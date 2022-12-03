@@ -13,7 +13,20 @@ The [/example](./example) folder contains a minimal page and styling that can he
 
 - `body.embed` defines the style that will be used when the page is actually embedded in-game. For example, it is *highly* recommended to use a transparent background, along with some of the basic in-game styles reproduced in [/style/influence-index.css](./style/influence-index.css).
 
-    **Note:** You will likely want to set the `embed` class only when [the page is being shown in an iframe](https://stackoverflow.com/questions/925039/detect-iframe-embedding-in-javascript) - i.e. not on direct visits to your page, outside the game.
+    **Note:** You will likely want to set the `embed` class only when [the page is being shown in an iframe](https://stackoverflow.com/a/326076/11071601) - i.e. not on direct visits to your page, outside the game:
+    ```
+    function inIframe() {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    }
+
+    if (inIframe()) {
+        document.body.classList.add('embed');
+    }
+    ```
 
 - `body` without any of the above classes defines the style that will be used in all contexts, including on direct visits to your page, outside the game.
 

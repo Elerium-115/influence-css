@@ -1,0 +1,58 @@
+/* Body class "mock-embed" used for testing as if embedded in-game */
+
+body.mock-embed::before {
+    background-color: #090300;
+    background-image: url('game-main.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    content: '';
+    height: 100%;
+    left: 0;
+    position: absolute;
+    right: 385px;
+    top: 0;
+}
+
+body.mock-embed::after {
+    background-color: #090300;
+    background-image: url('game-side.jpg');
+    background-repeat: no-repeat;
+    content: '';
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 385px;
+}
+
+body.mock-embed {
+    display: flex;
+    justify-content: center;
+    padding: 25px calc(385px + 50px) 75px 25px;
+}
+
+body.mock-embed .main-outer-shell {
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.5);
+    clip-path: polygon(0px 0px, 100% 0px, 100% calc(100% - 35px), calc(100% - 35px) 100%, 0px 100%);
+    max-width: 1400px;
+    padding: calc(60px + 25px) 35px 35px 25px;
+    width: 100%;
+}
+
+body.mock-embed .main-inner-shell {
+    height: 100%;
+    overflow: auto;
+}
+
+/* Body class "embed" used for actual embedding via iframe - e.g. transparent background */
+
+body.embed {
+    background-color: unset;
+}
+
+/* Body without the "mock-embed" or "embed" classes used for standalone website, without embedding */
+
+body {
+    background-color: black;
+}

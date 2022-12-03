@@ -31,18 +31,29 @@ body.mock-embed {
     padding: 25px calc(385px + 50px) 75px 25px;
 }
 
-body.mock-embed .main-outer-shell {
-    backdrop-filter: blur(4px);
-    background-color: rgba(0, 0, 0, 0.5);
-    clip-path: polygon(0px 0px, 100% 0px, 100% calc(100% - 35px), calc(100% - 35px) 100%, 0px 100%);
+body.mock-embed .main-wrapper {
     max-width: 1400px;
     padding: calc(60px + 25px) 35px 35px 25px;
+    position: relative;
     width: 100%;
 }
 
-body.mock-embed .main-inner-shell {
+body.mock-embed .main-wrapper::before {
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.5);
+    bottom: 0;
+    clip-path: polygon(0px 0px, 100% 0px, 100% calc(100% - 35px), calc(100% - 35px) 100%, 0px 100%);
+    content: '';
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+body.mock-embed .main {
     height: 100%;
     overflow: auto;
+    position: relative;
 }
 
 /* Body class "embed" used for actual embedding via iframe - e.g. transparent background */

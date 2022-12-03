@@ -31,14 +31,14 @@ body.mock-embed {
     padding: 25px calc(385px + 50px) 75px 25px;
 }
 
-body.mock-embed .main-wrapper {
+body.mock-embed .example-wrapper {
     max-width: 1400px;
     padding: calc(60px + 25px) 35px 35px 25px;
     position: relative;
     width: 100%;
 }
 
-body.mock-embed .main-wrapper::before {
+body.mock-embed .example-wrapper::before {
     backdrop-filter: blur(4px);
     background-color: rgba(0, 0, 0, 0.5);
     bottom: 0;
@@ -50,7 +50,7 @@ body.mock-embed .main-wrapper::before {
     top: 0;
 }
 
-body.mock-embed .main {
+body.mock-embed .example-main {
     height: 100%;
     overflow: auto;
     position: relative;

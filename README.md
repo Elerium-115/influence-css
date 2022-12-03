@@ -6,7 +6,7 @@ Styling recommended for embedding tools and content into the Influence game clie
 
 ## Dev notes
 
-The [/example](./example) folder contains a minimal page and styling that can help you to preview a page, before trying to embed it in-game. The actual contents of your page should be placed inside the `<div class="main">` element. You can then use the following classes on the `<body>` element:
+The [/example](./example) folder contains a minimal page and styling that can help you to preview a page, before trying to embed it in-game. The actual contents of your page should be placed inside the `<div class="example-main">` element. You can then use the following classes on the `<body>` element:
 
 - `body.mock-embed` will mock a background that looks similar to the game layout, so you can test your content as if it were embedded in-game:
 <img src="./README.png" width="100%">

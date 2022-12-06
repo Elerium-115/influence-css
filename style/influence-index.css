@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Jura:wght@300;400;700');
 
+:root {
+    --highlight-red: 54; --highlight-green: 167; --highlight-blue: 205;
+    --highlight: rgb(var(--highlight-red), var(--highlight-green), var(--highlight-blue));
+    --highlight-faded-25: rgba(var(--highlight-red), var(--highlight-green), var(--highlight-blue), 0.25);
+    /* IMPORTANT: any change of this highlight color should also be applied in background-image @ "button::after" */
+}
+
 html, body {
   cursor: url('/assets/images/cursor.png') 5 5, auto;
   color: #cccccc;
@@ -30,7 +37,7 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 
-/* Scroll bar styles */
+/* Scroll bar */
 ::-webkit-scrollbar {
   height: 7px;
   width: 7px;
@@ -46,4 +53,36 @@ input::-webkit-inner-spin-button {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
+}
+
+/* Button */
+button {
+    background-color: transparent;
+    border: 1px solid var(--highlight);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9.5px), calc(100% - 9.5px) 100%, 0 100%);
+    color: var(--highlight);
+    font-family: inherit;
+    min-height: 35px;
+    padding: 0 15px 0 10px;
+    position: relative;
+    transition: all 300ms ease 0s;
+}
+button:hover:not(:disabled) {
+    background-color: var(--highlight-faded-25);
+    color: white;
+}
+button:active:not(:disabled) {
+    background-color: var(--highlight);
+}
+button::after {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%2336a7cd'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+    bottom: -1px;
+    content: '';
+    height: 10px;
+    margin-right: 0px;
+    position: absolute;
+    right: -1px;
+    width: 10px;
 }

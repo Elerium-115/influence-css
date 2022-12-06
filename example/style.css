@@ -67,3 +67,10 @@ body.embed {
 body {
     background-color: black;
 }
+
+/* Example styles */
+
+button {
+    font-size: 1rem;
+    margin-top: 1rem;
+}

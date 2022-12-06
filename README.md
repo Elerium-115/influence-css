@@ -4,6 +4,10 @@
 
 Styling recommended for embedding tools and content into the Influence game client, for example via [influence-tools-chrome-extension](https://github.com/Elerium-115/influence-tools-chrome-extension).
 
+## Live example
+
+https://elerium-115.github.io/influence-css/example/
+
 ## Dev notes
 
 The [/example](./example) folder contains a minimal page and styling that can help you to preview a page, before trying to embed it in-game. The actual contents of your page should be placed inside the `<div class="example-main">` element. You can then use the following classes on the `<body>` element:

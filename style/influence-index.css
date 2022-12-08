@@ -5,10 +5,12 @@
     --highlight: rgb(var(--highlight-red), var(--highlight-green), var(--highlight-blue));
     --highlight-faded-25: rgba(var(--highlight-red), var(--highlight-green), var(--highlight-blue), 0.25);
     /* IMPORTANT: any change of this highlight color should also be applied in background-image @ "button::after" */
+    --cursor-url: url('/assets/images/cursor.png');
+    --cursor-active-url: url('/assets/images/cursor-active.png');
 }
 
 html, body {
-  cursor: url('/assets/images/cursor.png') 5 5, auto;
+  cursor: var(--cursor-url) 5 5, auto;
   color: #cccccc;
   font-family: Jura, sans-serif;
   height: 100%;
@@ -21,7 +23,7 @@ html, body {
 }
 
 a, button {
-  cursor: url('/assets/images/cursor-active.png') 5 5, auto;
+  cursor: var(--cursor-active-url) 5 5, auto;
 }
 
 * {

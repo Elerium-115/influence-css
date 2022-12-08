@@ -5,8 +5,8 @@
     --highlight: rgb(var(--highlight-red), var(--highlight-green), var(--highlight-blue));
     --highlight-faded-25: rgba(var(--highlight-red), var(--highlight-green), var(--highlight-blue), 0.25);
     /* IMPORTANT: any change of this highlight color should also be applied in background-image @ "button::after" */
-    --cursor-url: url('/assets/images/cursor.png');
-    --cursor-active-url: url('/assets/images/cursor-active.png');
+    --cursor-url: url('../assets/images/cursor.png');
+    --cursor-active-url: url('../assets/images/cursor-active.png');
 }
 
 html, body {

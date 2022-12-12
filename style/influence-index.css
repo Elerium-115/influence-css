@@ -4,7 +4,7 @@
     --highlight-red: 54; --highlight-green: 167; --highlight-blue: 205;
     --highlight: rgb(var(--highlight-red), var(--highlight-green), var(--highlight-blue));
     --highlight-faded-25: rgba(var(--highlight-red), var(--highlight-green), var(--highlight-blue), 0.25);
-    /* IMPORTANT: any change of this highlight color should also be applied in background-image @ "button::after" */
+    /* IMPORTANT: any change of this highlight color should also be applied in background-images */
     --cursor-url: url('../assets/images/cursor.png');
     --cursor-active-url: url('../assets/images/cursor-active.png');
 }
@@ -22,7 +22,7 @@ html, body {
   width: 100%;
 }
 
-a, button {
+a, button, input[type='checkbox'] {
   cursor: var(--cursor-active-url) 5 5, auto;
 }
 
@@ -87,4 +87,32 @@ button::after {
     position: absolute;
     right: -1px;
     width: 10px;
+}
+
+/* Input checkbox */
+label.checkbox {
+  align-items: center;
+  cursor: var(--cursor-active-url) 5 5, auto;
+  display: inline-flex;
+  gap: 10px;
+}
+
+input[type='checkbox'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent; /* for iOS < 15 to remove gradient background */
+  background-image: url('../assets/images/checkbox-off.svg');
+  background-image: url("data:image/svg+xml,%3Csvg stroke='%2336a7cd' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' height='1em' width='1em' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3C/svg%3E%0A");
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: var(--highlight);
+  height: 20px;
+  margin: 0; /* not removed via appearance */
+  position: relative;
+  transition: all 300ms ease 0s;
+  width: 20px;
+}
+
+input[type='checkbox']:checked {
+  background-image: url("data:image/svg+xml,%3Csvg stroke='%2336a7cd' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' height='1em' width='1em' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='9 11 12 14 22 4'%3E%3C/polyline%3E%3Cpath d='M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'%3E%3C/path%3E%3C/svg%3E%0A");
 }

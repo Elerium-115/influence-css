@@ -5,77 +5,84 @@
     --highlight: rgb(var(--highlight-red), var(--highlight-green), var(--highlight-blue));
     --highlight-faded-25: rgba(var(--highlight-red), var(--highlight-green), var(--highlight-blue), 0.25);
     /* IMPORTANT: any change of this highlight color should also be applied in background-images */
+    --warning: rgb(223, 67, 0);
     --cursor-url: url('../assets/images/cursor.png');
     --cursor-active-url: url('../assets/images/cursor-active.png');
 }
 
 html, body {
-  cursor: var(--cursor-url) 5 5, auto;
-  color: #cccccc;
-  font-family: Jura, sans-serif;
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
-  padding: 0;
-  scroll-behavior: smooth;
-  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(50, 50, 50, 0.3);
-  width: 100%;
+    cursor: var(--cursor-url) 5 5, auto;
+    color: #cccccc;
+    font-family: Jura, sans-serif;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    scroll-behavior: smooth;
+    scrollbar-color: rgba(255, 255, 255, 0.25) rgba(50, 50, 50, 0.3);
+    width: 100%;
 }
 
 a, button, input[type='checkbox'] {
-  cursor: var(--cursor-active-url) 5 5, auto;
+    cursor: var(--cursor-active-url) 5 5, auto;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 input[type='number'] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+    -webkit-appearance: none;
 }
 
 /* Scroll bar */
+
 ::-webkit-scrollbar {
-  height: 7px;
-  width: 7px;
+    height: 7px;
+    width: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 /* Button */
+
 button {
     background-color: transparent;
     border: 1px solid var(--highlight);
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9.5px), calc(100% - 9.5px) 100%, 0 100%);
     color: var(--highlight);
     font-family: inherit;
+    font-size: 15px;
     min-height: 35px;
     padding: 0 15px 0 10px;
     position: relative;
     transition: all 300ms ease 0s;
 }
+
 button:hover:not(:disabled) {
     background-color: var(--highlight-faded-25);
     color: white;
 }
+
 button:active:not(:disabled) {
     background-color: var(--highlight);
 }
+
 button::after {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%2336a7cd'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
     background-position: center;
@@ -90,29 +97,66 @@ button::after {
 }
 
 /* Input checkbox */
+
 label.checkbox {
-  align-items: center;
-  cursor: var(--cursor-active-url) 5 5, auto;
-  display: inline-flex;
-  gap: 10px;
+    align-items: center;
+    cursor: var(--cursor-active-url) 5 5, auto;
+    display: inline-flex;
+    gap: 10px;
 }
 
 input[type='checkbox'] {
-  -webkit-appearance: none;
-  appearance: none;
-  background-color: transparent; /* for iOS < 15 to remove gradient background */
-  background-image: url('../assets/images/checkbox-off.svg');
-  background-image: url("data:image/svg+xml,%3Csvg stroke='%2336a7cd' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' height='1em' width='1em' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3C/svg%3E%0A");
-  background-repeat: no-repeat;
-  background-size: contain;
-  color: var(--highlight);
-  height: 20px;
-  margin: 0; /* not removed via appearance */
-  position: relative;
-  transition: all 300ms ease 0s;
-  width: 20px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: transparent; /* for iOS < 15 to remove gradient background */
+    background-image: url('../assets/images/checkbox-off.svg');
+    background-image: url("data:image/svg+xml,%3Csvg stroke='%2336a7cd' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' height='1em' width='1em' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3C/svg%3E%0A");
+    background-repeat: no-repeat;
+    background-size: contain;
+    color: var(--highlight);
+    height: 20px;
+    margin: 0; /* not removed via appearance */
+    position: relative;
+    transition: all 300ms ease 0s;
+    width: 20px;
 }
 
 input[type='checkbox']:checked {
-  background-image: url("data:image/svg+xml,%3Csvg stroke='%2336a7cd' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' height='1em' width='1em' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='9 11 12 14 22 4'%3E%3C/polyline%3E%3Cpath d='M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'%3E%3C/path%3E%3C/svg%3E%0A");
+    background-image: url("data:image/svg+xml,%3Csvg stroke='%2336a7cd' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' height='1em' width='1em' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='9 11 12 14 22 4'%3E%3C/polyline%3E%3Cpath d='M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'%3E%3C/path%3E%3C/svg%3E%0A");
+}
+
+/* Notification */
+
+.notification {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-left: 5px solid var(--highlight);
+    box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.2);
+    cursor: var(--cursor-active-url) 5 5, auto;
+    font-size: 14px;
+    line-height: 150%;
+    padding: 20px 30px 20px 40px;
+    position: relative;
+    width: 325px;
+}
+
+.notification.warning {
+    border-color: var(--warning);
+}
+
+.notification-close {
+    height: 18px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 18px;
+}
+
+.notification-close::after {
+    color: white;
+    content: "\D7";
+    font-size: 20px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%,-50%);
 }

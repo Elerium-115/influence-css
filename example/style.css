@@ -82,6 +82,15 @@ body {
 
 /* Example styles */
 
-button {
-    font-size: 1rem;
+.example-main {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.example-notifications {
+    align-items: flex-start;
+    display: flex;
+    gap: 25px;
 }

@@ -89,8 +89,30 @@ body {
     gap: 25px;
 }
 
-.example-notifications {
+.example-row {
     align-items: flex-start;
     display: flex;
-    gap: 25px;
+    gap: 50px;
+}
+
+.example-row.example-centered {
+    align-items: center;
+}
+
+.example-column {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.example-list-header {
+    margin-bottom: 25px;
+}
+
+ul.list-expanding-items {
+    max-height: calc(7 * var(--list-item-height));
+}
+
+ul.list-expanding-items li .item-expand {
+    opacity: 0.5;
 }

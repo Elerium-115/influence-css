@@ -6,13 +6,15 @@
     --highlight-faded-25: rgba(var(--highlight-red), var(--highlight-green), var(--highlight-blue), 0.25);
     /* IMPORTANT: any change of this highlight color should also be applied in background-images */
     --warning: rgb(223, 67, 0);
+    --gray: rgb(204, 204, 204);
+    --darkgray: rgb(102, 102, 102);
     --cursor-url: url('../assets/images/cursor.png');
     --cursor-active-url: url('../assets/images/cursor-active.png');
 }
 
 html, body {
     cursor: var(--cursor-url) 5 5, auto;
-    color: #cccccc;
+    color: var(--gray);
     font-family: Jura, sans-serif;
     height: 100%;
     margin: 0;
@@ -38,6 +40,12 @@ input[type='number'] {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 /* Scroll bar */
@@ -90,7 +98,7 @@ button::after {
     bottom: -1px;
     content: '';
     height: 10px;
-    margin-right: 0px;
+    margin-right: 0;
     position: absolute;
     right: -1px;
     width: 10px;
@@ -133,7 +141,7 @@ input[type='checkbox']:checked {
     box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.2);
     cursor: var(--cursor-active-url) 5 5, auto;
     font-size: 14px;
-    line-height: 150%;
+    line-height: 1.5;
     padding: 20px 30px 20px 40px;
     position: relative;
     width: 325px;
@@ -159,4 +167,47 @@ input[type='checkbox']:checked {
     position: absolute;
     top: 50%;
     transform: translate(-50%,-50%);
+}
+
+/* List with expanding items */
+
+ul.list-expanding-items {
+    --list-item-height: 40px;
+    border-top: 1px solid var(--darkgray);
+    box-shadow: rgb(0, 0, 0) 0px 5px 7px -8px inset;
+    font-size: 14px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+ul.list-expanding-items li {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    height: var(--list-item-height);
+    max-height: var(--list-item-height);
+    overflow: hidden;
+    padding: 0 20px 0 10px;
+    transition: all 0.3s ease 0s;
+}
+
+ul.list-expanding-items li:hover {
+    background-color: rgba(40, 40, 40, 0.5);
+    border-top: 1px solid var(--darkgray);
+    border-bottom: 1px solid var(--darkgray);
+    height: 120px;
+    max-height: 120px;
+}
+
+ul.list-expanding-items li:first-child:hover {
+    border-top-color: transparent;
+}
+
+ul.list-expanding-items li .item-title {
+    line-height: var(--list-item-height);
+    white-space: nowrap;
+}
+
+ul.list-expanding-items li .item-expand {
+    line-height: 1.5;
+    white-space: nowrap;
 }

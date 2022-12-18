@@ -1,0 +1,23 @@
+#action-types {
+    display: flex;
+    gap: 25px;
+}
+
+.icon-build::after {
+    -webkit-mask-image: url('./assets/images/icon-build.png');
+    mask-image: url('./assets/images/icon-build.png');
+}
+
+ul.list-expanding-items {
+    /* max-height: calc(7 * var(--list-item-height)); */
+}
+
+ul.list-expanding-items li .item-title {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+ul.list-expanding-items li .item-expand {
+    opacity: 0.5;
+}

@@ -33,7 +33,7 @@ body.mock-embed {
 
 body.mock-embed .example-wrapper {
     max-width: 1400px;
-    padding: calc(60px + 25px) 35px 35px 25px;
+    padding: calc(60px + 25px) 35px 35px 35px;
     position: relative;
     width: 100%;
 }
@@ -51,8 +51,8 @@ body.mock-embed .example-wrapper::before {
 }
 
 body.mock-embed .example-wrapper::after {
-    border-left: 5px solid var(--highlight);
-    content: "Influence CSS Example";
+    border-left: 5px solid var(--color-highlight);
+    content: "Action Planner";
     font-size: 24px;
     height: 60px;
     left: 0;
@@ -107,12 +107,4 @@ body {
 
 .example-list-header {
     margin-bottom: 25px;
-}
-
-ul.list-expanding-items {
-    max-height: calc(7 * var(--list-item-height));
-}
-
-ul.list-expanding-items li .item-expand {
-    opacity: 0.5;
 }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style/influence-index.css">
+    <link rel="stylesheet" href="./example.css">
+    <link rel="stylesheet" href="./style.css">
+    <title>Action Planner</title>
+</head>
+<body class="mock-embed">
+    <div class="example-wrapper">
+        <div class="example-main">
+            <!-- TOOL TEMPLATE -- START -->
+            <div id="action-types">
+                <button>Build</button>
+                <button>Core Sample</button>
+                <button>Extract</button>
+                <button>Transfer</button>
+            </div>
+            <div>
+                <div>
+                    <ul id="queued-actions" class="list-expanding-items">
+                        <li class="action ready">
+                            <div class="item-title">
+                                <div class="icon-round icon-yield"></div>
+                                Extract: Hydrogen
+                            </div>
+                            <div class="item-expand">Lot: 123</div>
+                        </li>
+                        <li class="action queued">
+                            <div class="item-title">
+                                <div class="icon-round icon-zoom"></div>
+                                Core Sample: Methane
+                            </div>
+                            <div class="item-expand">Lot: 4567</div>
+                        </li>
+                        <li class="action queued">
+                            <span class="item-title">
+                                <div class="icon-round icon-build"></div>
+                                Build: Extractor
+                            </span>
+                            <div class="item-expand">Lot: 4567</div>
+                        </li>
+                        <li class="action queued">
+                            <span class="item-title">
+                                <div class="icon-round icon-yield"></div>
+                                Extract: Methane
+                            </span>
+                            <div class="item-expand">Lot: 4567</div>
+                        </li>
+                        <li class="action queued">
+                            <span class="item-title">
+                                <div class="icon-round icon-trade"></div>
+                                Transfer: Hydrogen
+                            </span>
+                            <div class="item-expand">From: Lot 123<br>To: Warehouse</div>
+                        </li>
+                        <li class="action queued">
+                            <span class="item-title">
+                                <div class="icon-round icon-trade"></div>
+                                Transfer: [multiple]
+                            </span>
+                            <div class="item-expand">From: Warehouse<br>To: Light Transport</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- TOOL TEMPLATE -- END -->
+        </div>
+    </div>
+</body>
+</html>

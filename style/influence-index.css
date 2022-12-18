@@ -1,20 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Jura:wght@300;400;700');
 
 :root {
-    --highlight-red: 54; --highlight-green: 167; --highlight-blue: 205;
-    --highlight: rgb(var(--highlight-red), var(--highlight-green), var(--highlight-blue));
-    --highlight-faded-25: rgba(var(--highlight-red), var(--highlight-green), var(--highlight-blue), 0.25);
+    --color-highlight-red: 54; --color-highlight-green: 167; --color-highlight-blue: 205;
+    --color-highlight: rgb(var(--color-highlight-red), var(--color-highlight-green), var(--color-highlight-blue));
+    --color-highlight-faded-10: rgba(var(--color-highlight-red), var(--color-highlight-green), var(--color-highlight-blue), 0.10);
+    --color-highlight-faded-25: rgba(var(--color-highlight-red), var(--color-highlight-green), var(--color-highlight-blue), 0.25);
     /* IMPORTANT: any change of this highlight color should also be applied in background-images */
-    --warning: rgb(223, 67, 0);
-    --gray: rgb(204, 204, 204);
-    --darkgray: rgb(102, 102, 102);
-    --cursor-url: url('../assets/images/cursor.png');
-    --cursor-active-url: url('../assets/images/cursor-active.png');
+    --color-warning: rgb(223, 67, 0);
+    --color-gray-light: rgb(204, 204, 204);
+    --color-gray-medium: rgb(153, 153, 153);
+    --color-gray-dark: rgb(102, 102, 102);
+    --cursor-url-default: url('../assets/images/cursor.png');
+    --cursor-url-active: url('../assets/images/cursor-active.png');
 }
 
 html, body {
-    cursor: var(--cursor-url) 5 5, auto;
-    color: var(--gray);
+    cursor: var(--cursor-url-default) 5 5, auto;
+    color: var(--color-gray-light);
     font-family: Jura, sans-serif;
     height: 100%;
     margin: 0;
@@ -26,7 +28,7 @@ html, body {
 }
 
 a, button, input[type='checkbox'] {
-    cursor: var(--cursor-active-url) 5 5, auto;
+    cursor: var(--cursor-url-active) 5 5, auto;
 }
 
 * {
@@ -71,9 +73,9 @@ ul {
 
 button {
     background-color: transparent;
-    border: 1px solid var(--highlight);
+    border: 1px solid var(--color-highlight);
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9.5px), calc(100% - 9.5px) 100%, 0 100%);
-    color: var(--highlight);
+    color: var(--color-highlight);
     font-family: inherit;
     font-size: 15px;
     min-height: 35px;
@@ -83,12 +85,13 @@ button {
 }
 
 button:hover:not(:disabled) {
-    background-color: var(--highlight-faded-25);
+    background-color: var(--color-highlight-faded-25);
     color: white;
 }
 
 button:active:not(:disabled) {
-    background-color: var(--highlight);
+    background-color: var(--color-highlight);
+    color: white;
 }
 
 button::after {
@@ -108,7 +111,7 @@ button::after {
 
 label.checkbox {
     align-items: center;
-    cursor: var(--cursor-active-url) 5 5, auto;
+    cursor: var(--cursor-url-active) 5 5, auto;
     display: inline-flex;
     gap: 10px;
 }
@@ -117,11 +120,10 @@ input[type='checkbox'] {
     -webkit-appearance: none;
     appearance: none;
     background-color: transparent; /* for iOS < 15 to remove gradient background */
-    background-image: url('../assets/images/checkbox-off.svg');
     background-image: url("data:image/svg+xml,%3Csvg stroke='%2336a7cd' fill='none' stroke-width='2' viewBox='0 0 24 24' stroke-linecap='round' stroke-linejoin='round' height='1em' width='1em' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3C/svg%3E%0A");
     background-repeat: no-repeat;
     background-size: contain;
-    color: var(--highlight);
+    color: var(--color-highlight);
     height: 20px;
     margin: 0; /* not removed via appearance */
     position: relative;
@@ -137,9 +139,9 @@ input[type='checkbox']:checked {
 
 .notification {
     background-color: rgba(0, 0, 0, 0.5);
-    border-left: 5px solid var(--highlight);
+    border-left: 5px solid var(--color-highlight);
     box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.2);
-    cursor: var(--cursor-active-url) 5 5, auto;
+    cursor: var(--cursor-url-active) 5 5, auto;
     font-size: 14px;
     line-height: 1.5;
     padding: 20px 30px 20px 40px;
@@ -148,7 +150,7 @@ input[type='checkbox']:checked {
 }
 
 .notification.warning {
-    border-color: var(--warning);
+    border-color: var(--color-warning);
 }
 
 .notification-close {
@@ -173,7 +175,6 @@ input[type='checkbox']:checked {
 
 ul.list-expanding-items {
     --list-item-height: 40px;
-    border-top: 1px solid var(--darkgray);
     box-shadow: rgb(0, 0, 0) 0px 5px 7px -8px inset;
     font-size: 14px;
     overflow-y: auto;
@@ -192,14 +193,10 @@ ul.list-expanding-items li {
 
 ul.list-expanding-items li:hover {
     background-color: rgba(40, 40, 40, 0.5);
-    border-top: 1px solid var(--darkgray);
-    border-bottom: 1px solid var(--darkgray);
+    border-top: 1px solid var(--color-gray-dark);
+    border-bottom: 1px solid var(--color-gray-dark);
     height: 120px;
     max-height: 120px;
-}
-
-ul.list-expanding-items li:first-child:hover {
-    border-top-color: transparent;
 }
 
 ul.list-expanding-items li .item-title {
@@ -210,4 +207,88 @@ ul.list-expanding-items li .item-title {
 ul.list-expanding-items li .item-expand {
     line-height: 1.5;
     white-space: nowrap;
+}
+
+/* Icons */
+
+.icon-button {
+    border: 1px solid var(--color-highlight);
+    border-radius: 2px;
+    cursor: var(--cursor-url-active) 5 5, auto;
+    display: inline-block;
+    height: 30px;
+    width: 30px;
+    padding: 4px;
+    transition: all 300ms ease 0s;
+}
+
+.icon-button:hover {
+    background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
+}
+
+.icon-button:active {
+    background-color: var(--color-highlight);
+}
+
+.icon-round {
+    border-radius: 50%;
+    display: inline-block;
+    height: 30px;
+    padding: 5px;
+    width: 30px;
+}
+
+.icon-round:hover {
+    background-color: var(--color-gray-medium);
+}
+
+.icon-button::after,
+.icon-round::after {
+    background-color: var(--color-highlight);
+    content: '';
+    display: block;
+    height: 100%;
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    width: 100%;
+}
+
+.icon-button:hover::after,
+.icon-button:active::after {
+    background-color: white;
+}
+
+.icon-round::after {
+    background-color: var(--color-gray-medium);
+}
+
+.icon-round:hover::after {
+    background-color: black;
+}
+
+/* Icon images */
+
+.icon-crew-member::after {
+    -webkit-mask-image: url('../assets/images/icon-crew-member.svg');
+    mask-image: url('../assets/images/icon-crew-member.svg');
+}
+
+.icon-fissiles::after {
+    -webkit-mask-image: url('../assets/images/icon-fissiles.svg');
+    mask-image: url('../assets/images/icon-fissiles.svg');
+}
+
+.icon-trade::after {
+    -webkit-mask-image: url('../assets/images/icon-trade.svg');
+    mask-image: url('../assets/images/icon-trade.svg');
+}
+
+.icon-yield::after {
+    -webkit-mask-image: url('../assets/images/icon-yield.svg');
+    mask-image: url('../assets/images/icon-yield.svg');
+}
+
+.icon-zoom::after {
+    -webkit-mask-image: url('../assets/images/icon-zoom.svg');
+    mask-image: url('../assets/images/icon-zoom.svg');
 }

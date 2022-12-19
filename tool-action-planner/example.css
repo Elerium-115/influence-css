@@ -79,32 +79,3 @@ body.embed {
 body {
     background-color: black;
 }
-
-/* Example styles */
-
-.example-main {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.example-row {
-    align-items: flex-start;
-    display: flex;
-    gap: 50px;
-}
-
-.example-row.example-centered {
-    align-items: center;
-}
-
-.example-column {
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-}
-
-.example-list-header {
-    margin-bottom: 25px;
-}

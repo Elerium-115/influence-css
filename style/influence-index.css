@@ -50,6 +50,14 @@ ul {
     padding: 0;
 }
 
+h2 {
+    border-bottom: 1px solid var(--color-gray-dark);
+    font-size: 18px;
+    height: 40px;
+    line-height: 40px;
+    margin: 0;
+}
+
 /* Scroll bar */
 
 ::-webkit-scrollbar {
@@ -175,7 +183,7 @@ input[type='checkbox']:checked {
 
 ul.list-expanding-items {
     --list-item-height: 40px;
-    box-shadow: rgb(0, 0, 0) 0px 5px 7px -8px inset;
+    /* box-shadow: rgb(0, 0, 0) 0px 5px 7px -8px inset; */
     font-size: 14px;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -200,8 +208,9 @@ ul.list-expanding-items li:hover {
 }
 
 ul.list-expanding-items li .item-title {
-    line-height: var(--list-item-height);
-    white-space: nowrap;
+    align-items: center;
+    display: flex;
+    height: var(--list-item-height);
 }
 
 ul.list-expanding-items li .item-expand {

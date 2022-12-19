@@ -19,9 +19,10 @@
                 <button>Extract</button>
                 <button>Transfer</button>
             </div>
-            <div>
-                <div>
-                    <ul id="queued-actions" class="list-expanding-items">
+            <div id="action-groups">
+                <div id="actions-queued" class="action-group">
+                    <h2>Queued</h2>
+                    <ul class="list-expanding-items">
                         <li class="action ready">
                             <div class="item-title">
                                 <div class="icon-round icon-yield"></div>
@@ -65,6 +66,12 @@
                             <div class="item-expand">From: Warehouse<br>To: Light Transport</div>
                         </li>
                     </ul>
+                </div>
+                <div id="actions-ongoing" class="action-group">
+                    <h2>Ongoing</h2>
+                </div>
+                <div id="actions-done" class="action-group">
+                    <h2>Done</h2>
                 </div>
             </div>
             <!-- TOOL TEMPLATE -- END -->

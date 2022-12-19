@@ -25,10 +25,10 @@
 }
 
 #manage-actions {
-  margin-top: 25px;
+  margin-top: 50px;
   position: relative;
 }
-#manage-actions #toggle-compact-lists {
+#manage-actions #toggle-compact-lists-label {
   line-height: 40px;
   position: absolute;
   right: 0;

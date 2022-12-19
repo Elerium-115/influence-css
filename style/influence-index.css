@@ -115,14 +115,16 @@ button::after {
     width: 10px;
 }
 
-/* Input checkbox */
+/* Label for input */
 
-label.checkbox {
+label.label-for-input {
     align-items: center;
     cursor: var(--cursor-url-active) 5 5, auto;
     display: inline-flex;
     gap: 10px;
 }
+
+/* Input checkbox */
 
 input[type='checkbox'] {
     -webkit-appearance: none;

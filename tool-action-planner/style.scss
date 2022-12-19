@@ -60,6 +60,8 @@
 }
 
 ul.list-expanding-items {
+    background-color: rgba(0, 0, 0, 0.5);
+
     &.list-expanded {
         li,
         li:hover {
@@ -72,10 +74,14 @@ ul.list-expanding-items {
         padding-left: 0;
 
         .item-title {
-            gap: 10px;
+            gap: 5px;
 
-            .icon-round:hover {
-                background-color: transparent;
+            .icon-round {
+                margin-left: 5px;
+
+                &:hover {
+                    background-color: transparent;
+                }
             }
         }
 

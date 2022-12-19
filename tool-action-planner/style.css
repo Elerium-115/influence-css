@@ -1,80 +1,133 @@
 :root {
-    --color-ready: rgb(54, 205, 54);
-    --color-ready-faded-10: rgba(54, 205, 54, 0.1);
-    --color-ready-faded-25: rgba(54, 205, 54, 0.25);
+  --color-ready: rgb(54, 205, 54);
+  --color-ready-faded-10: rgba(54, 205, 54, 0.1);
+  --color-ready-faded-25: rgba(54, 205, 54, 0.25);
 }
 
 .icon-build::after {
-    -webkit-mask-image: url('./assets/images/icon-build.png');
-    mask-image: url('./assets/images/icon-build.png');
+  -webkit-mask-image: url("./assets/images/icon-build.png");
+  mask-image: url("./assets/images/icon-build.png");
 }
 
-#action-types {
-    display: flex;
-    gap: 25px;
+.icon-ship::after {
+  -webkit-mask-image: url("./assets/images/icon-ship.svg");
+  mask-image: url("./assets/images/icon-ship.svg");
 }
 
-#action-groups {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    margin-top: 25px;
+.root-section {
+  margin-right: 10px;
 }
 
-ul.list-expanding-items {
-    /* max-height: calc(7 * var(--list-item-height)); */
+#plan-actions #action-buttons {
+  display: flex;
+  gap: 25px;
+  margin-top: 25px;
 }
 
-ul.list-expanding-items li:first-child:hover {
-    border-top: 1px solid transparent;
+#manage-actions {
+  margin-top: 25px;
+  position: relative;
+}
+#manage-actions #toggle-compact-lists {
+  line-height: 40px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+#manage-actions #action-groups {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+#manage-actions #action-groups .action-group .action-group-title {
+  font-weight: bold;
+  line-height: 60px;
+  padding-left: 40px;
+}
+#manage-actions #action-groups .action-group:hover .action-group-title {
+  color: white;
 }
 
+ul.list-expanding-items.list-expanded li,
+ul.list-expanding-items.list-expanded li:hover {
+  height: unset;
+  max-height: unset;
+}
+ul.list-expanding-items li {
+  padding-left: 0;
+}
 ul.list-expanding-items li .item-title {
-    gap: 10px;
+  gap: 10px;
 }
-
-ul.list-expanding-items li:hover .item-title {
-    color: white !important;
+ul.list-expanding-items li .item-title .icon-round:hover {
+  background-color: transparent;
 }
-
-ul.list-expanding-items li:hover .item-title .icon-round::after {
-    background-color: white !important;
-}
-
 ul.list-expanding-items li .item-expand {
-    color: var(--color-gray-dark);
-    line-height: 1;
-    position: relative;
+  color: var(--color-gray-dark);
+  height: calc(2.25 * var(--list-item-height));
+  line-height: 1;
+  margin-left: 40px;
+  position: relative;
 }
-
 ul.list-expanding-items li .item-expand .action-status {
-    align-items: center;
-    bottom: 10px;
-    display: flex;
-    gap: 10px;
-    height: var(--list-item-height);
-    justify-content: flex-end;
-    position: absolute;
-    width: 100%;
+  align-items: center;
+  bottom: 10px;
+  display: flex;
+  gap: 10px;
+  height: var(--list-item-height);
+  justify-content: flex-end;
+  position: absolute;
+  width: 100%;
 }
-
-/* Action ready */
-
-ul.list-expanding-items li.action.ready .item-title,
-ul.list-expanding-items li.action.ready .item-expand .action-status {
-    color: var(--color-ready);
+ul.list-expanding-items li .item-expand .action-status .icon-button {
+  border-color: var(--color-gray-dark);
 }
-
-ul.list-expanding-items li.action.ready .item-title .icon-round::after,
-ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button:active,
-ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button::after {
-    background-color: var(--color-ready);
+ul.list-expanding-items li .item-expand .action-status .icon-button:active, ul.list-expanding-items li .item-expand .action-status .icon-button::after {
+  background-color: var(--color-gray-dark);
 }
-
-ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button {
-    border: 1px solid var(--color-ready);
+ul.list-expanding-items li:hover {
+  height: calc(3.25 * var(--list-item-height));
+  max-height: calc(3.25 * var(--list-item-height));
 }
-
-ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button:hover {
-    background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+ul.list-expanding-items li:hover .item-title {
+  color: white !important;
 }
+ul.list-expanding-items li:hover .item-title .icon-round::after {
+  background-color: white !important;
+}
+ul.list-expanding-items li:hover .item-expand {
+  color: inherit;
+}
+ul.list-expanding-items li:hover .item-expand .action-warning {
+  color: var(--color-warning);
+}
+ul.list-expanding-items li:hover .item-expand .action-status {
+  color: var(--color-highlight);
+}
+ul.list-expanding-items li:hover .item-expand .action-status .icon-button {
+  border-color: var(--color-highlight);
+}
+ul.list-expanding-items li:hover .item-expand .action-status .icon-button:active, ul.list-expanding-items li:hover .item-expand .action-status .icon-button::after {
+  background-color: var(--color-highlight);
+}
+ul.list-expanding-items li:hover .item-expand .action-status .icon-button:hover {
+  background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
+}
+ul.list-expanding-items li.action.ready .item-title {
+  color: var(--color-ready);
+}
+ul.list-expanding-items li.action.ready .item-title .icon-round::after {
+  background-color: var(--color-ready);
+}
+ul.list-expanding-items li.action.ready:hover .item-expand .action-status {
+  color: var(--color-ready);
+}
+ul.list-expanding-items li.action.ready:hover .item-expand .action-status .icon-button {
+  border-color: var(--color-ready);
+}
+ul.list-expanding-items li.action.ready:hover .item-expand .action-status .icon-button:active, ul.list-expanding-items li.action.ready:hover .item-expand .action-status .icon-button::after {
+  background-color: var(--color-ready);
+}
+ul.list-expanding-items li.action.ready:hover .item-expand .action-status .icon-button:hover {
+  background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+}/*# sourceMappingURL=style.css.map */

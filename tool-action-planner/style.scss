@@ -1,0 +1,177 @@
+:root {
+    --color-ready: rgb(54, 205, 54);
+    --color-ready-faded-10: rgba(54, 205, 54, 0.1);
+    --color-ready-faded-25: rgba(54, 205, 54, 0.25);
+}
+
+// Custom icons
+
+.icon-build::after {
+    -webkit-mask-image: url('./assets/images/icon-build.png');
+    mask-image: url('./assets/images/icon-build.png');
+}
+
+.icon-ship::after {
+    -webkit-mask-image: url('./assets/images/icon-ship.svg');
+    mask-image: url('./assets/images/icon-ship.svg');
+}
+
+.root-section {
+    // Margin between the root-level sections and the in-game scrollbar
+    margin-right: 10px;
+}
+
+#plan-actions {
+    #action-buttons {
+        display: flex;
+        gap: 25px;
+        margin-top: 25px;
+    }
+}
+
+#manage-actions {
+    margin-top: 25px;
+    position: relative;
+
+    #toggle-compact-lists {
+        line-height: 40px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    #action-groups {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+
+        .action-group {
+            .action-group-title {
+                font-weight: bold;
+                line-height: 60px;
+                padding-left: 40px;
+            }
+
+            &:hover .action-group-title {
+                color: white;
+            }
+        }
+    }
+}
+
+ul.list-expanding-items {
+    &.list-expanded {
+        li,
+        li:hover {
+            height: unset;
+            max-height: unset;
+        }
+    }
+
+    li {
+        padding-left: 0;
+
+        .item-title {
+            gap: 10px;
+
+            .icon-round:hover {
+                background-color: transparent;
+            }
+        }
+
+        .item-expand {
+            color: var(--color-gray-dark);
+            // Height of "li:hover" minus height of ".item-title"
+            height: calc(2.25 * var(--list-item-height));
+            line-height: 1;
+            margin-left: 40px;
+            position: relative;
+
+            .action-status {
+                align-items: center;
+                bottom: 10px;
+                display: flex;
+                gap: 10px;
+                height: var(--list-item-height);
+                justify-content: flex-end;
+                position: absolute;
+                width: 100%;
+
+                .icon-button {
+                    border-color: var(--color-gray-dark);
+
+                    &:active,
+                    &::after {
+                        background-color: var(--color-gray-dark);
+                    }
+                }
+            }
+        }
+
+        &:hover {
+            height: calc(3.25 * var(--list-item-height));
+            max-height: calc(3.25 * var(--list-item-height));
+
+            .item-title {
+                color: white !important;
+
+                .icon-round::after {
+                    background-color: white !important;
+                }
+            }
+
+            .item-expand {
+                color: inherit;
+
+                .action-warning {
+                    color: var(--color-warning);
+                }
+
+                .action-status {
+                    color: var(--color-highlight);
+
+                    .icon-button {
+                        border-color: var(--color-highlight);
+
+                        &:active,
+                        &::after {
+                            background-color: var(--color-highlight);
+                        }
+
+                        &:hover {
+                            background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
+                        }
+                    }
+                }
+            }
+        }
+
+        // Action ready
+        &.action.ready {
+            .item-title {
+                color: var(--color-ready);
+            }
+
+            .item-title .icon-round::after {
+                background-color: var(--color-ready);
+            }
+
+            &:hover .item-expand .action-status {
+                color: var(--color-ready);
+
+                .icon-button {
+                    border-color: var(--color-ready);
+
+                    &:active,
+                    &::after {
+                        background-color: var(--color-ready);
+                    }
+
+                    &:hover {
+                        background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+                    }
+                }
+            }
+        }
+    }
+}

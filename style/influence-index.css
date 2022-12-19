@@ -204,7 +204,7 @@ ul.list-expanding-items li:hover {
     border-top: 1px solid var(--color-gray-dark);
     border-bottom: 1px solid var(--color-gray-dark);
     height: calc(3 * var(--list-item-height));
-    max-height: 120px;
+    max-height: calc(3 * var(--list-item-height));
 }
 
 ul.list-expanding-items li .item-title {
@@ -215,7 +215,8 @@ ul.list-expanding-items li .item-title {
 
 ul.list-expanding-items li .item-expand {
     line-height: 1.5;
-    height: calc(2 * var(--list-item-height)); /* height of "li" minus height of ".item-title" */
+    /* height of "li:hover" minus height of ".item-title" */
+    height: calc(2 * var(--list-item-height));
     white-space: nowrap;
 }
 
@@ -260,6 +261,7 @@ ul.list-expanding-items li .item-expand {
     height: 100%;
     mask-repeat: no-repeat;
     mask-size: contain;
+    mask-position: center;
     width: 100%;
 }
 

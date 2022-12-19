@@ -1,11 +1,24 @@
-#action-types {
-    display: flex;
-    gap: 25px;
+:root {
+    --color-ready: rgb(54, 205, 54);
+    --color-ready-faded-10: rgba(54, 205, 54, 0.1);
+    --color-ready-faded-25: rgba(54, 205, 54, 0.25);
 }
 
 .icon-build::after {
     -webkit-mask-image: url('./assets/images/icon-build.png');
     mask-image: url('./assets/images/icon-build.png');
+}
+
+#action-types {
+    display: flex;
+    gap: 25px;
+}
+
+#action-groups {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 25px;
 }
 
 ul.list-expanding-items {
@@ -20,13 +33,48 @@ ul.list-expanding-items li .item-title {
     gap: 10px;
 }
 
-ul.list-expanding-items li .item-expand {
-    opacity: 0.5;
+ul.list-expanding-items li:hover .item-title {
+    color: white !important;
 }
 
-#action-groups {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 25px;
-    margin-top: 25px;
+ul.list-expanding-items li:hover .item-title .icon-round::after {
+    background-color: white !important;
+}
+
+ul.list-expanding-items li .item-expand {
+    color: var(--color-gray-dark);
+    line-height: 1;
+    position: relative;
+}
+
+ul.list-expanding-items li .item-expand .action-status {
+    align-items: center;
+    bottom: 10px;
+    display: flex;
+    gap: 10px;
+    height: var(--list-item-height);
+    justify-content: flex-end;
+    position: absolute;
+    width: 100%;
+}
+
+/* Action ready */
+
+ul.list-expanding-items li.action.ready .item-title,
+ul.list-expanding-items li.action.ready .item-expand .action-status {
+    color: var(--color-ready);
+}
+
+ul.list-expanding-items li.action.ready .item-title .icon-round::after,
+ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button:active,
+ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button::after {
+    background-color: var(--color-ready);
+}
+
+ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button {
+    border: 1px solid var(--color-ready);
+}
+
+ul.list-expanding-items li.action.ready .item-expand .action-status .icon-button:hover {
+    background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
 }

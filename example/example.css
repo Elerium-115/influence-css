@@ -119,5 +119,5 @@ ul.list-expanding-items {
 }
 
 ul.list-expanding-items li .item-expand {
-    opacity: 0.5;
+    color: var(--color-gray-dark);
 }

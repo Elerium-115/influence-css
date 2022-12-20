@@ -9,7 +9,22 @@
     <link rel="stylesheet" href="./style.css">
     <title>Action Planner</title>
 </head>
-<body class="mock-embed">
+<body class="embed">
+    <script>
+        // Run embedding logic ASAP, instead of requesting it via a script file.
+        // Source: https://stackoverflow.com/a/326076/11071601
+        function inIframe() {
+            try {
+                return window.self !== window.top;
+            } catch (e) {
+                return true;
+            }
+        }
+        if (!inIframe()) {
+            document.body.classList.remove('embed');
+            document.body.classList.add('mock-embed');
+        }
+    </script>
     <div class="example-wrapper">
         <div class="example-main">
             <!-- TOOL TEMPLATE -- START -->

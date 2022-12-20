@@ -5,13 +5,13 @@
 }
 
 .icon-build::after {
-  -webkit-mask-image: url("./assets/images/icon-build.png");
   mask-image: url("./assets/images/icon-build.png");
+  -webkit-mask-image: url("./assets/images/icon-build.png");
 }
 
 .icon-ship::after {
-  -webkit-mask-image: url("./assets/images/icon-ship.svg");
   mask-image: url("./assets/images/icon-ship.svg");
+  -webkit-mask-image: url("./assets/images/icon-ship.svg");
 }
 
 .root-section {

@@ -262,8 +262,11 @@ ul.list-expanding-items li .item-expand {
     display: block;
     height: 100%;
     mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
     mask-size: contain;
+    -webkit-mask-size: contain;
     mask-position: center;
+    -webkit-mask-position: center;
     width: 100%;
 }
 
@@ -283,49 +286,49 @@ ul.list-expanding-items li .item-expand {
 /* Icon images */
 
 .icon-arrow-down::after {
-    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
     mask-image: url('../assets/images/icon-arrow-right.svg');
+    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
     transform: rotate(90deg);
 }
 
 .icon-arrow-left::after {
-    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
     mask-image: url('../assets/images/icon-arrow-right.svg');
+    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
     transform: rotate(180deg);
 }
 
 .icon-arrow-right::after {
-    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
     mask-image: url('../assets/images/icon-arrow-right.svg');
+    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
 }
 
 .icon-arrow-up::after {
-    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
     mask-image: url('../assets/images/icon-arrow-right.svg');
+    -webkit-mask-image: url('../assets/images/icon-arrow-right.svg');
     transform: rotate(-90deg);
 }
 
 .icon-crew-member::after {
-    -webkit-mask-image: url('../assets/images/icon-crew-member.svg');
     mask-image: url('../assets/images/icon-crew-member.svg');
+    -webkit-mask-image: url('../assets/images/icon-crew-member.svg');
 }
 
 .icon-fissiles::after {
-    -webkit-mask-image: url('../assets/images/icon-fissiles.svg');
     mask-image: url('../assets/images/icon-fissiles.svg');
+    -webkit-mask-image: url('../assets/images/icon-fissiles.svg');
 }
 
 .icon-trade::after {
-    -webkit-mask-image: url('../assets/images/icon-trade.svg');
     mask-image: url('../assets/images/icon-trade.svg');
+    -webkit-mask-image: url('../assets/images/icon-trade.svg');
 }
 
 .icon-yield::after {
-    -webkit-mask-image: url('../assets/images/icon-yield.svg');
     mask-image: url('../assets/images/icon-yield.svg');
+    -webkit-mask-image: url('../assets/images/icon-yield.svg');
 }
 
 .icon-zoom::after {
-    -webkit-mask-image: url('../assets/images/icon-zoom.svg');
     mask-image: url('../assets/images/icon-zoom.svg');
+    -webkit-mask-image: url('../assets/images/icon-zoom.svg');
 }

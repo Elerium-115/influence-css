@@ -63,7 +63,7 @@ class Action {
                 } else {
                     subactionText = 'Cancel';
                     subactionIconsHtml = /*html*/ `
-                        <div class="icon-button icon-arrow-right"></div>
+                        <div class="icon-button icon-x"></div>
                     `;
                     timerHtml = /*html*/ `
                         <span class="prefix highlight-text-pulse">T-minus:</span>
@@ -74,7 +74,7 @@ class Action {
             case ACTION_STATE.DONE:
                 subactionText = 'Dismiss';
                 subactionIconsHtml = /*html*/ `
-                    <div class="icon-button icon-arrow-right"></div>
+                    <div class="icon-button icon-x"></div>
                 `;
                 timerHtml = /*html*/ `
                     <span class="prefix">Done:</span>

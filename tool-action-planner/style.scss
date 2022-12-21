@@ -23,15 +23,17 @@ body {
 .icon-construct::after { @include customIcon('icon-construct.png'); }
 .icon-core-sample::after { @include customIcon('icon-core-sample.png'); }
 .icon-deconstruct::after { @include customIcon('icon-deconstruct.png'); }
+.icon-x::after { @include customIcon('icon-x.svg'); }
 
 @keyframes pulse-highlight-text {
 	0% { color: var(--color-gray-light); };
+	10% { color: var(--color-gray-light); };
     50% { color: var(--color-highlight); };
 }
 
 .highlight-text-pulse {
     color: var(--color-highlight);
-	animation: pulse-highlight-text 1.5s infinite;
+	animation: pulse-highlight-text 2s infinite;
 }
 
 .root-section {

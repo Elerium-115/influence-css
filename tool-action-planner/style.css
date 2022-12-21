@@ -26,8 +26,16 @@ body.embed {
   -webkit-mask-image: url("./assets/images/icon-deconstruct.png");
 }
 
+.icon-x::after {
+  mask-image: url("./assets/images/icon-x.svg");
+  -webkit-mask-image: url("./assets/images/icon-x.svg");
+}
+
 @-webkit-keyframes pulse-highlight-text {
   0% {
+    color: var(--color-gray-light);
+  }
+  10% {
     color: var(--color-gray-light);
   }
   50% {
@@ -39,14 +47,17 @@ body.embed {
   0% {
     color: var(--color-gray-light);
   }
+  10% {
+    color: var(--color-gray-light);
+  }
   50% {
     color: var(--color-highlight);
   }
 }
 .highlight-text-pulse {
   color: var(--color-highlight);
-  -webkit-animation: pulse-highlight-text 1.5s infinite;
-          animation: pulse-highlight-text 1.5s infinite;
+  -webkit-animation: pulse-highlight-text 2s infinite;
+          animation: pulse-highlight-text 2s infinite;
 }
 
 .root-section {

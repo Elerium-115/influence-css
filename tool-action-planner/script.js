@@ -1,3 +1,4 @@
+import {Action} from './modules/action.js';
 
 /**
  * Fix for Firefox bug re: checkbox inputs keeping
@@ -49,3 +50,6 @@ on('change', '#toggle-compact-lists', el => {
         elsActionGroupList.forEach(el => el.classList.add('list-expanded'));
     }
 });
+
+const testAction = new Action(); //// TEST
+// console.log(`--- testAction:`, testAction); //// TEST

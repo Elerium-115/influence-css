@@ -4,21 +4,29 @@
     --color-ready-faded-25: rgba(54, 205, 54, 0.25);
 }
 
+body {
+    background-color: rgba(0, 0, 0, 0.9);
+
+    &.embed {
+        /* Used for embedding via iframe - e.g. transparent background */
+        background-color: unset;
+    }
+}
+
 // Custom icons
 
-.icon-build::after {
-    mask-image: url('./assets/images/icon-build.png');
-    -webkit-mask-image: url('./assets/images/icon-build.png');
+@mixin customIcon($iconFilename) {
+    mask-image: url('./assets/images/' + $iconFilename);
+    -webkit-mask-image: url('./assets/images/' + $iconFilename);
 }
 
-.icon-ship::after {
-    mask-image: url('./assets/images/icon-ship.svg');
-    -webkit-mask-image: url('./assets/images/icon-ship.svg');
-}
+.icon-construct::after { @include customIcon('icon-construct.png'); }
+.icon-core-sample::after { @include customIcon('icon-core-sample.png'); }
+.icon-deconstruct::after { @include customIcon('icon-deconstruct.png'); }
 
 .root-section {
     // Margin between the root-level sections and the in-game scrollbar
-    margin-right: 10px;
+    margin-right: 20px;
 }
 
 #plan-actions {
@@ -88,10 +96,23 @@ ul.list-expanding-items {
         .item-expand {
             color: var(--color-gray-dark);
             // Height of "li:hover" minus height of ".item-title"
-            height: calc(2.25 * var(--list-item-height));
-            line-height: 1;
-            margin-left: 40px;
+            height: calc(2.5 * var(--list-item-height));
+            line-height: 1.25;
+            margin-left: 10px;
             position: relative;
+
+            .action-details {
+                column-gap: 10px;
+                display: grid;
+                grid-template-columns: auto auto;
+                justify-content: start;
+
+                .prefix {
+                    min-width: 30px;
+                    opacity: 0.5;
+                    text-align: right;
+                }
+            }
 
             .action-status {
                 align-items: center;
@@ -115,8 +136,8 @@ ul.list-expanding-items {
         }
 
         &:hover {
-            height: calc(3.25 * var(--list-item-height));
-            max-height: calc(3.25 * var(--list-item-height));
+            height: calc(3.5 * var(--list-item-height));
+            max-height: calc(3.5 * var(--list-item-height));
 
             .item-title {
                 color: white !important;
@@ -128,10 +149,6 @@ ul.list-expanding-items {
 
             .item-expand {
                 color: inherit;
-
-                .action-warning {
-                    color: var(--color-warning);
-                }
 
                 .action-status {
                     color: var(--color-highlight);

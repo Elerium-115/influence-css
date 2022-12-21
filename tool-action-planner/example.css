@@ -2,7 +2,7 @@
 
 body.mock-embed::before {
     background-color: #090300;
-    background-image: url('game-main.jpg');
+    background-image: url('../mock-embed/game-main.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     content: '';
@@ -15,7 +15,7 @@ body.mock-embed::before {
 
 body.mock-embed::after {
     background-color: #090300;
-    background-image: url('game-side.jpg');
+    background-image: url('../mock-embed/game-side.jpg');
     background-repeat: no-repeat;
     content: '';
     height: 100%;
@@ -66,16 +66,4 @@ body.mock-embed .example-main {
     height: 100%;
     overflow: auto;
     position: relative;
-}
-
-/* Body class "embed" used for actual embedding via iframe - e.g. transparent background */
-
-body.embed {
-    background-color: unset;
-}
-
-/* Body without the "mock-embed" or "embed" classes used for standalone website, without embedding */
-
-body {
-    background-color: black;
 }

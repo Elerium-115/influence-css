@@ -34,7 +34,7 @@
                     <button>Core Sample</button>
                     <button>Extract</button>
                     <button>Transfer</button>
-                    <button>Build</button>
+                    <button>Construct</button>
                     <button>Deconstruct</button>
                 </div>
             </section>
@@ -51,7 +51,10 @@
                                     Extract: Hydrogen
                                 </div>
                                 <div class="item-expand">
-                                    Lot: 123<br><span class="action-warning">Req.: Core Sample, Extractor</span>
+                                    <div class="action-details">
+                                        <span class="prefix">With:</span><span class="value">Extractor #123</span>
+                                        <span class="prefix">Into:</span><span class="value">Warehouse #777</span>
+                                    </div>
                                     <div class="action-status">
                                         Ready to start
                                         <div class="icon-button icon-arrow-right"></div>
@@ -60,11 +63,13 @@
                             </li>
                             <li class="action ready">
                                 <div class="item-title">
-                                    <div class="icon-round icon-zoom"></div>
+                                    <div class="icon-round icon-core-sample"></div>
                                     Core Sample: Methane
                                 </div>
                                 <div class="item-expand">
-                                    Lot: 4567
+                                    <div class="action-details">
+                                        <span class="prefix">At:</span><span class="value">Lot #4567</span>
+                                    </div>
                                     <div class="action-status">
                                         Ready to start
                                         <div class="icon-button icon-arrow-right"></div>
@@ -73,13 +78,15 @@
                             </li>
                             <li class="action queued">
                                 <span class="item-title">
-                                    <div class="icon-round icon-build"></div>
-                                    Build: Extractor
+                                    <div class="icon-round icon-construct"></div>
+                                    Construct: Extractor
                                 </span>
                                 <div class="item-expand">
-                                    Lot: 4567
+                                    <div class="action-details">
+                                        <span class="prefix">At:</span><span class="value">Lot #4567</span>
+                                    </div>
                                     <div class="action-status">
-                                        Queued
+                                        Move in queue
                                         <!-- <div class="icon-button icon-arrow-up"></div> -->
                                         <div class="icon-button icon-arrow-down"></div>
                                     </div>
@@ -91,9 +98,12 @@
                                     Extract: Methane
                                 </span>
                                 <div class="item-expand">
-                                    Lot: 4567<br><span class="action-warning">Req.: Core Sample, Extractor</span>
+                                    <div class="action-details">
+                                        <span class="prefix">With:</span><span class="value">Extractor #4567</span>
+                                        <span class="prefix">Into:</span><span class="value">Warehouse #777</span>
+                                    </div>
                                     <div class="action-status">
-                                        Queued
+                                        Move in queue
                                         <div class="icon-button icon-arrow-up"></div>
                                         <div class="icon-button icon-arrow-down"></div>
                                     </div>
@@ -101,13 +111,16 @@
                             </li>
                             <li class="action queued">
                                 <span class="item-title">
-                                    <div class="icon-round icon-trade"></div>
-                                    Transfer: Hydrogen
+                                    <div class="icon-round icon-deconstruct"></div>
+                                    Deconstruct: Extractor
                                 </span>
                                 <div class="item-expand">
-                                    From: Lot 123<br>To: Warehouse
+                                    <div class="action-details">
+                                        <span class="prefix">What:</span><span class="value">Extractor #89</span>
+                                        <span class="prefix">Into:</span><span class="value">Warehouse #777</span>
+                                    </div>
                                     <div class="action-status">
-                                        Queued
+                                        Move in queue
                                         <div class="icon-button icon-arrow-up"></div>
                                         <div class="icon-button icon-arrow-down"></div>
                                     </div>
@@ -119,23 +132,12 @@
                                     Transfer: [multiple]
                                 </span>
                                 <div class="item-expand">
-                                    From: Warehouse<br>To: Light Transport
-                                    <div class="action-status">
-                                        Queued
-                                        <div class="icon-button icon-arrow-up"></div>
-                                        <div class="icon-button icon-arrow-down"></div>
+                                    <div class="action-details">
+                                        <span class="prefix">From:</span><span class="value">Warehouse #777</span>
+                                        <span class="prefix">To:</span><span class="value">Light Transport #666</span>
                                     </div>
-                                </div>
-                            </li>
-                            <li class="action queued">
-                                <span class="item-title">
-                                    <div class="icon-round icon-ship"></div>
-                                    Fly: Light Transport
-                                </span>
-                                <div class="item-expand">
-                                    From: Asteroid #1<br>To: Asteroid #104
                                     <div class="action-status">
-                                        Queued
+                                        Move in queue
                                         <div class="icon-button icon-arrow-up"></div>
                                         <!-- <div class="icon-button icon-arrow-down"></div> -->
                                     </div>
@@ -148,11 +150,13 @@
                         <ul class="list-expanding-items">
                             <li class="action ready">
                                 <div class="item-title">
-                                    <div class="icon-round icon-build"></div>
-                                    Build: Extractor
+                                    <div class="icon-round icon-construct"></div>
+                                    Construct: Extractor
                                 </div>
                                 <div class="item-expand">
-                                    Lot: 123
+                                    <div class="action-details">
+                                        <span class="prefix">At:</span><span class="value">Lot #123</span>
+                                    </div>
                                     <div class="action-status">
                                         Ready to finalize
                                         <div class="icon-button icon-arrow-right"></div>
@@ -165,9 +169,14 @@
                                     Extract: Water
                                 </div>
                                 <div class="item-expand">
-                                    Lot: 89
+                                    <div class="action-details">
+                                        <span class="prefix">With:</span><span class="value">Extractor #89</span>
+                                        <span class="prefix">Into:</span><span class="value">Warehouse #777</span>
+                                        <span class="prefix">T-minus:</span><span class="value">5 hours</span>
+                                    </div>
                                     <div class="action-status">
-                                        Remaining: 5 hours
+                                        Cancel
+                                        <div class="icon-button icon-arrow-right"></div>
                                     </div>
                                 </div>
                             </li>
@@ -178,37 +187,49 @@
                         <ul class="list-expanding-items">
                             <li class="action">
                                 <div class="item-title">
-                                    <div class="icon-round icon-zoom"></div>
+                                    <div class="icon-round icon-core-sample"></div>
                                     Core Sample: Hydrogen
                                 </div>
                                 <div class="item-expand">
-                                    Lot: 123
+                                    <div class="action-details">
+                                        <span class="prefix">At:</span><span class="value">Lot #123</span>
+                                        <span class="prefix">Done:</span><span class="value">18 hours ago</span>
+                                    </div>
                                     <div class="action-status">
-                                        Done: 18 hours ago
+                                        Dismiss
+                                        <div class="icon-button icon-arrow-right"></div>
                                     </div>
                                 </div>
                             </li>
                             <li class="action">
                                 <div class="item-title">
-                                    <div class="icon-round icon-build"></div>
-                                    Build: Extractor
+                                    <div class="icon-round icon-construct"></div>
+                                    Construct: Extractor
                                 </div>
                                 <div class="item-expand">
-                                    Lot: 89
+                                    <div class="action-details">
+                                        <span class="prefix">At:</span><span class="value">Lot #89</span>
+                                        <span class="prefix">Done:</span><span class="value">1 day ago</span>
+                                    </div>
                                     <div class="action-status">
-                                        Done: 1 day ago
+                                        Dismiss
+                                        <div class="icon-button icon-arrow-right"></div>
                                     </div>
                                 </div>
                             </li>
                             <li class="action">
                                 <div class="item-title">
-                                    <div class="icon-round icon-zoom"></div>
+                                    <div class="icon-round icon-core-sample"></div>
                                     Core Sample: Water
                                 </div>
                                 <div class="item-expand">
-                                    Lot: 89
+                                    <div class="action-details">
+                                        <span class="prefix">At:</span><span class="value">Lot #89</span>
+                                        <span class="prefix">Done:</span><span class="value">2 days ago</span>
+                                    </div>
                                     <div class="action-status">
-                                        Done: 2 days ago
+                                        Dismiss
+                                        <div class="icon-button icon-arrow-right"></div>
                                     </div>
                                 </div>
                             </li>
@@ -219,6 +240,6 @@
             <!-- TOOL TEMPLATE -- END -->
         </div>
     </div>
-    <script src="./script.js"></script>
+    <script type="module" src="./script.js"></script>
 </body>
 </html>

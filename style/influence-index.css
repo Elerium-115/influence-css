@@ -20,7 +20,6 @@ html, body {
     font-family: Jura, sans-serif;
     height: 100%;
     margin: 0;
-    overflow: hidden;
     padding: 0;
     scroll-behavior: smooth;
     scrollbar-color: rgba(255, 255, 255, 0.25) rgba(50, 50, 50, 0.3);

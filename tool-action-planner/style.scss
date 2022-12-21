@@ -5,10 +5,10 @@
 }
 
 body {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.95);
 
     &.embed {
-        /* Used for embedding via iframe - e.g. transparent background */
+        // Used for embedding via iframe - e.g. transparent background
         background-color: unset;
     }
 }
@@ -23,6 +23,16 @@ body {
 .icon-construct::after { @include customIcon('icon-construct.png'); }
 .icon-core-sample::after { @include customIcon('icon-core-sample.png'); }
 .icon-deconstruct::after { @include customIcon('icon-deconstruct.png'); }
+
+@keyframes pulse-highlight-text {
+	0% { color: var(--color-gray-light); };
+    50% { color: var(--color-highlight); };
+}
+
+.highlight-text-pulse {
+    color: var(--color-highlight);
+	animation: pulse-highlight-text 1.5s infinite;
+}
 
 .root-section {
     // Margin between the root-level sections and the in-game scrollbar
@@ -86,10 +96,20 @@ ul.list-expanding-items {
 
             .icon-round {
                 margin-left: 5px;
+                min-width: 30px; // required for long titles
 
                 &:hover {
                     background-color: transparent;
                 }
+            }
+
+            .item-title-text {
+                --max-lines: 2;
+                display: -webkit-box;
+                line-height: 1.25; // minimum value to avoid single-line texts being truncated vertically
+                overflow: hidden;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: var(--max-lines);
             }
         }
 
@@ -98,18 +118,18 @@ ul.list-expanding-items {
             // Height of "li:hover" minus height of ".item-title"
             height: calc(2.5 * var(--list-item-height));
             line-height: 1.25;
-            margin-left: 10px;
+            padding-top: 5px;
             position: relative;
 
             .action-details {
-                column-gap: 10px;
                 display: grid;
                 grid-template-columns: auto auto;
                 justify-content: start;
 
                 .prefix {
-                    min-width: 30px;
+                    min-width: 40px;
                     opacity: 0.5;
+                    padding: 0 10px;
                     text-align: right;
                 }
             }
@@ -140,6 +160,7 @@ ul.list-expanding-items {
             max-height: calc(3.5 * var(--list-item-height));
 
             .item-title {
+                background-image: linear-gradient(90deg, var(--color-highlight), transparent);
                 color: white !important;
 
                 .icon-round::after {
@@ -179,19 +200,25 @@ ul.list-expanding-items {
                 background-color: var(--color-ready);
             }
 
-            &:hover .item-expand .action-status {
-                color: var(--color-ready);
+            &:hover {
+                .item-title {
+                    background-image: linear-gradient(90deg, var(--color-ready), transparent);
+                }
 
-                .icon-button {
-                    border-color: var(--color-ready);
+                .item-expand .action-status {
+                    color: var(--color-ready);
 
-                    &:active,
-                    &::after {
-                        background-color: var(--color-ready);
-                    }
+                    .icon-button {
+                        border-color: var(--color-ready);
 
-                    &:hover {
-                        background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+                        &:active,
+                        &::after {
+                            background-color: var(--color-ready);
+                        }
+
+                        &:hover {
+                            background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+                        }
                     }
                 }
             }

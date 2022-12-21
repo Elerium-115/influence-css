@@ -5,10 +5,9 @@
 }
 
 body {
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.95);
 }
 body.embed {
-  /* Used for embedding via iframe - e.g. transparent background */
   background-color: unset;
 }
 
@@ -25,6 +24,29 @@ body.embed {
 .icon-deconstruct::after {
   mask-image: url("./assets/images/icon-deconstruct.png");
   -webkit-mask-image: url("./assets/images/icon-deconstruct.png");
+}
+
+@-webkit-keyframes pulse-highlight-text {
+  0% {
+    color: var(--color-gray-light);
+  }
+  50% {
+    color: var(--color-highlight);
+  }
+}
+
+@keyframes pulse-highlight-text {
+  0% {
+    color: var(--color-gray-light);
+  }
+  50% {
+    color: var(--color-highlight);
+  }
+}
+.highlight-text-pulse {
+  color: var(--color-highlight);
+  -webkit-animation: pulse-highlight-text 1.5s infinite;
+          animation: pulse-highlight-text 1.5s infinite;
 }
 
 .root-section {
@@ -77,27 +99,35 @@ ul.list-expanding-items li .item-title {
 }
 ul.list-expanding-items li .item-title .icon-round {
   margin-left: 5px;
+  min-width: 30px;
 }
 ul.list-expanding-items li .item-title .icon-round:hover {
   background-color: transparent;
+}
+ul.list-expanding-items li .item-title .item-title-text {
+  --max-lines: 2;
+  display: -webkit-box;
+  line-height: 1.25;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--max-lines);
 }
 ul.list-expanding-items li .item-expand {
   color: var(--color-gray-dark);
   height: calc(2.5 * var(--list-item-height));
   line-height: 1.25;
-  margin-left: 10px;
+  padding-top: 5px;
   position: relative;
 }
 ul.list-expanding-items li .item-expand .action-details {
-  -moz-column-gap: 10px;
-       column-gap: 10px;
   display: grid;
   grid-template-columns: auto auto;
   justify-content: start;
 }
 ul.list-expanding-items li .item-expand .action-details .prefix {
-  min-width: 30px;
+  min-width: 40px;
   opacity: 0.5;
+  padding: 0 10px;
   text-align: right;
 }
 ul.list-expanding-items li .item-expand .action-status {
@@ -121,6 +151,7 @@ ul.list-expanding-items li:hover {
   max-height: calc(3.5 * var(--list-item-height));
 }
 ul.list-expanding-items li:hover .item-title {
+  background-image: linear-gradient(90deg, var(--color-highlight), transparent);
   color: white !important;
 }
 ul.list-expanding-items li:hover .item-title .icon-round::after {
@@ -146,6 +177,9 @@ ul.list-expanding-items li.action.ready .item-title {
 }
 ul.list-expanding-items li.action.ready .item-title .icon-round::after {
   background-color: var(--color-ready);
+}
+ul.list-expanding-items li.action.ready:hover .item-title {
+  background-image: linear-gradient(90deg, var(--color-ready), transparent);
 }
 ul.list-expanding-items li.action.ready:hover .item-expand .action-status {
   color: var(--color-ready);

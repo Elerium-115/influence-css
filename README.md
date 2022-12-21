@@ -34,6 +34,8 @@ The [/example](./example) folder contains a minimal page and styling that can he
 
 - `body` without any of the above classes defines the style that will be used in all contexts, including on direct visits to your page, outside the game.
 
+**Note:** The maximum screen width available for your page, when embedded in-game, is 1290 pixels.
+
 ---
 
 Created by [@elerium115](https://twitter.com/elerium115) for the space strategy sandbox MMO [Influence](https://www.influenceth.io/).

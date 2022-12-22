@@ -51,6 +51,16 @@ on('change', '#toggle-compact-lists', el => {
     }
 });
 
+// Toggle showing vs. hiding ".action-type-text" elements in each "ul.list-expanding-items"
+on('change', '#toggle-action-types', el => {
+    const elsActionGroupList = document.querySelectorAll("ul.list-expanding-items");
+    if (el.checked) {
+        elsActionGroupList.forEach(el => el.classList.remove('hide-action-types'));
+    } else {
+        elsActionGroupList.forEach(el => el.classList.add('hide-action-types'));
+    }
+});
+
 // Preload example actions
 let tempAction = null
 // -- Queued actions
@@ -92,8 +102,8 @@ tempAction.injectListItem();
 tempAction = new Action(ACTION_TYPE.EXTRACT, 'Water', 'Extractor', 89, 'Warehouse', 777, 5 * 3600 * 1000); // duration 5 hours
 tempAction.setState(ACTION_STATE.ONGOING);
 tempAction.injectListItem();
-// ---- Transfer: [multiple]
-tempAction = new Action(ACTION_TYPE.TRANSFER, 'Core Samplers', 'Light Transport', 666, 'Warehouse', 777, 1 * 3600 * 1000); // duration 1 hour
+// ---- Construct: Spaceport
+tempAction = new Action(ACTION_TYPE.CONSTRUCT, 'Marketplace', 'Lot', 1, null, null, 23 * 3600 * 1000); // duration 23 hours
 tempAction.setState(ACTION_STATE.ONGOING);
 tempAction.injectListItem();
 // -- Done actions
@@ -111,4 +121,14 @@ tempAction.injectListItem();
 tempAction = new Action(ACTION_TYPE.CORE_SAMPLE, 'Water', 'Lot', 89, null, null);
 tempAction.setState(ACTION_STATE.DONE);
 tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 48); // done 2 days ago
+tempAction.injectListItem();
+// ---- Transfer: Core Samplers
+tempAction = new Action(ACTION_TYPE.TRANSFER, 'Core Samplers', 'Light Transport', 666, 'Warehouse', 777);
+tempAction.setState(ACTION_STATE.DONE);
+tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 72); // done 3 days ago
+tempAction.injectListItem();
+// ---- Construct: Warehouse
+tempAction = new Action(ACTION_TYPE.CONSTRUCT, 'Warehouse', 'Lot', 777, null, null);
+tempAction.setState(ACTION_STATE.DONE);
+tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 96); // done 4 days ago
 tempAction.injectListItem();

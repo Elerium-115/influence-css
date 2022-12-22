@@ -50,7 +50,9 @@ body {
     margin-top: 50px;
     position: relative;
 
-    #toggle-compact-lists-label {
+    .toggles {
+        display: flex;
+        gap: 25px;
         line-height: 40px;
         position: absolute;
         right: 0;
@@ -84,6 +86,12 @@ ul.list-expanding-items {
         li:hover {
             height: unset;
             max-height: unset;
+        }
+    }
+
+    &.hide-action-types {
+        .action-type-text {
+            display: none;
         }
     }
 

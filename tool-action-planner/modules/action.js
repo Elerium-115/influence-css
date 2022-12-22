@@ -95,7 +95,10 @@ class Action {
             <li id="action_${this.id}" class="action ${readyClass}">
                 <div class="item-title">
                     <div class="icon-round ${ACTION_TYPE_ICON_CLASS[this.type]}"></div>
-                    <div class="item-title-text">${ACTION_TYPE_TEXT[this.type]}: ${this.subject}</div>
+                    <div class="item-title-text">
+                        <span class="action-type-text">${ACTION_TYPE_TEXT[this.type]}:</span>
+                        ${this.subject}
+                    </div>
                     ${timerCompactHtml}
                 </div>
                 <div class="item-expand">

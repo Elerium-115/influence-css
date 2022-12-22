@@ -61,7 +61,9 @@ body.embed {
   margin-top: 50px;
   position: relative;
 }
-#manage-actions #toggle-compact-lists-label {
+#manage-actions .toggles {
+  display: flex;
+  gap: 25px;
   line-height: 40px;
   position: absolute;
   right: 0;
@@ -88,6 +90,9 @@ ul.list-expanding-items.list-expanded li,
 ul.list-expanding-items.list-expanded li:hover {
   height: unset;
   max-height: unset;
+}
+ul.list-expanding-items.hide-action-types .action-type-text {
+  display: none;
 }
 ul.list-expanding-items li {
   padding-left: 0;

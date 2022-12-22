@@ -52,39 +52,28 @@ on('change', '#toggle-compact-lists', el => {
 });
 
 // Preload example actions
-window.exampleActions = []; // Expose this globally
 let tempAction = null
-let tempListItemsHtml = '';
 // -- Queued actions
-tempListItemsHtml = '';
 // ---- Extract: Hydrogen
 tempAction = new Action(ACTION_TYPE.EXTRACT, 'Hydrogen', 'Extractor', 123, 'Warehouse', 777);
 tempAction.markReady();
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.injectListItem();
 // ---- Core Sample: Methane
 tempAction = new Action(ACTION_TYPE.CORE_SAMPLE, 'Methane', 'Lot', 4567, null, null);
 tempAction.markReady();
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.injectListItem();
 // ---- Construct: Extractor
 tempAction = new Action(ACTION_TYPE.CONSTRUCT, 'Extractor', 'Lot', 4567, null, null);
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.injectListItem();
 // ---- Extract: Methane
 tempAction = new Action(ACTION_TYPE.EXTRACT, 'Methane', 'Extractor', 4567, 'Warehouse', 777);
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.injectListItem();
 // ---- Deconstruct: Extractor
 tempAction = new Action(ACTION_TYPE.DECONSTRUCT, 'Extractor', 'Lot', 89, 'Warehouse', 777);
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.injectListItem();
 // ---- Transfer: [multiple]
 tempAction = new Action(ACTION_TYPE.TRANSFER, '[multiple]', 'Warehouse', 777, 'Light Transport', 666);
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
-// ---- Inject HTML
-document.getElementById('actions-queued').querySelector('ul').innerHTML += tempListItemsHtml;
+tempAction.injectListItem();
 // ---- Adjust HTML
 const queuedNotReadyListItems = [...document.getElementById('actions-queued').querySelectorAll('li:not(.ready)')];
 if (queuedNotReadyListItems.length) {
@@ -94,42 +83,32 @@ if (queuedNotReadyListItems.length) {
     queuedNotReadyListItems[queuedNotReadyListItems.length - 1].querySelector('.icon-arrow-down').style.display = 'none';
 }
 // -- Ongoing actions
-tempListItemsHtml = '';
 // ---- Construct: Extractor
 tempAction = new Action(ACTION_TYPE.CONSTRUCT, 'Extractor', 'Lot', 123, null, null);
 tempAction.markReady();
 tempAction.setState(ACTION_STATE.ONGOING);
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.injectListItem();
 // ---- Extract: Water
-tempAction = new Action(ACTION_TYPE.EXTRACT, 'Water', 'Extractor', 89, 'Warehouse', 777);
+tempAction = new Action(ACTION_TYPE.EXTRACT, 'Water', 'Extractor', 89, 'Warehouse', 777, 5 * 3600 * 1000); // duration 5 hours
 tempAction.setState(ACTION_STATE.ONGOING);
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
-// ---- Inject HTML
-document.getElementById('actions-ongoing').querySelector('ul').innerHTML += tempListItemsHtml;
+tempAction.injectListItem();
+// ---- Transfer: [multiple]
+tempAction = new Action(ACTION_TYPE.TRANSFER, 'Core Samplers', 'Light Transport', 666, 'Warehouse', 777, 1 * 3600 * 1000); // duration 1 hour
+tempAction.setState(ACTION_STATE.ONGOING);
+tempAction.injectListItem();
 // -- Done actions
-tempListItemsHtml = '';
 // ---- Core Sample: Methane
 tempAction = new Action(ACTION_TYPE.CORE_SAMPLE, 'Hydrogen', 'Lot', 123, null, null);
 tempAction.setState(ACTION_STATE.DONE);
-tempAction.markFinalized();
-tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 18); // 18 hours ago
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 18); // done 18 hours ago
+tempAction.injectListItem();
 // ---- Construct: Extractor
 tempAction = new Action(ACTION_TYPE.CONSTRUCT, 'Extractor', 'Lot', 89, null, null);
 tempAction.setState(ACTION_STATE.DONE);
-tempAction.markFinalized();
-tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 24); // 1 day ago
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
+tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 24); // done 1 day ago
+tempAction.injectListItem();
 // ---- Core Sample: Water
 tempAction = new Action(ACTION_TYPE.CORE_SAMPLE, 'Water', 'Lot', 89, null, null);
 tempAction.setState(ACTION_STATE.DONE);
-tempAction.markFinalized();
-tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 48); // 2 days ago
-exampleActions.push(tempAction);
-tempListItemsHtml += tempAction.getListItemHtml();
-// ---- Inject HTML
-document.getElementById('actions-done').querySelector('ul').innerHTML += tempListItemsHtml;
+tempAction.finalizedDate.setHours(tempAction.finalizedDate.getHours() - 48); // done 2 days ago
+tempAction.injectListItem();

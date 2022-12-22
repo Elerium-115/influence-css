@@ -25,15 +25,12 @@ body {
 .icon-deconstruct::after { @include customIcon('icon-deconstruct.png'); }
 .icon-x::after { @include customIcon('icon-x.svg'); }
 
-@keyframes pulse-highlight-text {
-	0% { color: var(--color-gray-light); };
-	10% { color: var(--color-gray-light); };
-    50% { color: var(--color-highlight); };
+@keyframes pulse-text {
+	50% { color: var(--color-gray-dark); };
 }
 
-.highlight-text-pulse {
-    color: var(--color-highlight);
-	animation: pulse-highlight-text 2s infinite;
+.text-pulse {
+	animation: pulse-text 1.5s infinite;
 }
 
 .root-section {
@@ -112,6 +109,12 @@ ul.list-expanding-items {
                 overflow: hidden;
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: var(--max-lines);
+            }
+
+            .timer-compact {
+                flex-grow: 1;
+                padding-left: 5px;
+                text-align: right;
             }
         }
 

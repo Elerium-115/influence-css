@@ -1,7 +1,7 @@
 import {fromNow, getPseudoUniqueId} from './abstract.js'
 
 class Action {
-    constructor(type, subject, sourceName, sourceLotId, destinationName, destinationLotId) {
+    constructor(type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = 0) {
         this.id = getPseudoUniqueId();
         this.createdDate = new Date();
         this.finalizedDate = null;
@@ -12,6 +12,7 @@ class Action {
         this.sourceLotId = sourceLotId; // number
         this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
         this.destinationLotId = destinationLotId; // number
+        this.duration = duration; // number as milliseconds
         this.ready = false;
     }
 
@@ -25,6 +26,9 @@ class Action {
 
     setState(state) {
         this.state = state;
+        if (state === ACTION_STATE.DONE) {
+            this.markFinalized();
+        }
     }
 
     getListItemHtml() {
@@ -37,6 +41,7 @@ class Action {
             `;
         }
         let timerHtml = '';
+        let timerCompactHtml = '';
         let subactionText = '';
         let subactionIconsHtml = '';
         switch (this.state) {
@@ -65,9 +70,13 @@ class Action {
                     subactionIconsHtml = /*html*/ `
                         <div class="icon-button icon-x"></div>
                     `;
-                    timerHtml = /*html*/ `
-                        <span class="prefix highlight-text-pulse">T-minus:</span>
-                        <span class="value highlight-text-pulse">5 hours</span>
+                    const hoursAgo = Math.round(this.duration / (3600 * 1000));
+                    // timerHtml = /*html*/ `
+                    //     <span class="prefix text-pulse">T-minus:</span>
+                    //     <span class="value text-pulse">${hoursAgo} hours</span>
+                    // `;
+                    timerCompactHtml = /*html*/ `
+                        <div class="timer-compact text-pulse">${hoursAgo}h</div>
                     `;
                 }
                 break;
@@ -87,6 +96,7 @@ class Action {
                 <div class="item-title">
                     <div class="icon-round ${ACTION_TYPE_ICON_CLASS[this.type]}"></div>
                     <div class="item-title-text">${ACTION_TYPE_TEXT[this.type]}: ${this.subject}</div>
+                    ${timerCompactHtml}
                 </div>
                 <div class="item-expand">
                     <div class="action-details">
@@ -102,6 +112,22 @@ class Action {
                 </div>
             </li>
         `;
+    }
+
+    injectListItem() {
+        let elActionGroup;
+        switch (this.state) {
+            case ACTION_STATE.QUEUED:
+                elActionGroup = document.getElementById('actions-queued');
+                break;
+            case ACTION_STATE.ONGOING:
+                elActionGroup = document.getElementById('actions-ongoing');
+                break;
+            case ACTION_STATE.DONE:
+                elActionGroup = document.getElementById('actions-done');
+                break;
+        }
+        elActionGroup.querySelector('ul').innerHTML += this.getListItemHtml();
     }
 }
 

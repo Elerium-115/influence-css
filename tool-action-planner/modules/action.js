@@ -2,7 +2,7 @@ import {fromNow, getPseudoUniqueId} from './abstract.js'
 import {leaderLineConnectElements} from './leader-line-utils.js';
 
 class Action {
-    constructor(type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = 0) {
+    constructor(type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = null) {
         this.id = getPseudoUniqueId();
         this.createdDate = new Date();
         this.finalizedDate = null;
@@ -13,7 +13,7 @@ class Action {
         this.sourceLotId = sourceLotId; // number
         this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
         this.destinationLotId = destinationLotId; // number
-        this.duration = duration; // number as milliseconds
+        this.duration = duration ? duration : 0; // number as milliseconds
         this.ready = false;
     }
 
@@ -65,9 +65,9 @@ class Action {
                         <div class="icon-button icon-arrow-right"></div>
                     `;
                 } else {
-                    subactionText = 'Cancel';
+                    subactionText = 'Remove';
                     subactionIconsHtml = /*html*/ `
-                        <div class="icon-button icon-x"></div>
+                        <div class="icon-button icon-x" onclick="removeActionById('${this.id}', true)"></div>
                     `;
                     const hoursAgo = Math.round(this.duration / (3600 * 1000));
                     timerCompactHtml = /*html*/ `
@@ -78,7 +78,7 @@ class Action {
             case ACTION_STATE.DONE:
                 subactionText = `Done ${fromNow(this.finalizedDate)}`;
                 subactionIconsHtml = /*html*/ `
-                    <div class="icon-button icon-x"></div>
+                    <div class="icon-button icon-x" onclick="removeActionById('${this.id}')"></div>
                 `;
                 break;
         }
@@ -130,6 +130,14 @@ class Action {
             leaderLineConnectElements(elSource, elDestination);
         }
     }
+
+    removeAction() {
+        // Remove from DOM
+        const elListItem = document.getElementById(`action_${this.id}`);
+        elListItem.parentElement.removeChild(elListItem);
+        // Remove global reference
+        delete actionsById[this.id];
+    }
 }
 
 const ACTION_STATE = {
@@ -155,20 +163,23 @@ const ACTION_TYPE_TEXT = {
     TRANSFER: 'Transfer',
 };
 
-const ACTION_TYPE_PREFIX = {
-    CONSTRUCT: {source: 'At', destination: null},
-    CORE_SAMPLE: {source: 'At', destination: null},
-    DECONSTRUCT: {source: 'What', destination: 'Into'},
-    EXTRACT: {source: 'With', destination: 'Into'},
-    TRANSFER: {source: 'From', destination: 'To'},
-};
-
 const ACTION_TYPE_ICON_CLASS = {
     CONSTRUCT: 'icon-construct',
     CORE_SAMPLE: 'icon-core-sample',
     DECONSTRUCT: 'icon-deconstruct',
     EXTRACT: 'icon-yield',
     TRANSFER: 'icon-trade',
+};
+
+// Global variables and functions
+
+globalThis.actionsById = {};
+
+globalThis.removeActionById = function(actionId, shouldConfirm = false) {
+    if (shouldConfirm && !confirm('Are you sure you want to remove this action?')) {
+        return false;
+    }
+    actionsById[actionId]?.removeAction();
 };
 
 export {Action, ACTION_STATE, ACTION_TYPE};

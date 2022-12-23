@@ -41,8 +41,35 @@ body {
 #plan-actions {
     #action-buttons {
         display: flex;
+        flex-wrap: wrap;
         gap: 25px;
         margin-top: 25px;
+
+        button {
+            align-items: center;
+            display: flex;
+            gap: 5px;
+            white-space: nowrap;
+
+            .icon-round {
+                transition: inherit;
+
+                &::after {
+                    background-color: var(--color-highlight);
+                    transition: inherit;
+                }
+            }
+
+            &:hover {
+                .icon-round {
+                    background-color: transparent;
+
+                    &::after {
+                        background-color: white;
+                    }
+                }
+            }
+        }
     }
 }
 

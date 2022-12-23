@@ -53,8 +53,28 @@ body.embed {
 
 #plan-actions #action-buttons {
   display: flex;
+  flex-wrap: wrap;
   gap: 25px;
   margin-top: 25px;
+}
+#plan-actions #action-buttons button {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+  white-space: nowrap;
+}
+#plan-actions #action-buttons button .icon-round {
+  transition: inherit;
+}
+#plan-actions #action-buttons button .icon-round::after {
+  background-color: var(--color-highlight);
+  transition: inherit;
+}
+#plan-actions #action-buttons button:hover .icon-round {
+  background-color: transparent;
+}
+#plan-actions #action-buttons button:hover .icon-round::after {
+  background-color: white;
 }
 
 #manage-actions {

@@ -131,19 +131,17 @@ ul.list-expanding-items {
             // Height of "li:hover" minus height of ".item-title"
             height: calc(2.5 * var(--list-item-height));
             line-height: 1.25;
-            padding-top: 5px;
+            padding-top: 10px;
             position: relative;
 
             .action-details {
-                display: grid;
-                grid-template-columns: auto auto;
-                justify-content: start;
+                --color-leaderline-start: var(--color-gray-dark);
+                --color-leaderline-end: var(--color-gray-dark);
 
-                .prefix {
-                    min-width: 40px;
-                    opacity: 0.5;
-                    padding: 0 10px;
-                    text-align: right;
+                .value {
+                    // Margin and padding correlated with Leader Line
+                    margin-left: 30px;
+                    padding-left: 10px;
                 }
             }
 
@@ -184,6 +182,11 @@ ul.list-expanding-items {
             .item-expand {
                 color: inherit;
 
+                .action-details {
+                    --color-leaderline-start: var(--color-highlight);
+                    --color-leaderline-end: var(--color-highlight);
+                }
+
                 .action-status {
                     color: var(--color-highlight);
 
@@ -218,19 +221,26 @@ ul.list-expanding-items {
                     background-image: linear-gradient(90deg, var(--color-ready), transparent);
                 }
 
-                .item-expand .action-status {
-                    color: var(--color-ready);
+                .item-expand {
+                    .action-details {
+                        --color-leaderline-start: var(--color-ready);
+                        --color-leaderline-end: var(--color-ready);
+                    }
 
-                    .icon-button {
-                        border-color: var(--color-ready);
+                    .action-status {
+                        color: var(--color-ready);
 
-                        &:active,
-                        &::after {
-                            background-color: var(--color-ready);
-                        }
+                        .icon-button {
+                            border-color: var(--color-ready);
 
-                        &:hover {
-                            background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+                            &:active,
+                            &::after {
+                                background-color: var(--color-ready);
+                            }
+
+                            &:hover {
+                                background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+                            }
                         }
                     }
                 }

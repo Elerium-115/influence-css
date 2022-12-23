@@ -124,19 +124,16 @@ ul.list-expanding-items li .item-expand {
   color: var(--color-gray-dark);
   height: calc(2.5 * var(--list-item-height));
   line-height: 1.25;
-  padding-top: 5px;
+  padding-top: 10px;
   position: relative;
 }
 ul.list-expanding-items li .item-expand .action-details {
-  display: grid;
-  grid-template-columns: auto auto;
-  justify-content: start;
+  --color-leaderline-start: var(--color-gray-dark);
+  --color-leaderline-end: var(--color-gray-dark);
 }
-ul.list-expanding-items li .item-expand .action-details .prefix {
-  min-width: 40px;
-  opacity: 0.5;
-  padding: 0 10px;
-  text-align: right;
+ul.list-expanding-items li .item-expand .action-details .value {
+  margin-left: 30px;
+  padding-left: 10px;
 }
 ul.list-expanding-items li .item-expand .action-status {
   align-items: center;
@@ -168,6 +165,10 @@ ul.list-expanding-items li:hover .item-title .icon-round::after {
 ul.list-expanding-items li:hover .item-expand {
   color: inherit;
 }
+ul.list-expanding-items li:hover .item-expand .action-details {
+  --color-leaderline-start: var(--color-highlight);
+  --color-leaderline-end: var(--color-highlight);
+}
 ul.list-expanding-items li:hover .item-expand .action-status {
   color: var(--color-highlight);
 }
@@ -188,6 +189,10 @@ ul.list-expanding-items li.action.ready .item-title .icon-round::after {
 }
 ul.list-expanding-items li.action.ready:hover .item-title {
   background-image: linear-gradient(90deg, var(--color-ready), transparent);
+}
+ul.list-expanding-items li.action.ready:hover .item-expand .action-details {
+  --color-leaderline-start: var(--color-ready);
+  --color-leaderline-end: var(--color-ready);
 }
 ul.list-expanding-items li.action.ready:hover .item-expand .action-status {
   color: var(--color-ready);

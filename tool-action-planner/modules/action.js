@@ -1,4 +1,5 @@
 import {fromNow, getPseudoUniqueId} from './abstract.js'
+import {leaderLineConnectElements} from './leader-line-utils.js';
 
 class Action {
     constructor(type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = 0) {
@@ -36,11 +37,9 @@ class Action {
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
-                <span class="prefix">${ACTION_TYPE_PREFIX[this.type].destination}:</span>
-                <span class="value">${this.destinationName} #${this.destinationLotId}</span>
+                <div class="value value-destination">${this.destinationName} #${this.destinationLotId}</div>
             `;
         }
-        let timerHtml = '';
         let timerCompactHtml = '';
         let subactionText = '';
         let subactionIconsHtml = '';
@@ -71,23 +70,15 @@ class Action {
                         <div class="icon-button icon-x"></div>
                     `;
                     const hoursAgo = Math.round(this.duration / (3600 * 1000));
-                    // timerHtml = /*html*/ `
-                    //     <span class="prefix text-pulse">T-minus:</span>
-                    //     <span class="value text-pulse">${hoursAgo} hours</span>
-                    // `;
                     timerCompactHtml = /*html*/ `
                         <div class="timer-compact text-pulse">${hoursAgo}h</div>
                     `;
                 }
                 break;
             case ACTION_STATE.DONE:
-                subactionText = 'Dismiss';
+                subactionText = `Done ${fromNow(this.finalizedDate)}`;
                 subactionIconsHtml = /*html*/ `
                     <div class="icon-button icon-x"></div>
-                `;
-                timerHtml = /*html*/ `
-                    <span class="prefix">Done:</span>
-                    <span class="value">${fromNow(this.finalizedDate)}</span>
                 `;
                 break;
         }
@@ -103,10 +94,8 @@ class Action {
                 </div>
                 <div class="item-expand">
                     <div class="action-details">
-                        <span class="prefix">${ACTION_TYPE_PREFIX[this.type].source}:</span>
-                        <span class="value">${this.sourceName} #${this.sourceLotId}</span>
+                        <div class="value value-source">${this.sourceName} #${this.sourceLotId}</div>
                         ${destinationHtml}
-                        ${timerHtml}
                     </div>
                     <div class="action-status">
                         <div class="subaction-text">${subactionText}</div>
@@ -131,6 +120,13 @@ class Action {
                 break;
         }
         elActionGroup.querySelector('ul').innerHTML += this.getListItemHtml();
+        const elListItem = document.getElementById(`action_${this.id}`);
+        const elDestination = elListItem.querySelector('.value-destination');
+        if (elDestination) {
+            // Inject Leader Line from source to destination
+            const elSource = elListItem.querySelector('.value-source');
+            leaderLineConnectElements(elSource, elDestination);        
+        }
     }
 }
 

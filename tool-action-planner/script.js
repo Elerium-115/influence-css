@@ -79,7 +79,7 @@ tempAction.injectListItem();
 tempAction = new Action(ACTION_TYPE.EXTRACT, 'Methane', 'Extractor', 4567, 'Warehouse', 777);
 tempAction.injectListItem();
 // ---- Deconstruct: Extractor
-tempAction = new Action(ACTION_TYPE.DECONSTRUCT, 'Extractor', 'Lot', 89, 'Warehouse', 777);
+tempAction = new Action(ACTION_TYPE.DECONSTRUCT, 'Extractor', 'Extractor', 89, 'Warehouse', 777);
 tempAction.injectListItem();
 // ---- Transfer: [multiple]
 tempAction = new Action(ACTION_TYPE.TRANSFER, '[multiple]', 'Warehouse', 777, 'Light Transport', 666);

@@ -135,6 +135,10 @@ ul.list-expanding-items li .item-expand .action-details .value {
   margin-left: 30px;
   padding-left: 10px;
 }
+ul.list-expanding-items li .item-expand .action-details .leader-line {
+  left: 0 !important;
+  top: 15px !important;
+}
 ul.list-expanding-items li .item-expand .action-status {
   align-items: center;
   bottom: 10px;

@@ -119,13 +119,15 @@ class Action {
                 elActionGroup = document.getElementById('actions-done');
                 break;
         }
-        elActionGroup.querySelector('ul').innerHTML += this.getListItemHtml();
-        const elListItem = document.getElementById(`action_${this.id}`);
+        const elTemp = document.createElement('div');
+        elTemp.innerHTML = this.getListItemHtml();
+        const elListItem = elTemp.firstElementChild;
+        elActionGroup.querySelector('ul').appendChild(elListItem);
         const elDestination = elListItem.querySelector('.value-destination');
         if (elDestination) {
             // Inject Leader Line from source to destination
             const elSource = elListItem.querySelector('.value-source');
-            leaderLineConnectElements(elSource, elDestination);        
+            leaderLineConnectElements(elSource, elDestination);
         }
     }
 }

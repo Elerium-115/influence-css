@@ -71,7 +71,7 @@ body.embed {
 }
 #manage-actions #action-groups {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 25px;
 }
 #manage-actions #action-groups .action-group .action-group-title {
@@ -133,7 +133,13 @@ ul.list-expanding-items li .item-expand .action-details {
 }
 ul.list-expanding-items li .item-expand .action-details .value {
   margin-left: 30px;
+  overflow: hidden;
   padding-left: 10px;
+  text-overflow: ellipsis;
+}
+ul.list-expanding-items li .item-expand .action-details .value.value-destination {
+  margin-left: 33px;
+  padding-left: 7px;
 }
 ul.list-expanding-items li .item-expand .action-details .leader-line {
   left: 0 !important;
@@ -170,7 +176,7 @@ ul.list-expanding-items li:hover .item-expand {
   color: inherit;
 }
 ul.list-expanding-items li:hover .item-expand .action-details {
-  --color-leaderline-start: var(--color-highlight);
+  --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-highlight);
 }
 ul.list-expanding-items li:hover .item-expand .action-status {
@@ -195,7 +201,7 @@ ul.list-expanding-items li.action.ready:hover .item-title {
   background-image: linear-gradient(90deg, var(--color-ready), transparent);
 }
 ul.list-expanding-items li.action.ready:hover .item-expand .action-details {
-  --color-leaderline-start: var(--color-ready);
+  --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-ready);
 }
 ul.list-expanding-items li.action.ready:hover .item-expand .action-status {

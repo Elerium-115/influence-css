@@ -61,7 +61,7 @@ body {
 
     #action-groups {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 25px;
 
         .action-group {
@@ -141,7 +141,15 @@ ul.list-expanding-items {
                 .value {
                     // Margin and padding correlated with Leader Line
                     margin-left: 30px;
+                    overflow: hidden;
                     padding-left: 10px;
+                    text-overflow: ellipsis;
+
+                    &.value-destination {
+                        // Compensate for misaligned startPlug and endPlug of Leader Line
+                        margin-left: 33px;
+                        padding-left: 7px;
+                    }
                 }
 
                 .leader-line {
@@ -188,7 +196,7 @@ ul.list-expanding-items {
                 color: inherit;
 
                 .action-details {
-                    --color-leaderline-start: var(--color-highlight);
+                    --color-leaderline-start: var(--color-warning);
                     --color-leaderline-end: var(--color-highlight);
                 }
 
@@ -228,7 +236,7 @@ ul.list-expanding-items {
 
                 .item-expand {
                     .action-details {
-                        --color-leaderline-start: var(--color-ready);
+                        --color-leaderline-start: var(--color-warning);
                         --color-leaderline-end: var(--color-ready);
                     }
 

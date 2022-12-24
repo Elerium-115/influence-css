@@ -23,7 +23,7 @@ function leaderLineConnectElements(el1, el2) {
     line.setOptions(leaderLineOptions);
     // Move the newly created SVG into the parent of "el1" (i.e. ".action-details")
     const elLine = document.querySelector('body > svg.leader-line');
-    el1.parentElement.appendChild(elLine);
+    el1.parentElement.append(elLine);
 }
 
 export {leaderLineConnectElements};

@@ -247,7 +247,7 @@ ul.list-expanding-items {
         }
 
         // Action ready
-        &.action.ready {
+        &.ready {
             .item-title {
                 color: var(--color-ready);
             }
@@ -283,6 +283,41 @@ ul.list-expanding-items {
                             }
                         }
                     }
+                }
+            }
+        }
+
+        &.sliding {
+            height: var(--this-height) !important;
+            position: relative;
+            transition-duration: var(--half-slide-duration);
+
+            @keyframes fade-background {
+                100% { background-color: transparent; border-color: transparent; };
+            }
+
+            &.fade-background {
+                animation: fade-background var(--half-slide-duration) linear;
+                animation-fill-mode: both;
+            }
+
+            &.slide-up {
+                height: 0 !important; // animated based on "transition-duration" value
+            }
+
+            .slider {
+                left: 0;
+                padding: inherit;
+                position: absolute;
+                width: var(--this-width);
+
+                @keyframes slide-right {
+                    100% { left: var(--this-width); };
+                }
+    
+                &.slide-right {
+                    animation: slide-right var(--half-slide-duration) linear;
+                    animation-fill-mode: both;
                 }
             }
         }

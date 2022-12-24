@@ -64,7 +64,7 @@ on('change', '#toggle-action-types', el => {
 // Initialize example actions
 initializeExampleActionsById();
 
-// ---- Adjust HTML
+// Adjust HTML
 const queuedNotReadyListItems = [...document.getElementById('actions-queued').querySelectorAll('li:not(.ready)')];
 if (queuedNotReadyListItems.length) {
     // Do not show arrow-up for top [queued + NOT ready] action
@@ -72,3 +72,6 @@ if (queuedNotReadyListItems.length) {
     // Do not show arrow-down for bottom [queued + NOT ready] action
     queuedNotReadyListItems[queuedNotReadyListItems.length - 1].querySelector('.icon-arrow-down').style.display = 'none';
 }
+
+//// TEST
+// document.getElementById('toggle-compact-lists-label').click();

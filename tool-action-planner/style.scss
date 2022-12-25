@@ -17,7 +17,6 @@ body {
 
 @mixin customIcon($iconFilename) {
     mask-image: url('./assets/images/' + $iconFilename);
-    -webkit-mask-image: url('./assets/images/' + $iconFilename);
 }
 
 .icon-construct::after { @include customIcon('icon-construct.png'); }
@@ -30,7 +29,7 @@ body {
 }
 
 .text-pulse {
-	animation: pulse-text 1.5s infinite;
+	animation: pulse-text 2s infinite;
 }
 
 .root-section {
@@ -123,6 +122,43 @@ ul.list-expanding-items {
     }
 
     li {
+        @mixin listItemActive() {
+            .item-title {
+                background-image: linear-gradient(90deg, var(--color-highlight), transparent);
+                color: white !important;
+
+                .icon-round::after {
+                    background-color: white !important;
+                }
+            }
+
+            .item-expand {
+                color: inherit;
+
+                .action-details {
+                    --color-leaderline-start: var(--color-warning);
+                    --color-leaderline-end: var(--color-highlight);
+                }
+
+                .action-status {
+                    color: var(--color-highlight);
+
+                    .icon-button {
+                        border-color: var(--color-highlight);
+
+                        &:active,
+                        &::after {
+                            background-color: var(--color-highlight);
+                        }
+
+                        &:hover {
+                            background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
+                        }
+                    }
+                }
+            }
+        }
+
         padding-left: 0;
 
         .item-title {
@@ -207,43 +243,9 @@ ul.list-expanding-items {
         }
 
         &:hover {
+            @include listItemActive();
             height: calc(3.5 * var(--list-item-height));
             max-height: calc(3.5 * var(--list-item-height));
-
-            .item-title {
-                background-image: linear-gradient(90deg, var(--color-highlight), transparent);
-                color: white !important;
-
-                .icon-round::after {
-                    background-color: white !important;
-                }
-            }
-
-            .item-expand {
-                color: inherit;
-
-                .action-details {
-                    --color-leaderline-start: var(--color-warning);
-                    --color-leaderline-end: var(--color-highlight);
-                }
-
-                .action-status {
-                    color: var(--color-highlight);
-
-                    .icon-button {
-                        border-color: var(--color-highlight);
-
-                        &:active,
-                        &::after {
-                            background-color: var(--color-highlight);
-                        }
-
-                        &:hover {
-                            background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
-                        }
-                    }
-                }
-            }
         }
 
         // Action ready
@@ -320,6 +322,18 @@ ul.list-expanding-items {
                     animation-fill-mode: both;
                 }
             }
+        }
+
+        &.transition-flash {
+            @keyframes transition-flash {
+                0% { opacity: 0; }
+                25% { opacity: 1; }
+                50% { opacity: 0; }
+                75% { opacity: 1; }
+            }
+
+            @include listItemActive();
+            animation: transition-flash var(--transition-flash-duration) linear;
         }
     }
 }

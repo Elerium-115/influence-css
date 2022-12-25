@@ -1,4 +1,9 @@
-import {fromNow, getPseudoUniqueId} from './abstract.js'
+import {
+    deleteFromDOM,
+    fromNow,
+    getPseudoUniqueId,
+    msToShortTime,
+} from './abstract.js'
 import {leaderLineConnectElements} from './leader-line-utils.js';
 
 class Action {
@@ -15,11 +20,52 @@ class Action {
         this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
         this.destinationLotId = destinationLotId; // number
         this.duration = duration ? duration : 0; // number as milliseconds
-        this.ready = false;
+        this.isReady = false;
+        this.elListItem = null;
+        this.refreshOngoingInterval = null;
+        actionsById[this.id] = this;
+    }
+
+    updateListItemStatus() {
+        switch (this.state) {
+            case ACTION_STATE.QUEUED:
+                if (this.isReady) {
+                    // Replace "Remove" button with "Ready to start" button
+                    const elActionStatus = this.elListItem.querySelector('.action-status');
+                    elActionStatus.innerHTML = /*html*/ `
+                        <div class="subaction-text">Ready to start</div>
+                        <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                    `;
+                }
+                break;
+            case ACTION_STATE.ONGOING:
+                if (this.isReady) {
+                    // Replace "Remove" button with "Ready to finalize" button
+                    const elActionStatus = this.elListItem.querySelector('.action-status');
+                    elActionStatus.innerHTML = /*html*/ `
+                        <div class="subaction-text">Ready to finalize</div>
+                        <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                    `;
+                }
+                break;
+        }
     }
 
     markReady() {
-        this.ready = true;
+        if (this.isReady) {
+            console.log(`%c--- ERROR: action is already ready => can NOT mark as ready`, 'color: orange;');
+            return;
+        }
+        this.isReady = true;
+        if (this.elListItem) {
+            this.elListItem.classList.add('ready');
+            this.updateListItemStatus();
+            if (this.state === ACTION_STATE.ONGOING) {
+                const elTimerCompact = this.elListItem.querySelector('.timer-compact');
+                deleteFromDOM(elTimerCompact);
+                this.clearRefreshOngoingInterval();
+            }
+        }
     }
 
     markStarted() {
@@ -40,8 +86,45 @@ class Action {
         }
     }
 
+    clearRefreshOngoingInterval() {
+        if (this.refreshOngoingInterval) {
+            clearInterval(this.refreshOngoingInterval);
+        }
+        this.refreshOngoingInterval = null;
+    }
+
+    getOngoingTimeRemainingMs() {
+        if (this.state !== ACTION_STATE.ONGOING || this.isReady || !this.startedDate) {
+            return null;
+        }
+        return this.startedDate.getTime() + this.duration - Date.now();
+    }
+
+    getNextLongestOngoingAction() {
+        const thisTimeRemainingMs = this.getOngoingTimeRemainingMs();
+        let nextLongestOngoingAction = null;
+        for (const [actionId, action] of Object.entries(actionsById)) {
+            // Parse only other actions which are ongoing and not ready
+            if (action.id === this.id || action.state !== ACTION_STATE.ONGOING || action.isReady) {
+                continue;
+            }
+            const otherTimeRemainingMs = actionsById[action.id].getOngoingTimeRemainingMs()
+            if (otherTimeRemainingMs && otherTimeRemainingMs > thisTimeRemainingMs) {
+                // Found other longer ongoing action => check if shorter than the currently-saved "nextLongestOngoingAction"
+                if (!nextLongestOngoingAction) {
+                    nextLongestOngoingAction = action;
+                    continue;
+                }
+                if (otherTimeRemainingMs < nextLongestOngoingAction.getOngoingTimeRemainingMs()) {
+                    nextLongestOngoingAction = action;
+                }
+            }
+        }
+        return nextLongestOngoingAction;
+    }
+
     getListItemHtml() {
-        const readyClass = this.ready ? 'ready' : '';
+        const readyClass = this.isReady ? 'ready' : '';
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
@@ -53,7 +136,7 @@ class Action {
         let subactionIconsHtml = '';
         switch (this.state) {
             case ACTION_STATE.QUEUED:
-                if (this.ready) {
+                if (this.isReady) {
                     subactionText = 'Ready to start';
                     subactionIconsHtml = /*html*/ `
                         <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
@@ -67,16 +150,15 @@ class Action {
                 }
                 break;
             case ACTION_STATE.ONGOING:
-                if (this.ready) {
+                if (this.isReady) {
                     subactionText = 'Ready to finalize';
                     subactionIconsHtml = /*html*/ `
                         <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
                     `;
                 } else {
-                    //// TO DO: calculate hours remaining as "duration" MINUS [time passed since "startedDate"], MIN 0
-                    const hoursRemaining = Math.round(this.duration / (3600 * 1000));
+                    const timeRemainingShort = msToShortTime(this.getOngoingTimeRemainingMs());
                     timerCompactHtml = /*html*/ `
-                        <div class="timer-compact text-pulse">${hoursRemaining}h</div>
+                        <div class="timer-compact text-pulse">${timeRemainingShort}</div>
                     `;
                     subactionText = 'Remove';
                     subactionIconsHtml = /*html*/ `
@@ -115,43 +197,82 @@ class Action {
         `;
     }
 
+    refreshOngoingTime() {
+        if (this.state !== ACTION_STATE.ONGOING) {
+            console.log(`%c--- ERROR: action not ongoing => can NOT refresh time`, 'color: orange;');
+            this.clearRefreshOngoingInterval();
+            return;
+        }
+        if (this.isReady) {
+            console.log(`%c--- WARNING: action ready => can NOT refresh time`, 'color: yellow;');
+            return;
+        }
+        const timeRemainingShort = msToShortTime(this.getOngoingTimeRemainingMs());
+        if (!timeRemainingShort) {
+            // Ongoing action is now ready
+            this.markReady();
+            return;
+        }
+        const elTimerCompact = this.elListItem.querySelector('.timer-compact');
+        if (elTimerCompact.textContent !== timeRemainingShort) {
+            elTimerCompact.textContent = timeRemainingShort;
+        }
+    }
+
     injectListItem() {
-        let elActionGroup;
+        let actionGroupList;
         switch (this.state) {
             case ACTION_STATE.QUEUED:
-                elActionGroup = document.getElementById('actions-queued');
+                actionGroupList = document.querySelector('#actions-queued ul');
                 break;
             case ACTION_STATE.ONGOING:
-                elActionGroup = document.getElementById('actions-ongoing');
+                actionGroupList = document.querySelector('#actions-ongoing ul');
                 break;
             case ACTION_STATE.DONE:
-                elActionGroup = document.getElementById('actions-done');
+                actionGroupList = document.querySelector('#actions-done ul');
                 break;
         }
         const elTemp = document.createElement('div');
         elTemp.innerHTML = this.getListItemHtml();
-        const elListItem = elTemp.firstElementChild;
-        if (this.state === ACTION_STATE.DONE) {
-            elActionGroup.querySelector('ul').prepend(elListItem);
-        } else {
-            elActionGroup.querySelector('ul').append(elListItem);
-            //// TO DO: if action ONGOING => move it to the correct list-index, based on its remaining time
+        this.elListItem = elTemp.firstElementChild;
+        switch (this.state) {
+            case ACTION_STATE.QUEUED:
+                actionGroupList.append(this.elListItem);
+                break;
+            case ACTION_STATE.ONGOING:
+                // Inject before the next-longest ongoing action
+                const nextLongestOngoingAction = this.getNextLongestOngoingAction();
+                if (nextLongestOngoingAction) {
+                    nextLongestOngoingAction.elListItem.insertAdjacentElement('beforebegin', this.elListItem);
+                } else {
+                    // This is the new longest ongoing action
+                    actionGroupList.append(this.elListItem);
+                }
+                break;
+            case ACTION_STATE.DONE:
+                actionGroupList.prepend(this.elListItem);
+                break;
         }
-        const elDestination = elListItem.querySelector('.value-destination');
+        const elDestination = this.elListItem.querySelector('.value-destination');
         if (elDestination) {
             // Inject Leader Line from source to destination
-            const elSource = elListItem.querySelector('.value-source');
+            const elSource = this.elListItem.querySelector('.value-source');
             leaderLineConnectElements(elSource, elDestination);
         }
-    }
-
-    getListItem() {
-        return document.getElementById(`action_${this.id}`);
+        if (this.state === ACTION_STATE.ONGOING && !this.isReady) {
+            /**
+             * Use arrow function re: "this" problem
+             * Source: https://developer.mozilla.org/en-US/docs/Web/API/setInterval#a_possible_solution
+             */
+            this.refreshOngoingInterval = setInterval(() => this.refreshOngoingTime(), 1000); // refresh every 1 second
+        }
     }
 
     removeListItem() {
-        const elListItem = this.getListItem();
-        elListItem.parentElement.removeChild(elListItem);
+        deleteFromDOM(this.elListItem);
+        if (this.refreshOngoingInterval) {
+            this.clearRefreshOngoingInterval();
+        }
     }
 
     removeAction() {
@@ -161,7 +282,7 @@ class Action {
     }
 
     transitionAction() {
-        if (!this.ready) {
+        if (!this.isReady) {
             console.log(`%c--- ERROR: action not ready => can NOT transition`, 'color: orange;');
             return;
         }
@@ -178,32 +299,40 @@ class Action {
                 nextState = ACTION_STATE.DONE;
                 break;
         }
-        // Step 1: prepare the "li" element for sliding
-        const elListItem = this.getListItem();
-        const elListItemHeight = elListItem.getBoundingClientRect().height;
-        const elListItemWidth = elListItem.getBoundingClientRect().width;
+        // Prepare the list item element for sliding
+        const elListItemHeight = this.elListItem.getBoundingClientRect().height;
+        const elListItemWidth = this.elListItem.getBoundingClientRect().width;
         const halfSlideDuration = 300; // milliseconds
-        elListItem.style.setProperty("--this-height", `${elListItemHeight}px`);
-        elListItem.style.setProperty("--this-width", `${elListItemWidth}px`);
-        elListItem.style.setProperty("--half-slide-duration", `${halfSlideDuration}ms`);
-        // Step 2: wrap the content of "li", into a new element "div.slider", and animate it to the right, then up
-        elListItem.innerHTML = /*html*/ `<div class="slider slide-right">${elListItem.innerHTML}</div>`;
-        elListItem.classList.add('sliding', 'fade-background');
+        this.elListItem.style.setProperty('--this-height', `${elListItemHeight}px`);
+        this.elListItem.style.setProperty('--this-width', `${elListItemWidth}px`);
+        this.elListItem.style.setProperty('--half-slide-duration', `${halfSlideDuration}ms`);
+        // Wrap the list item content into a new element ".slider", and animate it to the right, then up
+        this.elListItem.innerHTML = /*html*/ `<div class="slider slide-right">${this.elListItem.innerHTML}</div>`;
+        this.elListItem.classList.add('sliding', 'fade-background');
         setTimeout(() => {
             // Done sliding to the right => start sliding up
-            elListItem.classList.add('slide-up');
+            this.elListItem.classList.add('slide-up');
             setTimeout(() => {
                 // Done sliding up => remove the action from the old action-group
                 this.removeListItem();
-                // Step 3: update the status of the action, and inject it into the new action-group
-                this.ready = false;
+                // Update the status of the action, and inject it into the new action-group
+                this.isReady = false;
                 this.setState(nextState);
                 if (this.state === ACTION_STATE.DONE) {
                     this.markFinalized();
                 }
                 this.injectListItem();
-                // Step 4: animate the slider "in reverse" as it's inserted in the new action-group (and/or flash it a couple of times?)
-                //// TO DO ...
+                // Flash the newly injected list item
+                const transitionFlashDuration = 1000; // milliseconds
+                this.elListItem.style.setProperty('--transition-flash-duration', `${transitionFlashDuration}ms`);
+                this.elListItem.classList.add('transition-flash');
+                setTimeout(() => {
+                    this.elListItem.classList.remove('transition-flash');
+                }, transitionFlashDuration);
+                // Mark the next queued action as ready, if the current action is now ongoing
+                if (this.state === ACTION_STATE.ONGOING) {
+                    markNextQueuedActionReady();
+                }
             }, halfSlideDuration);
         }, halfSlideDuration);
     }
@@ -239,6 +368,15 @@ const ACTION_TYPE_ICON_CLASS = {
     EXTRACT: 'icon-yield',
     TRANSFER: 'icon-trade',
 };
+
+function markNextQueuedActionReady() {
+    const nextQueuedActionNotReady = document.querySelector('#actions-queued ul li:not(.ready)');
+    if (nextQueuedActionNotReady) {
+        const actionId = nextQueuedActionNotReady.id.replace('action_', '');
+        const action = actionsById[actionId];
+        action.markReady();
+    }
+}
 
 // Global variables and functions
 

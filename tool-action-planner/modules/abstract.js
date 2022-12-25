@@ -1,3 +1,11 @@
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+const WEEK = 7 * DAY;
+const MONTH = 30 * DAY;
+const YEAR = 365 * DAY;
+
 /**
  * Human readable elapsed or remaining time (example: 3 minutes ago)
  * @param  {Date|Number|String} date A Date object, timestamp or string parsable with Date.parse()
@@ -15,13 +23,6 @@ function fromNow(
         numeric: 'always',
     })
 ) {
-    const SECOND = 1000;
-    const MINUTE = 60 * SECOND;
-    const HOUR = 60 * MINUTE;
-    const DAY = 24 * HOUR;
-    const WEEK = 7 * DAY;
-    const MONTH = 30 * DAY;
-    const YEAR = 365 * DAY;
     const intervals = [
         { ge: YEAR, divisor: YEAR, unit: 'year' },
         { ge: MONTH, divisor: MONTH, unit: 'month' },
@@ -37,9 +38,26 @@ function fromNow(
     const diffAbs = Math.abs(diff);
     for (const interval of intervals) {
         if (diffAbs >= interval.ge) {
-            const x = Math.round(Math.abs(diff) / interval.divisor);
+            const x = Math.round(diffAbs / interval.divisor);
             const isFuture = diff < 0;
             return interval.unit ? rft.format(isFuture ? x : -x, interval.unit) : interval.text;
+        }
+    }
+}
+
+function msToShortTime(diff = 0) {
+    const intervals = [
+        { ge: WEEK, divisor: WEEK, unit: 'w' },
+        { ge: DAY, divisor: DAY, unit: 'd' },
+        { ge: HOUR, divisor: HOUR, unit: 'h' },
+        { ge: MINUTE, divisor: MINUTE, unit: 'm' },
+        { ge: SECOND, divisor: SECOND, unit: 's' },
+        { ge: 0, divisor: 1, text: 'now' },
+    ];
+    for (const interval of intervals) {
+        if (diff >= interval.ge) {
+            const x = Math.round(diff / interval.divisor);
+            return interval.unit ? `${x}${interval.unit}` : interval.text;
         }
     }
 }
@@ -48,4 +66,8 @@ function getPseudoUniqueId() {
     return Math.floor(Math.random() * Date.now()).toString(16);
 }
 
-export {fromNow, getPseudoUniqueId};
+function deleteFromDOM(el) {
+    el.parentElement.removeChild(el);
+}
+
+export {HOUR, deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime};

@@ -26,4 +26,13 @@ function leaderLineConnectElements(el1, el2) {
     el1.parentElement.append(elLine);
 }
 
+if (typeof LeaderLine === 'function') {
+    /**
+     * Disable the automatic repositioning of leader lines on window resize,
+     * b/c it would trigger an error due to the original SVGs not being a direct
+     * child of "body" anymore (they are moved during "leaderLineConnectElements").
+     */
+    LeaderLine.positionByWindowResize = false;
+}
+
 export {leaderLineConnectElements};

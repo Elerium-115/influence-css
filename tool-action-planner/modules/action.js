@@ -1,18 +1,14 @@
-import {
-    deleteFromDOM,
-    fromNow,
-    getPseudoUniqueId,
-    msToShortTime,
-} from './abstract.js'
+import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js'
 import {leaderLineConnectElements} from './leader-line-utils.js';
 
 class Action {
-    constructor(type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = null) {
+    constructor(crewId, asteroidId, type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = null) {
         this.id = getPseudoUniqueId();
         this.createdDate = new Date();
         this.startedDate = null;
         this.finalizedDate = null;
-        this.state = ACTION_STATE.QUEUED; // default state for new actions
+        this.crewId = crewId;
+        this.asteroidId = asteroidId;
         this.type = type; // expecting "ACTION_TYPE" value
         this.subject = subject; // string - e.g. "Hydrogen" for "ACTION_TYPE.EXTRACT"
         this.sourceName = sourceName; // string - e.g. "Extractor" for "ACTION_TYPE.EXTRACT"
@@ -20,6 +16,7 @@ class Action {
         this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
         this.destinationLotId = destinationLotId; // number
         this.duration = duration ? duration : 0; // number as milliseconds
+        this.state = ACTION_STATE.QUEUED; // default state for new actions
         this.isReady = false;
         this.elListItem = null;
         this.refreshOngoingInterval = null;
@@ -406,7 +403,7 @@ globalThis.removeActionById = function(actionId, shouldConfirm = false) {
     actionsById[actionId]?.removeAction();
 };
 
-globalThis.transitionActionById =  function(actionId) {
+globalThis.transitionActionById = function(actionId) {
     actionsById[actionId]?.transitionAction();
 }
 

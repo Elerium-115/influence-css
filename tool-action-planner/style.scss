@@ -32,21 +32,29 @@ body {
 	animation: pulse-text 2s infinite;
 }
 
+.hidden {
+    display: none;
+}
+
 .root-section {
     // Margin between the root-level sections and the in-game scrollbar
     margin-right: 20px;
+    position: relative;
 
     &:not(:first-child) {
         margin-top: 50px;
     }
-}
 
-#crew-and-asteroid {
-    display: none; //// TEST
-}
+    .section-title-sidebar {
+        display: flex;
+        gap: 25px;
+        line-height: 40px;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
 
-#plan-actions {
-    #action-buttons {
+    .primary-buttons {
         display: flex;
         flex-wrap: wrap;
         gap: 25px;
@@ -78,24 +86,43 @@ body {
             }
         }
     }
+}
 
+#crew-and-asteroid {
+    #selected-crew {
+        &.ready {
+            color: var(--color-ready);
+        }
+
+        .crew-name::before { content: '"'; }
+        .crew-name::after { content: '"'; }
+    }
+
+    #selected-asteroid,
+    #selected-base {
+        opacity: 0.5;
+
+        .hover-detail {
+            display: none;
+        }
+
+        &:hover {
+            opacity: 1;
+
+            .hover-detail {
+                display: unset;
+            }
+        }
+    }
+}
+
+#plan-actions {
     #action-setup {
         display: none; //// TEST
     }
 }
 
 #manage-actions {
-    position: relative;
-
-    .toggles {
-        display: flex;
-        gap: 25px;
-        line-height: 40px;
-        position: absolute;
-        right: 0;
-        top: 0;
-    }
-
     #action-groups {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));

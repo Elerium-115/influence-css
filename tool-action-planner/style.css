@@ -47,50 +47,18 @@ body.embed {
           animation: pulse-text 2s infinite;
 }
 
+.hidden {
+  display: none;
+}
+
 .root-section {
   margin-right: 20px;
+  position: relative;
 }
 .root-section:not(:first-child) {
   margin-top: 50px;
 }
-
-#crew-and-asteroid {
-  display: none;
-}
-
-#plan-actions #action-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 25px;
-  margin-top: 25px;
-}
-#plan-actions #action-buttons button {
-  align-items: center;
-  display: flex;
-  gap: 5px;
-  white-space: nowrap;
-}
-#plan-actions #action-buttons button .icon-round {
-  transition: inherit;
-}
-#plan-actions #action-buttons button .icon-round::after {
-  background-color: var(--color-highlight);
-  transition: inherit;
-}
-#plan-actions #action-buttons button:hover .icon-round {
-  background-color: transparent;
-}
-#plan-actions #action-buttons button:hover .icon-round::after {
-  background-color: white;
-}
-#plan-actions #action-setup {
-  display: none;
-}
-
-#manage-actions {
-  position: relative;
-}
-#manage-actions .toggles {
+.root-section .section-title-sidebar {
   display: flex;
   gap: 25px;
   line-height: 40px;
@@ -98,6 +66,62 @@ body.embed {
   right: 0;
   top: 0;
 }
+.root-section .primary-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-top: 25px;
+}
+.root-section .primary-buttons button {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+  white-space: nowrap;
+}
+.root-section .primary-buttons button .icon-round {
+  transition: inherit;
+}
+.root-section .primary-buttons button .icon-round::after {
+  background-color: var(--color-highlight);
+  transition: inherit;
+}
+.root-section .primary-buttons button:hover .icon-round {
+  background-color: transparent;
+}
+.root-section .primary-buttons button:hover .icon-round::after {
+  background-color: white;
+}
+
+#crew-and-asteroid #selected-crew.ready {
+  color: var(--color-ready);
+}
+#crew-and-asteroid #selected-crew .crew-name::before {
+  content: '"';
+}
+#crew-and-asteroid #selected-crew .crew-name::after {
+  content: '"';
+}
+#crew-and-asteroid #selected-asteroid,
+#crew-and-asteroid #selected-base {
+  opacity: 0.5;
+}
+#crew-and-asteroid #selected-asteroid .hover-detail,
+#crew-and-asteroid #selected-base .hover-detail {
+  display: none;
+}
+#crew-and-asteroid #selected-asteroid:hover,
+#crew-and-asteroid #selected-base:hover {
+  opacity: 1;
+}
+#crew-and-asteroid #selected-asteroid:hover .hover-detail,
+#crew-and-asteroid #selected-base:hover .hover-detail {
+  display: unset;
+}
+
+#plan-actions #action-setup {
+  display: none;
+}
+
 #manage-actions #action-groups {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

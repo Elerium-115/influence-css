@@ -30,18 +30,37 @@
             <!-- TOOL TEMPLATE -- START -->
             <section id="crew-and-asteroid" class="root-section">
                 <h2>Crew & Asteroid</h2>
-                <div style="margin-top: 20px;">Crew: [dropdown] &nbsp; Asteroid ID: [dropdown]</div>
-                <div style="margin-top: 20px;">Crew base: Light Transport #666</div>
-                <div style="margin-top: 20px;">
-                    Crew assets: [owned by this crew, on this asteroid]<br>
-                    &raquo; (compact summary view - e.g. "1 Light Transport, 1 Warehouse, 3 Extractors")<br>
-                    &raquo; (overlay w/ detailed view)<br>
+                <div class="section-title-sidebar">
+                    <div id="selected-crew">
+                        Crew: <span class="crew-name"></span> <span class="crew-readiness"></span>
+                    </div>
+                    <div id="selected-asteroid">
+                        Asteroid: <span class="hover-detail">Adalia Prime</span> #1
+                    </div>
+                    <div id="selected-base">
+                        Base: <span class="hover-detail">Light Transport</span> #666
+                    </div>
+                </div>
+                <div id="crew-setup-wrapper">
+                    <div class="primary-buttons">
+                        <button onclick="toggleManageCrew()"><span class="icon-round icon-crew-member"></span>Manage</button>
+                    </div>
+                </div>
+                <div id="manage-crew" class="hidden">
+                    <div style="margin-top: 20px;">Active Crew: [dropdown]</div>
+                    <div style="margin-top: 20px;">Active Asteroid: [dropdown]</div>
+                    <div style="margin-top: 20px;">Crew base: [dropdown]</div>
+                    <div style="margin-top: 20px;">
+                        Crew assets: [owned by this crew, on this asteroid]<br>
+                        &raquo; (compact summary view - e.g. "1 Light Transport, 1 Warehouse, 3 Extractors")<br>
+                        &raquo; (overlay w/ detailed view)<br>
+                    </div>
                 </div>
             </section>
             <section id="plan-actions" class="root-section">
                 <h2>Plan Actions</h2>
                 <div id="action-setup-wrapper">
-                    <div id="action-buttons">
+                    <div class="primary-buttons">
                         <button><span class="icon-round icon-core-sample"></span>Core Sample</button>
                         <button><span class="icon-round icon-yield"></span>Extract</button>
                         <button><span class="icon-round icon-trade"></span>Transfer</button>
@@ -63,7 +82,7 @@
             </section>
             <section id="manage-actions" class="root-section">
                 <h2>Manage Actions</h2>
-                <div class="toggles">
+                <div class="section-title-sidebar">
                     <label id="toggle-action-types-label" class="label-for-input checked"><input type="checkbox" id="toggle-action-types" checked> Action Types</label>
                     <label id="toggle-compact-lists-label" class="label-for-input checked"><input type="checkbox" id="toggle-compact-lists" checked> Compact Lists</label>
                 </div>

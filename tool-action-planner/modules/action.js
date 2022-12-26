@@ -268,6 +268,17 @@ class Action {
         }
     }
 
+    prepareListItemForAnimating() {
+        this.elListItem.classList.add('animating');
+        const elListItemHeight = this.elListItem.getBoundingClientRect().height;
+        const elListItemWidth = this.elListItem.getBoundingClientRect().width;
+        this.elListItem.style.setProperty('--this-height', `${elListItemHeight}px`);
+        this.elListItem.style.setProperty('--this-width', `${elListItemWidth}px`);
+        this.elListItem.style.setProperty('--half-slide-duration', `${ACTION_LIST_ITEM_TRANSITION_DURATION}ms`);
+        // Wrap the list item content into a new element ".slider"
+        this.elListItem.innerHTML = /*html*/ `<div class="slider">${this.elListItem.innerHTML}</div>`;
+    }
+
     removeListItem() {
         deleteFromDOM(this.elListItem);
         if (this.refreshOngoingInterval) {
@@ -276,9 +287,19 @@ class Action {
     }
 
     removeAction() {
-        this.removeListItem();
-        // Remove global reference
-        delete actionsById[this.id];
+        this.prepareListItemForAnimating();
+        // Fade out the list item, then slide it up
+        this.elListItem.classList.add('fade-out');
+        setTimeout(() => {
+            // Done fading out => start sliding up
+            this.elListItem.classList.add('slide-up');
+            setTimeout(() => {
+                // Done sliding up => remove the list item
+                this.removeListItem();
+                // Remove global reference
+                delete actionsById[this.id];        
+            }, ACTION_LIST_ITEM_TRANSITION_DURATION);
+        }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
 
     transitionAction() {
@@ -299,21 +320,15 @@ class Action {
                 nextState = ACTION_STATE.DONE;
                 break;
         }
-        // Prepare the list item element for sliding
-        const elListItemHeight = this.elListItem.getBoundingClientRect().height;
-        const elListItemWidth = this.elListItem.getBoundingClientRect().width;
-        const halfSlideDuration = 300; // milliseconds
-        this.elListItem.style.setProperty('--this-height', `${elListItemHeight}px`);
-        this.elListItem.style.setProperty('--this-width', `${elListItemWidth}px`);
-        this.elListItem.style.setProperty('--half-slide-duration', `${halfSlideDuration}ms`);
-        // Wrap the list item content into a new element ".slider", and animate it to the right, then up
-        this.elListItem.innerHTML = /*html*/ `<div class="slider slide-right">${this.elListItem.innerHTML}</div>`;
-        this.elListItem.classList.add('sliding', 'fade-background');
+        this.prepareListItemForAnimating();
+        // Slide right the ".slider", then slide up the list item
+        this.elListItem.querySelector('.slider').classList.add('slide-right');
+        this.elListItem.classList.add('fade-background');
         setTimeout(() => {
-            // Done sliding to the right => start sliding up
+            // Done sliding right => start sliding up
             this.elListItem.classList.add('slide-up');
             setTimeout(() => {
-                // Done sliding up => remove the action from the old action-group
+                // Done sliding up => remove the list item from the old action-group
                 this.removeListItem();
                 // Update the status of the action, and inject it into the new action-group
                 this.isReady = false;
@@ -333,8 +348,8 @@ class Action {
                 if (this.state === ACTION_STATE.ONGOING) {
                     markNextQueuedActionReady();
                 }
-            }, halfSlideDuration);
-        }, halfSlideDuration);
+            }, ACTION_LIST_ITEM_TRANSITION_DURATION);
+        }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
 }
 
@@ -368,6 +383,8 @@ const ACTION_TYPE_ICON_CLASS = {
     EXTRACT: 'icon-yield',
     TRANSFER: 'icon-trade',
 };
+
+const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
 
 function markNextQueuedActionReady() {
     const nextQueuedActionNotReady = document.querySelector('#actions-queued ul li:not(.ready)');

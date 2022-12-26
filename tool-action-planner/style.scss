@@ -35,6 +35,14 @@ body {
 .root-section {
     // Margin between the root-level sections and the in-game scrollbar
     margin-right: 20px;
+
+    &:not(:first-child) {
+        margin-top: 50px;
+    }
+}
+
+#crew-and-asteroid {
+    display: none; //// TEST
 }
 
 #plan-actions {
@@ -70,10 +78,13 @@ body {
             }
         }
     }
+
+    #action-setup {
+        display: none; //// TEST
+    }
 }
 
 #manage-actions {
-    margin-top: 50px;
     position: relative;
 
     .toggles {
@@ -289,7 +300,7 @@ ul.list-expanding-items {
             }
         }
 
-        &.sliding {
+        &.animating {
             height: var(--this-height) !important;
             position: relative;
             transition-duration: var(--half-slide-duration);
@@ -300,6 +311,15 @@ ul.list-expanding-items {
 
             &.fade-background {
                 animation: fade-background var(--half-slide-duration) linear;
+                animation-fill-mode: both;
+            }
+
+            @keyframes fade-out {
+                100% { opacity: 0; };
+            }
+
+            &.fade-out {
+                animation: fade-out var(--half-slide-duration) linear;
                 animation-fill-mode: both;
             }
 

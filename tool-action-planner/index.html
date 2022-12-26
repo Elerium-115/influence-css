@@ -28,14 +28,37 @@
     <div class="example-wrapper">
         <div class="example-main">
             <!-- TOOL TEMPLATE -- START -->
+            <section id="crew-and-asteroid" class="root-section">
+                <h2>Crew & Asteroid</h2>
+                <div style="margin-top: 20px;">Crew: [dropdown] &nbsp; Asteroid ID: [dropdown]</div>
+                <div style="margin-top: 20px;">Crew base: Light Transport #666</div>
+                <div style="margin-top: 20px;">
+                    Crew assets: [owned by this crew, on this asteroid]<br>
+                    &raquo; (compact summary view - e.g. "1 Light Transport, 1 Warehouse, 3 Extractors")<br>
+                    &raquo; (overlay w/ detailed view)<br>
+                </div>
+            </section>
             <section id="plan-actions" class="root-section">
                 <h2>Plan Actions</h2>
-                <div id="action-buttons">
-                    <button><span class="icon-round icon-core-sample"></span>Core Sample</button>
-                    <button><span class="icon-round icon-yield"></span>Extract</button>
-                    <button><span class="icon-round icon-trade"></span>Transfer</button>
-                    <button><span class="icon-round icon-construct"></span>Construct</button>
-                    <button><span class="icon-round icon-deconstruct"></span>Deconstruct</button>
+                <div id="action-setup-wrapper">
+                    <div id="action-buttons">
+                        <button><span class="icon-round icon-core-sample"></span>Core Sample</button>
+                        <button><span class="icon-round icon-yield"></span>Extract</button>
+                        <button><span class="icon-round icon-trade"></span>Transfer</button>
+                        <button><span class="icon-round icon-construct"></span>Construct</button>
+                        <button><span class="icon-round icon-deconstruct"></span>Deconstruct</button>
+                    </div>
+                    <div id="action-setup">
+                        <div style="margin-top: 20px;">
+                            Source Lot ID: [dropdown] &raquo; SOURCE_ITEM [auto-complete based on action-type]<br>
+                            &raquo; (dropdown values = only lots that contain an asset compatible with the SOURCE of action-type)<br>
+                            &raquo; (dropdown value "Plan new lot" => replace dropdown w/ text-input, only for actions compatible w/ empty lots)<br>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            Destination Lot ID: [dropdown] &raquo; DESTINATION_ITEM [auto-complete based on action-type]<br>
+                            &raquo; (dropdown values = only lots that contain an asset compatible with the DESTINATION of action-type)<br>
+                        </div>
+                    </div>
                 </div>
             </section>
             <section id="manage-actions" class="root-section">

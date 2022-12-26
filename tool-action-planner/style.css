@@ -50,6 +50,13 @@ body.embed {
 .root-section {
   margin-right: 20px;
 }
+.root-section:not(:first-child) {
+  margin-top: 50px;
+}
+
+#crew-and-asteroid {
+  display: none;
+}
 
 #plan-actions #action-buttons {
   display: flex;
@@ -76,9 +83,11 @@ body.embed {
 #plan-actions #action-buttons button:hover .icon-round::after {
   background-color: white;
 }
+#plan-actions #action-setup {
+  display: none;
+}
 
 #manage-actions {
-  margin-top: 50px;
   position: relative;
 }
 #manage-actions .toggles {
@@ -236,7 +245,7 @@ ul.list-expanding-items li.ready:hover .item-expand .action-status .icon-button:
 ul.list-expanding-items li.ready:hover .item-expand .action-status .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
 }
-ul.list-expanding-items li.sliding {
+ul.list-expanding-items li.animating {
   height: var(--this-height) !important;
   position: relative;
   transition-duration: var(--half-slide-duration);
@@ -253,16 +262,32 @@ ul.list-expanding-items li.sliding {
     border-color: transparent;
   }
 }
-ul.list-expanding-items li.sliding.fade-background {
+ul.list-expanding-items li.animating.fade-background {
   -webkit-animation: fade-background var(--half-slide-duration) linear;
           animation: fade-background var(--half-slide-duration) linear;
   -webkit-animation-fill-mode: both;
           animation-fill-mode: both;
 }
-ul.list-expanding-items li.sliding.slide-up {
+@-webkit-keyframes fade-out {
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  100% {
+    opacity: 0;
+  }
+}
+ul.list-expanding-items li.animating.fade-out {
+  -webkit-animation: fade-out var(--half-slide-duration) linear;
+          animation: fade-out var(--half-slide-duration) linear;
+  -webkit-animation-fill-mode: both;
+          animation-fill-mode: both;
+}
+ul.list-expanding-items li.animating.slide-up {
   height: 0 !important;
 }
-ul.list-expanding-items li.sliding .slider {
+ul.list-expanding-items li.animating .slider {
   left: 0;
   padding: inherit;
   position: absolute;
@@ -278,7 +303,7 @@ ul.list-expanding-items li.sliding .slider {
     left: var(--this-width);
   }
 }
-ul.list-expanding-items li.sliding .slider.slide-right {
+ul.list-expanding-items li.animating .slider.slide-right {
   -webkit-animation: slide-right var(--half-slide-duration) linear;
           animation: slide-right var(--half-slide-duration) linear;
   -webkit-animation-fill-mode: both;

@@ -5,7 +5,8 @@ class Crew {
         this.id = getPseudoUniqueId();
         this.name = name;
         this.asteroidId = null; // asteroid ID where this crew is currently located
-        this.baseLotId = null; // lot ID (on "asteroidId") where this crew is currently based
+        this.isLanded = true; // TRUE if landed, FALSE if in orbit or traveling between asteroids
+        this.baseLotId = null; // lot ID (on "asteroidId") where this crew is currently based (NULL if not landed)
         this.baseAssetName = null; // name of habitable asset owned / available to this crew at "baseLotId"
         this.cooldown = 0; // number as milliseconds
         crewService.addCrew(this);
@@ -18,8 +19,17 @@ class Crew {
             el.textContent = asteroidsById[asteroidId].name;
         });
         document.querySelectorAll('.active-asteroid-id').forEach(el => {
-            el.textContent = asteroidId;
+            el.textContent = `#${asteroidId}`;
         });
+    }
+
+    setIsLanded(isLanded) {
+        this.isLanded = isLanded;
+        // Update landed status in DOM
+        document.querySelector('.landed-or-in-orbit').textContent = isLanded ? 'landed on' : 'in orbit of';
+        if (!isLanded) {
+            this.setBase(null, null);
+        }
     }
 
     setBase(baseLotId, baseAssetName) {
@@ -27,10 +37,10 @@ class Crew {
         this.baseAssetName = baseAssetName;
         // Update all occurrences of the active base asset name and lot ID in the DOM
         document.querySelectorAll('.active-base-asset-name').forEach(el => {
-            el.textContent = baseAssetName;
+            el.textContent = baseAssetName ? baseAssetName : '';
         });
         document.querySelectorAll('.active-base-lot-id').forEach(el => {
-            el.textContent = baseLotId;
+            el.textContent = baseLotId ? `#${baseLotId}` : 'In Orbit';
         });
     }
 

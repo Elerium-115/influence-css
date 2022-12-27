@@ -35,10 +35,10 @@
                         Crew: <span class="active-crew-name"></span> <span class="crew-readiness"></span>
                     </div>
                     <div id="active-asteroid">
-                        Asteroid: <span class="active-asteroid-name hover-detail"></span> #<span class="active-asteroid-id"></span>
+                        Asteroid: <span class="active-asteroid-name hover-detail"></span> <span class="active-asteroid-id"></span>
                     </div>
                     <div id="active-base">
-                        Base: <span class="active-base-asset-name hover-detail"></span> #<span class="active-base-lot-id"></span>
+                        Base: <span class="active-base-asset-name hover-detail"></span> <span class="active-base-lot-id"></span>
                     </div>
                 </div>
                 <div id="crew-setup-wrapper">
@@ -53,16 +53,16 @@
                         <button class="rename-crew">Rename</button>
                     </div>
                     <div>
-                        Crew located at - asteroid name and ID:
+                        Crew <span class="landed-or-in-orbit text-highlight"></span> asteroid:
                         <span class="text-highlight">
-                            <span class="active-asteroid-name"></span> #<span class="active-asteroid-id"></span>
+                            <span class="active-asteroid-name"></span> <span class="active-asteroid-id"></span>
                         </span><br>
                         <span class="faded">(change by traveling to another asteroid with this crew)</span>
                     </div>
                     <div>
-                        Crew based on above asteroid at - asset name and lot ID:
+                        Crew based at:
                         <span class="text-highlight">
-                            <span class="active-base-asset-name"></span> #<span class="active-base-lot-id"></span>
+                            <span class="active-base-asset-name"></span> <span class="active-base-lot-id"></span>
                         </span>
                         <button class="rename-crew">Change</button>
                     </div>
@@ -87,12 +87,12 @@
                         <button><span class="icon-round icon-ship-down"></span>Land</button>
                     </div>
                     <div id="action-setup">
-                        <div style="margin-top: 20px;">
+                        <div>
                             Source Lot ID: [dropdown] &raquo; SOURCE_ITEM [auto-complete based on action-type]<br>
                             &raquo; (dropdown values = only lots that contain an asset compatible with the SOURCE of action-type)<br>
                             &raquo; (dropdown value "Plan new lot" => replace dropdown w/ text-input, only for actions compatible w/ empty lots)<br>
                         </div>
-                        <div style="margin-top: 20px;">
+                        <div>
                             Destination Lot ID: [dropdown] &raquo; DESTINATION_ITEM [auto-complete based on action-type]<br>
                             &raquo; (dropdown values = only lots that contain an asset compatible with the DESTINATION of action-type)<br>
                         </div>

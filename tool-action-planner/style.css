@@ -147,16 +147,24 @@ body.embed {
   display: unset;
 }
 #crew-and-asteroid #manage-crew-panel {
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-top: 20px;
+  padding: 20px;
 }
 #crew-and-asteroid #manage-crew-panel button {
   margin-left: 20px;
 }
 
 #plan-actions #action-setup {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 20px;
   display: none;
 }
 

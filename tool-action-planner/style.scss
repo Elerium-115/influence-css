@@ -22,6 +22,9 @@ body {
 .icon-construct::after { @include customIcon('icon-construct.png'); }
 .icon-core-sample::after { @include customIcon('icon-core-sample.png'); }
 .icon-deconstruct::after { @include customIcon('icon-deconstruct.png'); }
+.icon-ship-right::after { @include customIcon('icon-ship.svg'); }
+.icon-ship-down::after { @include customIcon('icon-ship.svg'); transform: rotate(90deg); }
+.icon-ship-up::after { @include customIcon('icon-ship.svg'); transform: rotate(-90deg); }
 .icon-x::after { @include customIcon('icon-x.svg'); }
 
 @keyframes pulse-text {
@@ -32,8 +35,16 @@ body {
 	animation: pulse-text 2s infinite;
 }
 
+.text-highlight {
+    color: var(--color-highlight);
+}
+
+.faded {
+    opacity: 0.5;
+}
+
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .root-section {
@@ -53,53 +64,62 @@ body {
         right: 0;
         top: 0;
     }
+}
 
-    .primary-buttons {
+.primary-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin-top: 25px;
+
+    button {
+        align-items: center;
         display: flex;
-        flex-wrap: wrap;
-        gap: 25px;
-        margin-top: 25px;
+        gap: 5px;
+        white-space: nowrap;
 
-        button {
-            align-items: center;
-            display: flex;
-            gap: 5px;
-            white-space: nowrap;
+        .icon-round {
+            transition: inherit;
 
-            .icon-round {
+            &::after {
+                background-color: var(--color-highlight);
                 transition: inherit;
+            }
+        }
+
+        &.active {
+            background-color: var(--color-highlight);
+            color: white;
+        }
+
+        &:hover,
+        &:active,
+        &.active {
+            .icon-round {
+                background-color: transparent;
 
                 &::after {
-                    background-color: var(--color-highlight);
-                    transition: inherit;
-                }
-            }
-
-            &:hover {
-                .icon-round {
-                    background-color: transparent;
-
-                    &::after {
-                        background-color: white;
-                    }
+                    background-color: white;
                 }
             }
         }
     }
 }
 
+.active-crew-name::before,
+.active-crew-name::after {
+    content: '"';
+}
+
 #crew-and-asteroid {
-    #selected-crew {
+    #active-crew {
         &.ready {
             color: var(--color-ready);
         }
-
-        .crew-name::before { content: '"'; }
-        .crew-name::after { content: '"'; }
     }
 
-    #selected-asteroid,
-    #selected-base {
+    #active-asteroid,
+    #active-base {
         opacity: 0.5;
 
         .hover-detail {
@@ -112,6 +132,17 @@ body {
             .hover-detail {
                 display: unset;
             }
+        }
+    }
+
+    #manage-crew-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 20px;
+
+        button {
+            margin-left: 20px;
         }
     }
 }

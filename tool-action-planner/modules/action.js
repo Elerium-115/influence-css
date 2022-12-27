@@ -2,7 +2,7 @@ import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstra
 import {leaderLineConnectElements} from './leader-line-utils.js';
 
 class Action {
-    constructor(crewId, asteroidId, type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = null) {
+    constructor(crewId, asteroidId, type, subject, sourceName, sourceId, destinationName, destinationId, duration = null) {
         this.id = getPseudoUniqueId();
         this.createdDate = new Date();
         this.startedDate = null;
@@ -12,15 +12,24 @@ class Action {
         this.type = type; // expecting "ACTION_TYPE" value
         this.subject = subject; // string - e.g. "Hydrogen" for "ACTION_TYPE.EXTRACT"
         this.sourceName = sourceName; // string - e.g. "Extractor" for "ACTION_TYPE.EXTRACT"
-        this.sourceLotId = sourceLotId; // number
+        this.sourceId = sourceId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
         this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
-        this.destinationLotId = destinationLotId; // number
+        this.destinationId = destinationId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
         this.duration = duration ? duration : 0; // number as milliseconds
         this.state = ACTION_STATE.QUEUED; // default state for new actions
         this.isReady = false;
         this.elListItem = null;
         this.refreshOngoingInterval = null;
         actionsById[this.id] = this;
+    }
+
+    /** Verify that the active crew and asteroid matches this action */
+    isActiveCrewAndAsteroid() {
+        return crewService.activeCrew.id === this.crewId && crewService.activeCrew.asteroidId === this.asteroidId;
+    }
+
+    handleInvalidCrewOrAsteroid() {
+        console.log(`%c--- ERROR: action restricted to crew ID #${crewService.activeCrew.id} on asteroid ID #${crewService.activeCrew.asteroidId}`, 'color: orange;');
     }
 
     updateListItemStatus() {
@@ -49,6 +58,10 @@ class Action {
     }
 
     markReady() {
+        if (!this.isActiveCrewAndAsteroid()) {
+            this.handleInvalidCrewOrAsteroid();
+            return;
+        }
         if (this.isReady) {
             console.log(`%c--- ERROR: action is already ready => can NOT mark as ready`, 'color: orange;');
             return;
@@ -74,6 +87,10 @@ class Action {
     }
 
     setState(state) {
+        if (!this.isActiveCrewAndAsteroid()) {
+            this.handleInvalidCrewOrAsteroid();
+            return;
+        }
         this.state = state;
         if (state === ACTION_STATE.ONGOING) {
             this.markStarted();
@@ -125,7 +142,7 @@ class Action {
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
-                <div class="value value-destination">${this.destinationName} #${this.destinationLotId}</div>
+                <div class="value value-destination">${this.destinationName} #${this.destinationId}</div>
             `;
         }
         let timerCompactHtml = '';
@@ -182,7 +199,7 @@ class Action {
                 </div>
                 <div class="item-expand">
                     <div class="action-details">
-                        <div class="value value-source">${this.sourceName} #${this.sourceLotId}</div>
+                        <div class="value value-source">${this.sourceName} #${this.sourceId}</div>
                         ${destinationHtml}
                     </div>
                     <div class="action-status">
@@ -217,6 +234,10 @@ class Action {
     }
 
     injectListItem() {
+        if (!this.isActiveCrewAndAsteroid()) {
+            this.handleInvalidCrewOrAsteroid();
+            return;
+        }
         let actionGroupList;
         switch (this.state) {
             case ACTION_STATE.QUEUED:
@@ -284,6 +305,10 @@ class Action {
     }
 
     removeAction() {
+        if (!this.isActiveCrewAndAsteroid()) {
+            this.handleInvalidCrewOrAsteroid();
+            return;
+        }
         this.prepareListItemForAnimating();
         // Fade out the list item, then slide it up
         this.elListItem.classList.add('fade-out');
@@ -300,6 +325,10 @@ class Action {
     }
 
     transitionAction() {
+        if (!this.isActiveCrewAndAsteroid()) {
+            this.handleInvalidCrewOrAsteroid();
+            return;
+        }
         if (!this.isReady) {
             console.log(`%c--- ERROR: action not ready => can NOT transition`, 'color: orange;');
             return;
@@ -362,7 +391,10 @@ const ACTION_TYPE = {
     CORE_SAMPLE: 'CORE_SAMPLE',
     DECONSTRUCT: 'DECONSTRUCT',
     EXTRACT: 'EXTRACT',
+    LAND: 'LAND',
+    LAUNCH: 'LAUNCH',
     TRANSFER: 'TRANSFER',
+    TRAVEL: 'TRAVEL',
 };
 
 const ACTION_TYPE_TEXT = {
@@ -370,7 +402,10 @@ const ACTION_TYPE_TEXT = {
     CORE_SAMPLE: 'Core Sample',
     DECONSTRUCT: 'Deconstruct',
     EXTRACT: 'Extract',
+    LAND: 'Land', // Land from orbit
+    LAUNCH: 'Launch', // Launch to orbit
     TRANSFER: 'Transfer',
+    TRAVEL: 'Travel',
 };
 
 const ACTION_TYPE_ICON_CLASS = {
@@ -378,7 +413,10 @@ const ACTION_TYPE_ICON_CLASS = {
     CORE_SAMPLE: 'icon-core-sample',
     DECONSTRUCT: 'icon-deconstruct',
     EXTRACT: 'icon-yield',
+    LAND: 'icon-ship-down',
+    LAUNCH: 'icon-ship-up',
     TRANSFER: 'icon-trade',
+    TRAVEL: 'icon-ship-right',
 };
 
 const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds

@@ -1,14 +1,19 @@
 import {HOUR} from './abstract.js'
 import {Action, ACTION_STATE, ACTION_TYPE} from './action.js';
 import {Crew} from './crew.js';
+import {Asteroid} from './asteroid.js';
+
+new Asteroid(1, 'Adalia Prime');
+new Asteroid(296, 'Tortuga');
 
 const exampleCrew = new Crew('Dragon');
-
-const exampleAsteroidId = 1;
+exampleCrew.setAsteroidId(1); // Adalia Prime
+exampleCrew.setBase(666, 'Light Transport'); // Light Transport at lot #666
+// exampleCrew.setCooldown(HOUR);
 
 /**
  * Example action template:
- * [type, subject, sourceName, sourceLotId, destinationName, destinationLotId, duration = 0, forceReady = false, forceState = null, forceFinalizedHoursAgo = null]
+ * [type, subject, sourceName, sourceId, destinationName, destinationId, duration = 0, forceReady = false, forceState = null, forceFinalizedHoursAgo = null]
  */
 const exampleActionsTemplate = [
     // Queued actions
@@ -34,8 +39,16 @@ const exampleActionsTemplate = [
 function initializeExampleActionsById() {
     exampleActionsTemplate.forEach(actionTemplate => {
         const action = new Action(
-            exampleCrew.crewId,
-            exampleAsteroidId, actionTemplate[0], actionTemplate[1], actionTemplate[2], actionTemplate[3], actionTemplate[4], actionTemplate[5], actionTemplate[6]);
+            exampleCrew.id,
+            exampleCrew.asteroidId,
+            actionTemplate[0],
+            actionTemplate[1],
+            actionTemplate[2],
+            actionTemplate[3],
+            actionTemplate[4],
+            actionTemplate[5],
+            actionTemplate[6],
+        );
         if (actionTemplate[7]) {
             // Force ready
             action.markReady();

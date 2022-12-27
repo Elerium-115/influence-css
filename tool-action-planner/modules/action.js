@@ -32,6 +32,10 @@ class Action {
         console.log(`%c--- ERROR: action restricted to crew ID #${crewService.activeCrew.id} on asteroid ID #${crewService.activeCrew.asteroidId}`, 'color: orange;');
     }
 
+    handleCrewOnCooldown() {
+        alert('Crew not ready'); //// TEST
+    }
+
     updateListItemStatus() {
         switch (this.state) {
             case ACTION_STATE.QUEUED:
@@ -174,7 +178,7 @@ class Action {
                     timerCompactHtml = /*html*/ `
                         <div class="timer-compact text-pulse">${timeRemainingShort}</div>
                     `;
-                    subactionText = 'Remove';
+                    subactionText = 'Cancel';
                     subactionIconsHtml = /*html*/ `
                         <div class="icon-button icon-x" onclick="removeActionById('${this.id}', true)"></div>
                     `;
@@ -286,6 +290,19 @@ class Action {
         }
     }
 
+    setCrewCooldownBeforeTransition(transitionDuration) {
+        let cooldown = 5 * 1000; // default cooldown 5 seconds
+        // Put the crew on cooldown for the entire duration of the action, when starting a "Core Sample"
+        if (this.type === ACTION_TYPE.CORE_SAMPLE && this.state === ACTION_STATE.QUEUED) {
+            cooldown = this.duration;
+        }
+        /**
+         * Ensure the crew cooldown does not end too soon,
+         * due to the animation durations during the transition.
+         */
+        crewService.activeCrew.startCooldown(cooldown + transitionDuration, this.id);
+    }
+
     prepareListItemForAnimating() {
         this.elListItem.classList.add('animating');
         const elListItemHeight = this.elListItem.getBoundingClientRect().height;
@@ -309,6 +326,19 @@ class Action {
             this.handleInvalidCrewOrAsteroid();
             return;
         }
+        if (crewService.activeCrew.cooldown && this.state === ACTION_STATE.ONGOING) {
+            /**
+             * The only ongoing action that can be canceled while the crew is on cooldown,
+             * is the action that triggered the cooldown (e.g. a "Core Sample" action can be canceled
+             * while the crew is "locked" to that action, thus also clearing the crew cooldown).
+             */
+            if (this.id === crewService.activeCrew.cooldownActionId) {
+                crewService.activeCrew.clearCooldown();
+            } else {
+                this.handleCrewOnCooldown();
+                return;
+            }
+        }
         this.prepareListItemForAnimating();
         // Fade out the list item, then slide it up
         this.elListItem.classList.add('fade-out');
@@ -329,6 +359,11 @@ class Action {
             this.handleInvalidCrewOrAsteroid();
             return;
         }
+        if (crewService.activeCrew.cooldown) {
+            // Actions can not be transitioned while the crew is on cooldown
+            this.handleCrewOnCooldown();
+            return;
+        }
         if (!this.isReady) {
             console.log(`%c--- ERROR: action not ready => can NOT transition`, 'color: orange;');
             return;
@@ -337,6 +372,11 @@ class Action {
             console.log(`%c--- ERROR: action already done => can NOT transition`, 'color: orange;');
             return;
         }
+        /**
+         * The action is actually transitioned after 2 animations of
+         * "ACTION_LIST_ITEM_TRANSITION_DURATION" each (see "setTimeout" calls below).
+         */
+        this.setCrewCooldownBeforeTransition(ACTION_LIST_ITEM_TRANSITION_DURATION * 2);
         let nextState;
         switch (this.state) {
             case ACTION_STATE.QUEUED:

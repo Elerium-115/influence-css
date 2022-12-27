@@ -68,6 +68,10 @@ body.embed {
   color: var(--color-highlight);
 }
 
+.text-warning {
+  color: var(--color-warning);
+}
+
 .faded {
   opacity: 0.5;
 }

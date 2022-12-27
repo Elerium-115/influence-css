@@ -10,7 +10,6 @@ const exampleCrew = new Crew('Dragon');
 exampleCrew.setAsteroidId(1); // Adalia Prime
 exampleCrew.setIsLanded(true);
 exampleCrew.setBase(666, 'Light Transport'); // Light Transport at lot #666
-// exampleCrew.setCooldown(HOUR);
 
 /**
  * Example action template:

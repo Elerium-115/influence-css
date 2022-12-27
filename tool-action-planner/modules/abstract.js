@@ -45,7 +45,7 @@ function fromNow(
     }
 }
 
-function msToShortTime(diff = 0) {
+function msToShortTime(diff = 0, showPrefix = false) {
     const intervals = [
         { ge: WEEK, divisor: WEEK, unit: 'w' },
         { ge: DAY, divisor: DAY, unit: 'd' },
@@ -57,7 +57,7 @@ function msToShortTime(diff = 0) {
     for (const interval of intervals) {
         if (diff >= interval.ge) {
             const x = Math.round(diff / interval.divisor);
-            return interval.unit ? `${x}${interval.unit}` : interval.text;
+            return interval.unit ? `${showPrefix ? 'in ' : ''}${x}${interval.unit}` : interval.text;
         }
     }
 }

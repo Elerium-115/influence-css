@@ -9,6 +9,9 @@ class Crew {
         this.baseLotId = null; // lot ID (on "asteroidId") where this crew is currently based (NULL if not landed)
         this.baseAssetName = null; // name of habitable asset owned / available to this crew at "baseLotId"
         this.cooldown = 0; // number as milliseconds
+        this.cooldownActionId = null; // action ID that triggered the crew cooldown
+        this.cooldownStartedDate = null;
+        this.refreshCooldownInterval = null;
         crewService.addCrew(this);
     }
 
@@ -44,22 +47,56 @@ class Crew {
         });
     }
 
+    getCooldownTimeRemainingMs() {
+        if (!this.cooldown) {
+            return null;
+        }
+        return this.cooldownStartedDate.getTime() + this.cooldown - Date.now();
+    }
+
     updateCrewReadiness() {
         const elSelectedCrew = document.getElementById('active-crew');
-        if (this.cooldown) {
-            elSelectedCrew.querySelector('.crew-readiness').innerHTML = /*html*/ `
-                ready in <span class="text-pulse">${msToShortTime(this.cooldown)}</span>
-            `;
+        const elCrewReadiness = elSelectedCrew.querySelector('.crew-readiness');
+        const cooldownTimeRemainingMs = this.getCooldownTimeRemainingMs();
+        if (cooldownTimeRemainingMs && cooldownTimeRemainingMs > 0) {
+            const cooldownRemainingShort = msToShortTime(cooldownTimeRemainingMs, true);
+            elCrewReadiness.textContent = `ready ${cooldownRemainingShort}`; // e.g. "ready in 5s"
             elSelectedCrew.classList.remove('ready');
+            elSelectedCrew.classList.add('text-warning');
+            elCrewReadiness.classList.add('text-pulse');
         } else {
-            elSelectedCrew.querySelector('.crew-readiness').textContent = 'ready';
+            elCrewReadiness.textContent = 'ready';
+            elCrewReadiness.classList.remove('text-pulse');
+            elSelectedCrew.classList.remove('text-warning');
             elSelectedCrew.classList.add('ready');
+            // Bypass calling this function again from "clearCooldown", to avoid infinite loop
+            this.clearCooldown(true);
         }
     }
 
-    setCooldown(cooldown) {
+    clearCooldown(bypassUpdateCrewReadiness = false) {
+        this.cooldown = 0;
+        this.cooldownActionId = null;
+        this.cooldownStartedDate = null;
+        if (this.refreshCooldownInterval) {
+            clearInterval(this.refreshCooldownInterval);
+        }
+        this.refreshCooldownInterval = null;
+        if (!bypassUpdateCrewReadiness) {
+            this.updateCrewReadiness();
+        }
+    }
+
+    startCooldown(cooldown, actionId) {
+        if (!cooldown) {
+            console.log(`%c--- ERROR: cooldown value invalid or zero => can NOT start cooldown`, 'color: orange;');
+            return;
+        }
         this.cooldown = cooldown;
+        this.cooldownActionId = actionId;
+        this.cooldownStartedDate = new Date();
         this.updateCrewReadiness();
+        this.refreshCooldownInterval = setInterval(() => this.updateCrewReadiness(), 1000); // refresh every 1 second
     }
 }
 

@@ -28,8 +28,8 @@
     <div class="example-wrapper">
         <div class="example-main">
             <!-- TOOL TEMPLATE -- START -->
-            <section id="crew-and-asteroid" class="root-section">
-                <h2>Crew & Asteroid</h2>
+            <section id="manage-crews" class="root-section">
+                <h2>Manage Crews</h2>
                 <div class="section-title-sidebar">
                     <div id="active-crew">
                         Crew: <span class="active-crew-name"></span> <span class="crew-readiness"></span>
@@ -43,11 +43,11 @@
                 </div>
                 <div id="crew-setup-wrapper">
                     <div class="primary-buttons">
-                        <button id="manage-crew-button" onclick="toggleManageCrew()"><span class="icon-round icon-zoom"></span>Active Crew</button>
-                        <button id="add-crew-button"><span class="icon-round icon-crew-member"></span>Add Crew</button>
+                        <button id="active-crew-button" onclick="toggleActiveCrew()"><span class="icon-round icon-zoom"></span>Active Crew</button>
+                        <button id="change-crew-button" onclick="toggleChangeCrew()"><span class="icon-round icon-crew-member"></span>Switch / Add Crew</button>
                     </div>
                 </div>
-                <div id="manage-crew-panel" class="hidden">
+                <div id="active-crew-panel" class="crew-panel hidden">
                     <div>
                         Active crew name: <span class="active-crew-name text-highlight"></span>
                         <button class="rename-crew">Rename</button>
@@ -70,6 +70,14 @@
                         Crew assets: [owned by this crew, on this asteroid]<br>
                         &raquo; (compact summary view - e.g. "1 Light Transport, 1 Warehouse, 3 Extractors")<br>
                         &raquo; (overlay w/ detailed view)<br>
+                    </div>
+                </div>
+                <div id="change-crew-panel" class="crew-panel hidden">
+                    <div>
+                        [LIST of crews w/ "SELECT" button next to the NON-active crews]
+                    </div>
+                    <div>
+                        <button class="no-margin">Add Crew</button>
                     </div>
                 </div>
             </section>

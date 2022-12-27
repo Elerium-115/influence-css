@@ -94,15 +94,29 @@ class CrewService {
         crew.updateCrewReadiness();
     }
 
-    toggleManageCrew() {
-        const elManageCrewButton = document.getElementById('manage-crew-button');
-        const elManageCrewPanel = document.getElementById('manage-crew-panel');
-        if (elManageCrewButton.classList.contains('active')) {
-            elManageCrewButton.classList.remove('active');
-            elManageCrewPanel.classList.add('hidden');
+    toggleActiveCrew(forceInactive = false) {
+        const elActiveCrewButton = document.getElementById('active-crew-button');
+        const elActiveCrewPanel = document.getElementById('active-crew-panel');
+        if (elActiveCrewButton.classList.contains('active') || forceInactive) {
+            elActiveCrewButton.classList.remove('active');
+            elActiveCrewPanel.classList.add('hidden');
         } else {
-            elManageCrewButton.classList.add('active');
-            elManageCrewPanel.classList.remove('hidden');
+            this.toggleChangeCrew(true); // force inactive
+            elActiveCrewButton.classList.add('active');
+            elActiveCrewPanel.classList.remove('hidden');
+        }
+    }
+
+    toggleChangeCrew(forceInactive = false) {
+        const elChangeCrewButton = document.getElementById('change-crew-button');
+        const elChangeCrewPanel = document.getElementById('change-crew-panel');
+        if (elChangeCrewButton.classList.contains('active') || forceInactive) {
+            elChangeCrewButton.classList.remove('active');
+            elChangeCrewPanel.classList.add('hidden');
+        } else {
+            this.toggleActiveCrew(true); // force inactive
+            elChangeCrewButton.classList.add('active');
+            elChangeCrewPanel.classList.remove('hidden');
         }
     }
 }
@@ -111,8 +125,12 @@ class CrewService {
 
 globalThis.crewService = new CrewService();
 
-globalThis.toggleManageCrew = function() {
-    crewService.toggleManageCrew();
+globalThis.toggleActiveCrew = function() {
+    crewService.toggleActiveCrew();
+}
+
+globalThis.toggleChangeCrew = function() {
+    crewService.toggleChangeCrew();
 }
 
 export {Crew, CrewService};

@@ -127,26 +127,26 @@ body.embed {
   content: '"';
 }
 
-#crew-and-asteroid #active-crew.ready {
+#manage-crews #active-crew.ready {
   color: var(--color-ready);
 }
-#crew-and-asteroid #active-asteroid,
-#crew-and-asteroid #active-base {
+#manage-crews #active-asteroid,
+#manage-crews #active-base {
   opacity: 0.5;
 }
-#crew-and-asteroid #active-asteroid .hover-detail,
-#crew-and-asteroid #active-base .hover-detail {
+#manage-crews #active-asteroid .hover-detail,
+#manage-crews #active-base .hover-detail {
   display: none;
 }
-#crew-and-asteroid #active-asteroid:hover,
-#crew-and-asteroid #active-base:hover {
+#manage-crews #active-asteroid:hover,
+#manage-crews #active-base:hover {
   opacity: 1;
 }
-#crew-and-asteroid #active-asteroid:hover .hover-detail,
-#crew-and-asteroid #active-base:hover .hover-detail {
+#manage-crews #active-asteroid:hover .hover-detail,
+#manage-crews #active-base:hover .hover-detail {
   display: unset;
 }
-#crew-and-asteroid #manage-crew-panel {
+#manage-crews .crew-panel {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
@@ -154,7 +154,7 @@ body.embed {
   margin-top: 20px;
   padding: 20px;
 }
-#crew-and-asteroid #manage-crew-panel button {
+#manage-crews .crew-panel button:not(.no-margin) {
   margin-left: 20px;
 }
 

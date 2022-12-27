@@ -111,7 +111,7 @@ body {
     content: '"';
 }
 
-#crew-and-asteroid {
+#manage-crews {
     #active-crew {
         &.ready {
             color: var(--color-ready);
@@ -135,7 +135,7 @@ body {
         }
     }
 
-    #manage-crew-panel {
+    .crew-panel {
         background-color: rgba(0, 0, 0, 0.5);
         display: flex;
         flex-direction: column;
@@ -143,7 +143,7 @@ body {
         margin-top: 20px;
         padding: 20px;
 
-        button {
+        button:not(.no-margin) {
             margin-left: 20px;
         }
     }

@@ -10,6 +10,7 @@ const exampleCrew = new Crew('Dragon');
 exampleCrew.setAsteroidId(1); // Adalia Prime
 exampleCrew.setIsLanded(true);
 exampleCrew.setBase(666, 'Light Transport'); // Light Transport at lot #666
+// exampleCrew.setIsLanded(false); //// TEST
 
 /**
  * Example action template:
@@ -17,7 +18,7 @@ exampleCrew.setBase(666, 'Light Transport'); // Light Transport at lot #666
  */
 const exampleActionsTemplate = [
     // Queued actions
-    [ACTION_TYPE.EXTRACT,       'Hydrogen',         'Extractor',        123,    'Warehouse',        777,    0.0025 * HOUR,      true                                ], // duration 9 seconds (test fast completion)
+    [ACTION_TYPE.EXTRACT,       'Hydrogen',         'Extractor',        123,    'Warehouse',        777,    0.0125 * HOUR,      true                                ], // duration 45 seconds (test fast completion)
     [ACTION_TYPE.CORE_SAMPLE,   'Methane',          'Lot',              4567,   null,               null,   4 * HOUR                                                ], // duration 4 hours
     [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Lot',              4567,   null,               null,   12 * HOUR                                               ], // duration 12 hours
     [ACTION_TYPE.EXTRACT,       'Methane',          'Extractor',        4567,   'Warehouse',        777,    8 * HOUR                                                ], // duration 8 hours

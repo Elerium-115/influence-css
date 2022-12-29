@@ -161,7 +161,6 @@ body.embed {
 #manage-crews .crew-panel button:not(.no-margin) {
   margin-left: 20px;
 }
-
 #plan-actions #action-setup {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
@@ -248,20 +247,26 @@ ul.list-expanding-items li .item-expand .action-details .leader-line {
   left: 0 !important;
   top: 15px !important;
 }
-ul.list-expanding-items li .item-expand .action-status {
+ul.list-expanding-items li .item-expand .subactions {
   align-items: center;
   bottom: 10px;
   display: flex;
   gap: 10px;
   height: var(--list-item-height);
-  justify-content: flex-end;
+  justify-content: space-between;
+  left: 10px;
   position: absolute;
-  width: 100%;
+  right: 0;
 }
-ul.list-expanding-items li .item-expand .action-status .icon-button {
+ul.list-expanding-items li .item-expand .subactions .subactions-cell {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+ul.list-expanding-items li .item-expand .subactions .icon-button {
   border-color: var(--color-gray-dark);
 }
-ul.list-expanding-items li .item-expand .action-status .icon-button:active, ul.list-expanding-items li .item-expand .action-status .icon-button::after {
+ul.list-expanding-items li .item-expand .subactions .icon-button:active, ul.list-expanding-items li .item-expand .subactions .icon-button::after {
   background-color: var(--color-gray-dark);
 }
 ul.list-expanding-items li:hover {
@@ -282,16 +287,16 @@ ul.list-expanding-items li:hover .item-expand .action-details {
   --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .action-status {
+ul.list-expanding-items li:hover .item-expand .subactions {
   color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .action-status .icon-button {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button {
   border-color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .action-status .icon-button:active, ul.list-expanding-items li:hover .item-expand .action-status .icon-button::after {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li:hover .item-expand .subactions .icon-button::after {
   background-color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .action-status .icon-button:hover {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
 }
 ul.list-expanding-items li.ready .item-title {
@@ -307,16 +312,16 @@ ul.list-expanding-items li.ready:hover .item-expand .action-details {
   --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .action-status {
+ul.list-expanding-items li.ready:hover .item-expand .subactions {
   color: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .action-status .icon-button {
+ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button {
   border-color: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .action-status .icon-button:active, ul.list-expanding-items li.ready:hover .item-expand .action-status .icon-button::after {
+ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button::after {
   background-color: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .action-status .icon-button:hover {
+ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
 }
 ul.list-expanding-items li.animating {
@@ -429,15 +434,15 @@ ul.list-expanding-items li.transition-flash .item-expand .action-details {
   --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-highlight);
 }
-ul.list-expanding-items li.transition-flash .item-expand .action-status {
+ul.list-expanding-items li.transition-flash .item-expand .subactions {
   color: var(--color-highlight);
 }
-ul.list-expanding-items li.transition-flash .item-expand .action-status .icon-button {
+ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button {
   border-color: var(--color-highlight);
 }
-ul.list-expanding-items li.transition-flash .item-expand .action-status .icon-button:active, ul.list-expanding-items li.transition-flash .item-expand .action-status .icon-button::after {
+ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button:active, ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button::after {
   background-color: var(--color-highlight);
 }
-ul.list-expanding-items li.transition-flash .item-expand .action-status .icon-button:hover {
+ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
 }/*# sourceMappingURL=style.css.map */

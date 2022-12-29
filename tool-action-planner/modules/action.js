@@ -36,28 +36,34 @@ class Action {
         alert('Crew not ready'); //// TEST
     }
 
-    updateListItemStatus() {
-        switch (this.state) {
-            case ACTION_STATE.QUEUED:
-                if (this.isReady) {
-                    // Replace "Remove" button with "Ready to start" button
-                    const elActionStatus = this.elListItem.querySelector('.action-status');
-                    elActionStatus.innerHTML = /*html*/ `
-                        <div class="subaction-text">Ready to start</div>
+    updateListItemSubactions() {
+        const elSubactionsCellRemove = this.elListItem.querySelector('.subactions-cell-remove');
+        if (this.isReady && elSubactionsCellRemove) {
+            // Replace [remove] cell with [transition] cell
+            elSubactionsCellRemove.classList.remove('subactions-cell-remove');
+            elSubactionsCellRemove.classList.add('subactions-cell-transition');
+            switch (this.state) {
+                case ACTION_STATE.QUEUED:
+                    // Replace "Remove" with "Start"
+                    elSubactionsCellRemove.innerHTML = /*html*/ `
+                        <div>Start</div>
                         <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
                     `;
-                }
-                break;
-            case ACTION_STATE.ONGOING:
-                if (this.isReady) {
-                    // Replace "Remove" button with "Ready to finalize" button
-                    const elActionStatus = this.elListItem.querySelector('.action-status');
-                    elActionStatus.innerHTML = /*html*/ `
-                        <div class="subaction-text">Ready to finalize</div>
+                    // Remove queue subactions
+                    const elSubactionsCellQueue = this.elListItem.querySelector('.subactions-cell-queue');
+                    if (elSubactionsCellQueue) {
+                        elSubactionsCellQueue.classList.remove('subactions-cell-queue');
+                        elSubactionsCellQueue.innerHTML = '';
+                    }
+                    break;
+                case ACTION_STATE.ONGOING:
+                    // Replace "Cancel" with "Finalize"
+                    elSubactionsCellRemove.innerHTML = /*html*/ `
+                        <div>Finalize</div>
                         <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
                     `;
-                }
-                break;
+                    break;
+            }
         }
     }
 
@@ -73,7 +79,7 @@ class Action {
         this.isReady = true;
         if (this.elListItem) {
             this.elListItem.classList.add('ready');
-            this.updateListItemStatus();
+            this.updateListItemSubactions();
             if (this.state === ACTION_STATE.ONGOING) {
                 const elTimerCompact = this.elListItem.querySelector('.timer-compact');
                 deleteFromDOM(elTimerCompact);
@@ -150,44 +156,60 @@ class Action {
             `;
         }
         let timerCompactHtml = '';
-        let subactionText = '';
-        let subactionIconsHtml = '';
+        let subactionsHtml = '';
         switch (this.state) {
             case ACTION_STATE.QUEUED:
                 if (this.isReady) {
-                    subactionText = 'Ready to start';
-                    subactionIconsHtml = /*html*/ `
-                        <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                    subactionsHtml = /*html*/ `
+                        <div class="subactions-cell"></div>
+                        <div class="subactions-cell subactions-cell-transition">
+                            <div>Start</div>
+                            <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                        </div>
                     `;
                 } else {
-                    subactionText = 'Move in queue';
-                    subactionIconsHtml = /*html*/ `
-                        <div class="icon-button icon-arrow-up"></div>
-                        <div class="icon-button icon-arrow-down"></div>
+                    subactionsHtml = /*html*/ `
+                        <div class="subactions-cell subactions-cell-queue">
+                            <div class="icon-button icon-arrow-up"></div>
+                            <div class="icon-button icon-arrow-down"></div>
+                        </div>
+                        <div class="subactions-cell subactions-cell-remove">
+                            <div>Remove</div>
+                            <div class="icon-button icon-x" onclick="removeActionById('${this.id}')"></div>
+                        </div>
                     `;
                 }
                 break;
             case ACTION_STATE.ONGOING:
                 if (this.isReady) {
-                    subactionText = 'Ready to finalize';
-                    subactionIconsHtml = /*html*/ `
-                        <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                    subactionsHtml = /*html*/ `
+                        <div class="subactions-cell"></div>
+                        <div class="subactions-cell subactions-cell-transition">
+                            <div>Finalize</div>
+                            <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                        </div>
                     `;
                 } else {
                     const timeRemainingShort = msToShortTime(this.getOngoingTimeRemainingMs());
                     timerCompactHtml = /*html*/ `
                         <div class="timer-compact text-pulse">${timeRemainingShort}</div>
                     `;
-                    subactionText = 'Cancel';
-                    subactionIconsHtml = /*html*/ `
-                        <div class="icon-button icon-x" onclick="removeActionById('${this.id}', true)"></div>
+                    subactionsHtml = /*html*/ `
+                        <div class="subactions-cell"></div>
+                        <div class="subactions-cell subactions-cell-remove">
+                            <div>Cancel</div>
+                            <div class="icon-button icon-x" onclick="removeActionById('${this.id}', true)"></div>
+                        </div>
                     `;
                 }
                 break;
             case ACTION_STATE.DONE:
-                subactionText = `Done ${fromNow(this.finalizedDate)}`;
-                subactionIconsHtml = /*html*/ `
-                    <div class="icon-button icon-x" onclick="removeActionById('${this.id}')"></div>
+                subactionsHtml = /*html*/ `
+                    <div class="subactions-cell"></div>
+                    <div class="subactions-cell subactions-cell-remove">
+                        <div>Done ${fromNow(this.finalizedDate)}</div>
+                        <div class="icon-button icon-x" onclick="removeActionById('${this.id}')"></div>
+                    </div>
                 `;
                 break;
         }
@@ -206,9 +228,8 @@ class Action {
                         <div class="value value-source">${this.sourceName} #${this.sourceId}</div>
                         ${destinationHtml}
                     </div>
-                    <div class="action-status">
-                        <div class="subaction-text">${subactionText}</div>
-                        ${subactionIconsHtml}
+                    <div class="subactions">
+                        ${subactionsHtml}
                     </div>
                 </div>
             </li>
@@ -322,7 +343,8 @@ class Action {
     }
 
     removeAction() {
-        if (!this.isActiveCrewAndAsteroid()) {
+        // Queued actions can be removed without the need for the crew to be active and on the same asteroid
+        if (!this.isActiveCrewAndAsteroid() && this.state !== ACTION_STATE.QUEUED) {
             this.handleInvalidCrewOrAsteroid();
             return;
         }
@@ -396,7 +418,7 @@ class Action {
             setTimeout(() => {
                 // Done sliding up => remove the list item from the old action-group
                 this.removeListItem();
-                // Update the status of the action, and inject it into the new action-group
+                // Update the properties of the action, and inject it into the new action-group
                 this.isReady = false;
                 this.setState(nextState);
                 if (this.state === ACTION_STATE.DONE) {
@@ -410,9 +432,15 @@ class Action {
                 setTimeout(() => {
                     this.elListItem.classList.remove('transition-flash');
                 }, transitionFlashDuration);
-                // Mark the next queued action as ready, if the current action is now ongoing
+                /**
+                 * If the current action is now ongoing, then:
+                 * - mark the next queued action as ready
+                 * - update the queued subactions
+                 */
+                //// TO DO: rework to properly update the readiness of queued actions, based on lots / action types
                 if (this.state === ACTION_STATE.ONGOING) {
                     markNextQueuedActionReady();
+                    updateQueuedSubactions();
                 }
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
@@ -483,6 +511,16 @@ globalThis.removeActionById = function(actionId, shouldConfirm = false) {
 
 globalThis.transitionActionById = function(actionId) {
     actionsById[actionId]?.transitionAction();
+}
+
+globalThis.updateQueuedSubactions = function() {
+    const queuedNotReadyListItems = [...document.querySelectorAll('#actions-queued ul li:not(.ready)')];
+    if (queuedNotReadyListItems.length) {
+        // Do not show arrow-up for top [queued + NOT ready] action
+        queuedNotReadyListItems[0].querySelector('.icon-arrow-up').classList.add('hidden');
+        // Do not show arrow-down for bottom [queued + NOT ready] action
+        queuedNotReadyListItems[queuedNotReadyListItems.length - 1].querySelector('.icon-arrow-down').classList.add('hidden');
+    }    
 }
 
 export {Action, ACTION_STATE, ACTION_TYPE};

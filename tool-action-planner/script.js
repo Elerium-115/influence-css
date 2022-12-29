@@ -63,15 +63,7 @@ on('change', '#toggle-action-types', el => {
 
 // Initialize example actions
 initializeExampleActionsById();
-
-// Adjust HTML
-const queuedNotReadyListItems = [...document.querySelectorAll('#actions-queued ul li:not(.ready)')];
-if (queuedNotReadyListItems.length) {
-    // Do not show arrow-up for top [queued + NOT ready] action
-    queuedNotReadyListItems[0].querySelector('.icon-arrow-up').style.display = 'none';
-    // Do not show arrow-down for bottom [queued + NOT ready] action
-    queuedNotReadyListItems[queuedNotReadyListItems.length - 1].querySelector('.icon-arrow-down').style.display = 'none';
-}
+updateQueuedSubactions();
 
 //// TEST
 // document.getElementById('toggle-action-types-label').click();

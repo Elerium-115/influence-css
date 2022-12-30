@@ -44,7 +44,7 @@ class Action {
             elSubactionsCellRemove.classList.add('subactions-cell-transition');
             switch (this.state) {
                 case ACTION_STATE.QUEUED:
-                    // Replace "Remove" with "Start"
+                    // Queued action ready => replace "Remove" with "Start"
                     elSubactionsCellRemove.innerHTML = /*html*/ `
                         <div>Start</div>
                         <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
@@ -57,7 +57,7 @@ class Action {
                     }
                     break;
                 case ACTION_STATE.ONGOING:
-                    // Replace "Cancel" with "Finalize"
+                    // Ongoing action ready => replace "Cancel" with "Finalize"
                     elSubactionsCellRemove.innerHTML = /*html*/ `
                         <div>Finalize</div>
                         <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
@@ -170,8 +170,14 @@ class Action {
                 } else {
                     subactionsHtml = /*html*/ `
                         <div class="subactions-cell subactions-cell-queue">
-                            <div class="icon-button icon-arrow-up"></div>
-                            <div class="icon-button icon-arrow-down"></div>
+                            <div class="arrows arrows-up">
+                                <div class="icon-button icon-arrow-up-end hover-arrow hover-arrow-move-to-top"></div>
+                                <div class="icon-button icon-arrow-up"></div>
+                            </div>
+                            <div class="arrows arrows-down">
+                                <div class="icon-button icon-arrow-down"></div>
+                                <div class="icon-button icon-arrow-down-end hover-arrow hover-arrow-move-to-bottom"></div>
+                            </div>
                         </div>
                         <div class="subactions-cell subactions-cell-remove">
                             <div>Remove</div>
@@ -370,8 +376,15 @@ class Action {
             setTimeout(() => {
                 // Done sliding up => remove the list item
                 this.removeListItem();
+                // When removing a queued action, ensure that the queued subactions (of all queued actions) will be updated
+                //// TO DO: rework to properly update the readiness of queued actions, based on lots / action types
+                const shouldUpdateQueuedSubactions = this.state === ACTION_STATE.QUEUED;
                 // Remove global reference
-                delete actionsById[this.id];        
+                delete actionsById[this.id];
+                // Update the queued subactions (of all queued actions) AFTER fully removing this action (i.e. no more "this.state")
+                if (shouldUpdateQueuedSubactions) {
+                    updateQueuedSubactions();
+                }
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
@@ -435,7 +448,7 @@ class Action {
                 /**
                  * If the current action is now ongoing, then:
                  * - mark the next queued action as ready
-                 * - update the queued subactions
+                 * - update the queued subactions (of all queued actions)
                  */
                 //// TO DO: rework to properly update the readiness of queued actions, based on lots / action types
                 if (this.state === ACTION_STATE.ONGOING) {
@@ -517,10 +530,10 @@ globalThis.updateQueuedSubactions = function() {
     const queuedNotReadyListItems = [...document.querySelectorAll('#actions-queued ul li:not(.ready)')];
     if (queuedNotReadyListItems.length) {
         // Do not show arrow-up for top [queued + NOT ready] action
-        queuedNotReadyListItems[0].querySelector('.icon-arrow-up').classList.add('hidden');
+        queuedNotReadyListItems[0].querySelector('.arrows-up').classList.add('hidden');
         // Do not show arrow-down for bottom [queued + NOT ready] action
-        queuedNotReadyListItems[queuedNotReadyListItems.length - 1].querySelector('.icon-arrow-down').classList.add('hidden');
-    }    
+        queuedNotReadyListItems[queuedNotReadyListItems.length - 1].querySelector('.arrows-down').classList.add('hidden');
+    }
 }
 
 export {Action, ACTION_STATE, ACTION_TYPE};

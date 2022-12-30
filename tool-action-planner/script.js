@@ -66,5 +66,9 @@ initializeExampleActionsById();
 updateQueuedSubactions();
 
 //// TEST
-// document.getElementById('toggle-action-types-label').click();
-// document.getElementById('toggle-compact-lists-label').click();
+// document.getElementById('manage-crews').classList.add('hidden'); // hide "Manage Crews"
+// document.getElementById('crew-setup-wrapper').classList.add('hidden'); // hide buttons from "Manage Crews"
+// document.getElementById('plan-actions').classList.add('hidden'); // hide "Plan Actions"
+document.getElementById('action-setup').classList.add('hidden'); // hide action-setup from "Plan Actions"
+// document.getElementById('toggle-action-types-label').click(); // hide action types
+// document.getElementById('toggle-compact-lists-label').click(); // show expanded lists

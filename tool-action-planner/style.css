@@ -161,6 +161,7 @@ body.embed {
 #manage-crews .crew-panel button:not(.no-margin) {
   margin-left: 20px;
 }
+
 #plan-actions #action-setup {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
@@ -168,7 +169,6 @@ body.embed {
   gap: 20px;
   margin-top: 20px;
   padding: 20px;
-  display: none;
 }
 
 #manage-actions #action-groups {
@@ -212,7 +212,7 @@ ul.list-expanding-items li .item-title .icon-round:hover {
 ul.list-expanding-items li .item-title .item-title-text {
   --max-lines: 2;
   display: -webkit-box;
-  line-height: 1.25;
+  line-height: 1.2;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--max-lines);
@@ -262,6 +262,41 @@ ul.list-expanding-items li .item-expand .subactions .subactions-cell {
   align-items: center;
   display: flex;
   gap: 10px;
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows {
+  display: flex;
+  position: relative;
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows :hover {
+  filter: drop-shadow(0 0 10px black);
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows:not(:hover) .hover-arrow {
+  display: none;
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow {
+  --hover-arrow-background-color: rgb(20, 20, 20);
+  background-color: var(--hover-arrow-background-color);
+  position: absolute;
+  top: -100%;
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow::before {
+  align-items: center;
+  background-color: var(--hover-arrow-background-color) !important;
+  border: 1px solid transparent;
+  border-color: inherit;
+  bottom: 0;
+  color: white;
+  display: flex;
+  left: 39px;
+  padding: 0 10px;
+  position: absolute;
+  top: 0;
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow.hover-arrow-move-to-top:hover::before {
+  content: "Move to top";
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow.hover-arrow-move-to-bottom:hover::before {
+  content: "Move to bottom";
 }
 ul.list-expanding-items li .item-expand .subactions .icon-button {
   border-color: var(--color-gray-dark);

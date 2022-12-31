@@ -26,6 +26,17 @@ body.embed {
           mask-image: url("./assets/images/icon-deconstruct.png");
 }
 
+.icon-move-horizontal::after {
+  -webkit-mask-image: url("./assets/images/icon-move-horizontal.svg");
+          mask-image: url("./assets/images/icon-move-horizontal.svg");
+}
+
+.icon-move-vertical::after {
+  -webkit-mask-image: url("./assets/images/icon-move-horizontal.svg");
+          mask-image: url("./assets/images/icon-move-horizontal.svg");
+  transform: rotate(90deg);
+}
+
 .icon-ship-right::after {
   -webkit-mask-image: url("./assets/images/icon-ship.svg");
           mask-image: url("./assets/images/icon-ship.svg");
@@ -196,6 +207,10 @@ ul.list-expanding-items.list-expanded li:hover {
 ul.list-expanding-items.hide-action-types .action-type-text {
   display: none;
 }
+ul.list-expanding-items.dragging-wrapper {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding-bottom: 10px;
+}
 ul.list-expanding-items li {
   padding-left: 0;
 }
@@ -263,75 +278,61 @@ ul.list-expanding-items li .item-expand .subactions .subactions-cell {
   display: flex;
   gap: 10px;
 }
-ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows {
-  display: flex;
+ul.list-expanding-items li .item-expand .subactions .subactions-cell.subactions-cell-drag .icon-button {
+  cursor: move;
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button {
+  border-color: var(--color-gray-dark);
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button:active, ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button::after {
+  background-color: var(--color-gray-dark);
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button.icon-tooltip {
   position: relative;
 }
-ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows :hover {
-  filter: drop-shadow(0 0 10px black);
-}
-ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows:not(:hover) .hover-arrow {
-  display: none;
-}
-ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow {
-  --hover-arrow-background-color: rgb(20, 20, 20);
-  background-color: var(--hover-arrow-background-color);
-  position: absolute;
-  top: -100%;
-}
-ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow::before {
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button.icon-tooltip::before {
   align-items: center;
-  background-color: var(--hover-arrow-background-color) !important;
-  border: 1px solid transparent;
-  border-color: inherit;
+  background-color: black;
   bottom: 0;
   color: white;
   display: flex;
-  left: 39px;
+  filter: drop-shadow(0 0 10px black);
+  left: 40px;
   padding: 0 10px;
   position: absolute;
   top: 0;
 }
-ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow.hover-arrow-move-to-top:hover::before {
-  content: "Move to top";
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button.icon-tooltip--drag-in-queue:hover::before {
+  content: "Drag in queue";
 }
-ul.list-expanding-items li .item-expand .subactions .subactions-cell .arrows .hover-arrow.hover-arrow-move-to-bottom:hover::before {
-  content: "Move to bottom";
-}
-ul.list-expanding-items li .item-expand .subactions .icon-button {
-  border-color: var(--color-gray-dark);
-}
-ul.list-expanding-items li .item-expand .subactions .icon-button:active, ul.list-expanding-items li .item-expand .subactions .icon-button::after {
-  background-color: var(--color-gray-dark);
-}
-ul.list-expanding-items li:hover {
+ul.list-expanding-items li:hover, ul.list-expanding-items li.dragging {
   height: calc(3.5 * var(--list-item-height));
   max-height: calc(3.5 * var(--list-item-height));
 }
-ul.list-expanding-items li:hover .item-title {
+ul.list-expanding-items li:hover .item-title, ul.list-expanding-items li.dragging .item-title {
   background-image: linear-gradient(90deg, var(--color-highlight), transparent);
   color: white !important;
 }
-ul.list-expanding-items li:hover .item-title .icon-round::after {
+ul.list-expanding-items li:hover .item-title .icon-round::after, ul.list-expanding-items li.dragging .item-title .icon-round::after {
   background-color: white !important;
 }
-ul.list-expanding-items li:hover .item-expand {
+ul.list-expanding-items li:hover .item-expand, ul.list-expanding-items li.dragging .item-expand {
   color: inherit;
 }
-ul.list-expanding-items li:hover .item-expand .action-details {
+ul.list-expanding-items li:hover .item-expand .action-details, ul.list-expanding-items li.dragging .item-expand .action-details {
   --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions {
+ul.list-expanding-items li:hover .item-expand .subactions, ul.list-expanding-items li.dragging .item-expand .subactions {
   color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions .icon-button {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button {
   border-color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li:hover .item-expand .subactions .icon-button::after {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li:hover .item-expand .subactions .icon-button::after, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button:active, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button::after {
   background-color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions .icon-button:hover {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button:hover, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
 }
 ul.list-expanding-items li.ready .item-title {

@@ -162,11 +162,11 @@ class CrewService {
 
 globalThis.crewService = new CrewService();
 
-globalThis.toggleActiveCrew = function() {
+globalThis.onToggleActiveCrew = function() {
     crewService.toggleActiveCrew();
 }
 
-globalThis.toggleChangeCrew = function() {
+globalThis.onToggleChangeCrew = function() {
     crewService.toggleChangeCrew();
 }
 

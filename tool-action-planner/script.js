@@ -63,7 +63,7 @@ on('change', '#toggle-action-types', el => {
 
 // Initialize example actions
 initializeExampleActionsById();
-updateQueuedSubactions();
+actionService.updateQueuedDraggables();
 
 //// TEST
 // document.getElementById('manage-crews').classList.add('hidden'); // hide "Manage Crews"

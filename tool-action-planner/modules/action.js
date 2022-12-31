@@ -1,6 +1,48 @@
 import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js'
 import {leaderLineConnectElements} from './leader-line-utils.js';
 
+const ACTION_STATE = {
+    DONE: 'DONE',
+    ONGOING: 'ONGOING',
+    QUEUED: 'QUEUED',
+    TRANSITIONING: 'TRANSITIONING',
+};
+
+const ACTION_TYPE = {
+    CONSTRUCT: 'CONSTRUCT',
+    CORE_SAMPLE: 'CORE_SAMPLE',
+    DECONSTRUCT: 'DECONSTRUCT',
+    EXTRACT: 'EXTRACT',
+    LAND: 'LAND',
+    LAUNCH: 'LAUNCH',
+    TRANSFER: 'TRANSFER',
+    TRAVEL: 'TRAVEL',
+};
+
+const ACTION_TYPE_TEXT = {
+    CONSTRUCT: 'Construct',
+    CORE_SAMPLE: 'Core Sample',
+    DECONSTRUCT: 'Deconstruct',
+    EXTRACT: 'Extract',
+    LAND: 'Land', // Land from orbit
+    LAUNCH: 'Launch', // Launch to orbit
+    TRANSFER: 'Transfer',
+    TRAVEL: 'Travel',
+};
+
+const ACTION_TYPE_ICON_CLASS = {
+    CONSTRUCT: 'icon-construct',
+    CORE_SAMPLE: 'icon-core-sample',
+    DECONSTRUCT: 'icon-deconstruct',
+    EXTRACT: 'icon-yield',
+    LAND: 'icon-ship-down',
+    LAUNCH: 'icon-ship-up',
+    TRANSFER: 'icon-trade',
+    TRAVEL: 'icon-ship-right',
+};
+
+const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
+
 class Action {
     constructor(crewId, asteroidId, type, subject, sourceName, sourceId, destinationName, destinationId, duration = null) {
         this.id = getPseudoUniqueId();
@@ -20,7 +62,7 @@ class Action {
         this.isReady = false;
         this.elListItem = null;
         this.refreshOngoingInterval = null;
-        actionsById[this.id] = this;
+        actionService.actionsById[this.id] = this;
     }
 
     /** Verify that the active crew and asteroid matches this action */
@@ -37,32 +79,34 @@ class Action {
     }
 
     updateListItemSubactions() {
-        const elSubactionsCellRemove = this.elListItem.querySelector('.subactions-cell-remove');
-        if (this.isReady && elSubactionsCellRemove) {
-            // Replace [remove] cell with [transition] cell
-            elSubactionsCellRemove.classList.remove('subactions-cell-remove');
-            elSubactionsCellRemove.classList.add('subactions-cell-transition');
-            switch (this.state) {
-                case ACTION_STATE.QUEUED:
-                    // Queued action ready => replace "Remove" with "Start"
-                    elSubactionsCellRemove.innerHTML = /*html*/ `
-                        <div>Start</div>
-                        <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
-                    `;
-                    // Remove queue subactions
-                    const elSubactionsCellQueue = this.elListItem.querySelector('.subactions-cell-queue');
-                    if (elSubactionsCellQueue) {
-                        elSubactionsCellQueue.classList.remove('subactions-cell-queue');
-                        elSubactionsCellQueue.innerHTML = '';
-                    }
-                    break;
-                case ACTION_STATE.ONGOING:
-                    // Ongoing action ready => replace "Cancel" with "Finalize"
-                    elSubactionsCellRemove.innerHTML = /*html*/ `
-                        <div>Finalize</div>
-                        <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
-                    `;
-                    break;
+        if (this.isReady) {
+            const elSubactionsCellRemove = this.elListItem.querySelector('.subactions-cell-remove');
+            if (elSubactionsCellRemove) {
+                // Replace [remove] cell with [transition] cell
+                elSubactionsCellRemove.classList.remove('subactions-cell-remove');
+                elSubactionsCellRemove.classList.add('subactions-cell-transition');
+                switch (this.state) {
+                    case ACTION_STATE.QUEUED:
+                        // Queued action ready => replace "Remove" with "Start"
+                        elSubactionsCellRemove.innerHTML = /*html*/ `
+                            <div>Start</div>
+                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
+                        `;
+                        break;
+                    case ACTION_STATE.ONGOING:
+                        // Ongoing action ready => replace "Cancel" with "Finalize"
+                        elSubactionsCellRemove.innerHTML = /*html*/ `
+                            <div>Finalize</div>
+                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
+                        `;
+                        break;
+                }
+            }
+            const elSubactionsCellDrag = this.elListItem.querySelector('.subactions-cell-drag');
+            if (elSubactionsCellDrag) {
+                // Action ready => remove "drag" subaction (typically only for queued actions)
+                elSubactionsCellDrag.classList.remove('subactions-cell-drag');
+                elSubactionsCellDrag.innerHTML = '';
             }
         }
     }
@@ -81,6 +125,7 @@ class Action {
             this.elListItem.classList.add('ready');
             this.updateListItemSubactions();
             if (this.state === ACTION_STATE.ONGOING) {
+                // Remove timer for ongoing action which has become ready
                 const elTimerCompact = this.elListItem.querySelector('.timer-compact');
                 deleteFromDOM(elTimerCompact);
                 this.clearRefreshOngoingInterval();
@@ -127,12 +172,12 @@ class Action {
     getNextLongestOngoingAction() {
         const thisTimeRemainingMs = this.getOngoingTimeRemainingMs();
         let nextLongestOngoingAction = null;
-        for (const [actionId, action] of Object.entries(actionsById)) {
+        for (const [actionId, action] of Object.entries(actionService.actionsById)) {
             // Parse only other actions which are ongoing and not ready
             if (action.id === this.id || action.state !== ACTION_STATE.ONGOING || action.isReady) {
                 continue;
             }
-            const otherTimeRemainingMs = actionsById[action.id].getOngoingTimeRemainingMs()
+            const otherTimeRemainingMs = actionService.actionsById[action.id].getOngoingTimeRemainingMs();
             if (otherTimeRemainingMs && otherTimeRemainingMs > thisTimeRemainingMs) {
                 // Found other longer ongoing action => check if shorter than the currently-saved "nextLongestOngoingAction"
                 if (!nextLongestOngoingAction) {
@@ -149,6 +194,7 @@ class Action {
 
     getListItemHtml() {
         const readyClass = this.isReady ? 'ready' : '';
+        const draggableAttribute = this.state === ACTION_STATE.QUEUED && !this.isReady ? 'draggable="true"' : '';
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
@@ -164,24 +210,17 @@ class Action {
                         <div class="subactions-cell"></div>
                         <div class="subactions-cell subactions-cell-transition">
                             <div>Start</div>
-                            <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
                         </div>
                     `;
                 } else {
                     subactionsHtml = /*html*/ `
-                        <div class="subactions-cell subactions-cell-queue">
-                            <div class="arrows arrows-up">
-                                <div class="icon-button icon-arrow-up-end hover-arrow hover-arrow-move-to-top"></div>
-                                <div class="icon-button icon-arrow-up"></div>
-                            </div>
-                            <div class="arrows arrows-down">
-                                <div class="icon-button icon-arrow-down"></div>
-                                <div class="icon-button icon-arrow-down-end hover-arrow hover-arrow-move-to-bottom"></div>
-                            </div>
+                        <div class="subactions-cell subactions-cell-drag">
+                            <div class="icon-button icon-move-vertical icon-tooltip icon-tooltip--drag-in-queue"></div>
                         </div>
                         <div class="subactions-cell subactions-cell-remove">
                             <div>Remove</div>
-                            <div class="icon-button icon-x" onclick="removeActionById('${this.id}')"></div>
+                            <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}')"></div>
                         </div>
                     `;
                 }
@@ -192,7 +231,7 @@ class Action {
                         <div class="subactions-cell"></div>
                         <div class="subactions-cell subactions-cell-transition">
                             <div>Finalize</div>
-                            <div class="icon-button icon-arrow-right" onclick="transitionActionById('${this.id}')"></div>
+                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
                         </div>
                     `;
                 } else {
@@ -204,7 +243,7 @@ class Action {
                         <div class="subactions-cell"></div>
                         <div class="subactions-cell subactions-cell-remove">
                             <div>Cancel</div>
-                            <div class="icon-button icon-x" onclick="removeActionById('${this.id}', true)"></div>
+                            <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}', true)"></div>
                         </div>
                     `;
                 }
@@ -214,13 +253,13 @@ class Action {
                     <div class="subactions-cell"></div>
                     <div class="subactions-cell subactions-cell-remove">
                         <div>Done ${fromNow(this.finalizedDate)}</div>
-                        <div class="icon-button icon-x" onclick="removeActionById('${this.id}')"></div>
+                        <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}')"></div>
                     </div>
                 `;
                 break;
         }
         return /*html*/ `
-            <li id="action_${this.id}" class="${readyClass}">
+            <li id="action_${this.id}" class="${readyClass}" ${draggableAttribute}>
                 <div class="item-title">
                     <div class="icon-round ${ACTION_TYPE_ICON_CLASS[this.type]}"></div>
                     <div class="item-title-text">
@@ -341,6 +380,15 @@ class Action {
         this.elListItem.innerHTML = /*html*/ `<div class="slider">${this.elListItem.innerHTML}</div>`;
     }
 
+    flashListItem() {
+        const transitionFlashDuration = 1000; // milliseconds
+        this.elListItem.style.setProperty('--transition-flash-duration', `${transitionFlashDuration}ms`);
+        this.elListItem.classList.add('transition-flash');
+        setTimeout(() => {
+            this.elListItem.classList.remove('transition-flash');
+        }, transitionFlashDuration);
+    }
+
     removeListItem() {
         deleteFromDOM(this.elListItem);
         if (this.refreshOngoingInterval) {
@@ -376,15 +424,8 @@ class Action {
             setTimeout(() => {
                 // Done sliding up => remove the list item
                 this.removeListItem();
-                // When removing a queued action, ensure that the queued subactions (of all queued actions) will be updated
-                //// TO DO: rework to properly update the readiness of queued actions, based on lots / action types
-                const shouldUpdateQueuedSubactions = this.state === ACTION_STATE.QUEUED;
                 // Remove global reference
-                delete actionsById[this.id];
-                // Update the queued subactions (of all queued actions) AFTER fully removing this action (i.e. no more "this.state")
-                if (shouldUpdateQueuedSubactions) {
-                    updateQueuedSubactions();
-                }
+                delete actionService.actionsById[this.id];
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
@@ -438,102 +479,98 @@ class Action {
                     this.markFinalized();
                 }
                 this.injectListItem();
-                // Flash the newly injected list item
-                const transitionFlashDuration = 1000; // milliseconds
-                this.elListItem.style.setProperty('--transition-flash-duration', `${transitionFlashDuration}ms`);
-                this.elListItem.classList.add('transition-flash');
-                setTimeout(() => {
-                    this.elListItem.classList.remove('transition-flash');
-                }, transitionFlashDuration);
-                /**
-                 * If the current action is now ongoing, then:
-                 * - mark the next queued action as ready
-                 * - update the queued subactions (of all queued actions)
-                 */
-                //// TO DO: rework to properly update the readiness of queued actions, based on lots / action types
+                this.flashListItem();
                 if (this.state === ACTION_STATE.ONGOING) {
-                    markNextQueuedActionReady();
-                    updateQueuedSubactions();
+                    // Current action is now ongoing => mark the next queued action as ready
+                    //// TO DO: rework to properly update the readiness of queued actions, based on lots / action types
+                    actionService.markNextQueuedActionReady();
                 }
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
 }
 
-const ACTION_STATE = {
-    DONE: 'DONE',
-    ONGOING: 'ONGOING',
-    QUEUED: 'QUEUED',
-    TRANSITIONING: 'TRANSITIONING',
-};
+class ActionService {
+    constructor() {
+        this.actionsById = {};
+    }
 
-const ACTION_TYPE = {
-    CONSTRUCT: 'CONSTRUCT',
-    CORE_SAMPLE: 'CORE_SAMPLE',
-    DECONSTRUCT: 'DECONSTRUCT',
-    EXTRACT: 'EXTRACT',
-    LAND: 'LAND',
-    LAUNCH: 'LAUNCH',
-    TRANSFER: 'TRANSFER',
-    TRAVEL: 'TRAVEL',
-};
+    getActionForListItem(elListItem) {
+        const actionId = elListItem.id.replace('action_', '');
+        return this.actionsById[actionId];
+    }
 
-const ACTION_TYPE_TEXT = {
-    CONSTRUCT: 'Construct',
-    CORE_SAMPLE: 'Core Sample',
-    DECONSTRUCT: 'Deconstruct',
-    EXTRACT: 'Extract',
-    LAND: 'Land', // Land from orbit
-    LAUNCH: 'Launch', // Launch to orbit
-    TRANSFER: 'Transfer',
-    TRAVEL: 'Travel',
-};
+    markNextQueuedActionReady() {
+        const nextQueuedActionNotReady = document.querySelector('#actions-queued ul li:not(.ready)');
+        if (nextQueuedActionNotReady) {
+            const action = this.getActionForListItem(nextQueuedActionNotReady);
+            action.markReady();
+        }
+    }
 
-const ACTION_TYPE_ICON_CLASS = {
-    CONSTRUCT: 'icon-construct',
-    CORE_SAMPLE: 'icon-core-sample',
-    DECONSTRUCT: 'icon-deconstruct',
-    EXTRACT: 'icon-yield',
-    LAND: 'icon-ship-down',
-    LAUNCH: 'icon-ship-up',
-    TRANSFER: 'icon-trade',
-    TRAVEL: 'icon-ship-right',
-};
+    /**
+     * Based on: https://www.youtube.com/watch?v=jfYWwQrtzzY
+     */
+    updateQueuedDraggables() {
+        const container = document.querySelector('#actions-queued ul');
+        const draggables = container.querySelectorAll('li:not(.ready)');
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                container.classList.add('dragging-wrapper');
+                draggable.classList.add('dragging');
+            });
+            draggable.addEventListener('dragend', () => {
+                container.classList.remove('dragging-wrapper');
+                draggable.classList.remove('dragging');
+                const action = this.getActionForListItem(draggable);
+                action.flashListItem();
+            });
+        });
+        container.addEventListener('dragover', event => {
+            // Prevent default to allow drop (does not seem to be required in Firefox, but keeping it, just to be safe)
+            event.preventDefault();
+            const listItemDragging = container.querySelector('.dragging');
+            const listItemNext = this.getListItemAfterTheOneBeingDragged(container, event.clientY);
+            if (listItemNext === null) {
+                // List item being dragged is below all draggables
+                container.appendChild(listItemDragging);
+            } else {
+                container.insertBefore(listItemDragging, listItemNext);
+            }
+        });
+    }
 
-const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
-
-function markNextQueuedActionReady() {
-    const nextQueuedActionNotReady = document.querySelector('#actions-queued ul li:not(.ready)');
-    if (nextQueuedActionNotReady) {
-        const actionId = nextQueuedActionNotReady.id.replace('action_', '');
-        const action = actionsById[actionId];
-        action.markReady();
+    getListItemAfterTheOneBeingDragged(container, y) {
+        const elsDraggable = [...container.querySelectorAll('[draggable]:not(.dragging)')];
+        return elsDraggable.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height;
+            if (offset < 0 && offset > closest.offset) {
+                // Dragging above a child
+                return {
+                    offset: offset,
+                    element: child,
+                };
+            } else {
+                return closest;
+            }
+        }, {offset: Number.NEGATIVE_INFINITY}).element;
     }
 }
 
 // Global variables and functions
 
-globalThis.actionsById = {};
+globalThis.actionService = new ActionService();
 
-globalThis.removeActionById = function(actionId, shouldConfirm = false) {
+globalThis.onRemoveActionById = function(actionId, shouldConfirm = false) {
     if (shouldConfirm && !confirm('Are you sure you want to remove this action?')) {
         return false;
     }
-    actionsById[actionId]?.removeAction();
+    actionService.actionsById[actionId]?.removeAction();
 };
 
-globalThis.transitionActionById = function(actionId) {
-    actionsById[actionId]?.transitionAction();
-}
-
-globalThis.updateQueuedSubactions = function() {
-    const queuedNotReadyListItems = [...document.querySelectorAll('#actions-queued ul li:not(.ready)')];
-    if (queuedNotReadyListItems.length) {
-        // Do not show arrow-up for top [queued + NOT ready] action
-        queuedNotReadyListItems[0].querySelector('.arrows-up').classList.add('hidden');
-        // Do not show arrow-down for bottom [queued + NOT ready] action
-        queuedNotReadyListItems[queuedNotReadyListItems.length - 1].querySelector('.arrows-down').classList.add('hidden');
-    }
+globalThis.onTransitionActionById = function(actionId) {
+    actionService.actionsById[actionId]?.transitionAction();
 }
 
 export {Action, ACTION_STATE, ACTION_TYPE};

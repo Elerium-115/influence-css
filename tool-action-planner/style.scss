@@ -22,6 +22,8 @@ body {
 .icon-construct::after { @include customIcon('icon-construct.png'); }
 .icon-core-sample::after { @include customIcon('icon-core-sample.png'); }
 .icon-deconstruct::after { @include customIcon('icon-deconstruct.png'); }
+.icon-move-horizontal::after { @include customIcon('icon-move-horizontal.svg'); }
+.icon-move-vertical::after { @include customIcon('icon-move-horizontal.svg'); transform: rotate(90deg); }
 .icon-ship-right::after { @include customIcon('icon-ship.svg'); }
 .icon-ship-down::after { @include customIcon('icon-ship.svg'); transform: rotate(90deg); }
 .icon-ship-up::after { @include customIcon('icon-ship.svg'); transform: rotate(-90deg); }
@@ -201,6 +203,11 @@ ul.list-expanding-items {
         }
     }
 
+    &.dragging-wrapper {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding-bottom: 10px; // ensure some space for dropping the [draggable] action at the end of the list
+    }
+
     li {
         @mixin listItemActive() {
             .item-title {
@@ -317,56 +324,44 @@ ul.list-expanding-items {
                     display: flex;
                     gap: 10px;
 
-                    .arrows {
-                        display: flex;
-                        position: relative;
+                    &.subactions-cell-drag .icon-button {
+                        cursor: move;
+                    }
 
-                        :hover {
-                            filter: drop-shadow(0 0 10px black);
+                    .icon-button {
+                        border-color: var(--color-gray-dark);
+
+                        &:active,
+                        &::after {
+                            background-color: var(--color-gray-dark);
                         }
 
-                        &:not(:hover) .hover-arrow {
-                            display: none;
-                        }
-
-                        .hover-arrow {
-                            --hover-arrow-background-color: rgb(20, 20, 20);
-                            background-color: var(--hover-arrow-background-color);
-                            position: absolute;
-                            top: -100%;
+                        &.icon-tooltip {
+                            position: relative;
 
                             &::before {
+                                //// TO DO: use in-game styling for tooltips?
                                 align-items: center;
-                                background-color: var(--hover-arrow-background-color) !important; // inherit does not work with "!important"
-                                border: 1px solid transparent;
-                                border-color: inherit;
+                                background-color: black;
                                 bottom: 0;
                                 color: white;
                                 display: flex;
-                                left: 39px;
+                                filter: drop-shadow(0 0 10px black);
+                                left: 40px;
                                 padding: 0 10px;
                                 position: absolute;
                                 top: 0;
                             }
 
-                            &.hover-arrow-move-to-top:hover::before { content: 'Move to top'; }
-                            &.hover-arrow-move-to-bottom:hover::before { content: 'Move to bottom'; }
+                            &--drag-in-queue:hover::before { content: 'Drag in queue'; }
                         }
-                    }
-                }
-
-                .icon-button {
-                    border-color: var(--color-gray-dark);
-
-                    &:active,
-                    &::after {
-                        background-color: var(--color-gray-dark);
                     }
                 }
             }
         }
 
-        &:hover {
+        &:hover,
+        &.dragging {
             @include listItemActive();
             height: calc(3.5 * var(--list-item-height));
             max-height: calc(3.5 * var(--list-item-height));

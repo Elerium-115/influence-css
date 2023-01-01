@@ -199,8 +199,9 @@ class Action {
         switch (this.state) {
             case ACTION_STATE.QUEUED:
                 subactionsHtml = /*html*/ `
-                    <div class="subactions-cell subactions-cell-drag">
-                        <div class="icon-button icon-move-vertical icon-tooltip icon-tooltip--drag-in-queue"></div>
+                    <div class="subactions-cell">
+                        <div class="icon-button icon-move-vertical icon-tooltip icon-tooltip--drag-in-queue icon-draggable"></div>
+                        <div class="icon-button icon-arrow-up-end icon-tooltip icon-tooltip--move-to-top hidden-if-first-list-item" onclick="onMoveToTopOfQueue('${this.id}')"></div>
                     </div>
                     <div class="subactions-cell subactions-cell-remove subactions-cell-hidden-if-ready">
                         <div>Remove</div>
@@ -468,6 +469,16 @@ class Action {
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
+
+    moveToTopOfQueue() {
+        if (this.state !== ACTION_STATE.QUEUED) {
+            console.log(`%c--- ERROR: action not queued => can NOT move to top of queue`, 'color: orange;');
+            return;
+        }
+        document.querySelector('#actions-queued ul').prepend(this.elListItem);
+        actionService.updateQueuedActionsReadiness();
+        this.flashListItem();
+    }
 }
 
 class ActionService {
@@ -546,6 +557,10 @@ class ActionService {
 // Global variables and functions
 
 globalThis.actionService = new ActionService();
+
+globalThis.onMoveToTopOfQueue = function(actionId) {
+    actionService.actionsById[actionId]?.moveToTopOfQueue();
+}
 
 globalThis.onRemoveActionById = function(actionId, shouldConfirm = false) {
     if (shouldConfirm && !confirm('Are you sure you want to remove this action?')) {

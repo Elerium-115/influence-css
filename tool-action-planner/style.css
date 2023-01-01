@@ -278,9 +278,6 @@ ul.list-expanding-items li .item-expand .subactions .subactions-cell {
   display: flex;
   gap: 10px;
 }
-ul.list-expanding-items li .item-expand .subactions .subactions-cell.subactions-cell-drag .icon-button {
-  cursor: move;
-}
 ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button {
   border-color: var(--color-gray-dark);
 }
@@ -301,9 +298,19 @@ ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-butto
   padding: 0 10px;
   position: absolute;
   top: 0;
+  z-index: 1;
 }
 ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button.icon-tooltip--drag-in-queue:hover::before {
   content: "Drag in queue";
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button.icon-tooltip--move-to-top:hover::before {
+  content: "Move to top";
+}
+ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button.icon-draggable {
+  cursor: move;
+}
+ul.list-expanding-items li:first-child .hidden-if-first-list-item {
+  display: none;
 }
 ul.list-expanding-items li:hover, ul.list-expanding-items li.dragging {
   height: calc(3.5 * var(--list-item-height));

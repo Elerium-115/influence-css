@@ -354,10 +354,6 @@ ul.list-expanding-items {
                     display: flex;
                     gap: 10px;
 
-                    &.subactions-cell-drag .icon-button {
-                        cursor: move;
-                    }
-
                     .icon-button {
                         border-color: var(--color-gray-dark);
 
@@ -381,12 +377,24 @@ ul.list-expanding-items {
                                 padding: 0 10px;
                                 position: absolute;
                                 top: 0;
+                                z-index: 1;
                             }
 
                             &--drag-in-queue:hover::before { content: 'Drag in queue'; }
+                            &--move-to-top:hover::before { content: 'Move to top'; }
                         }
+
+                        &.icon-draggable {
+                            cursor: move;
+                        }    
                     }
                 }
+            }
+        }
+
+        &:first-child {
+            .hidden-if-first-list-item {
+                display: none;
             }
         }
 

@@ -78,37 +78,12 @@ class Action {
         alert('Crew not ready'); //// TEST
     }
 
-    updateListItemSubactions() {
-        if (this.isReady) {
-            const elSubactionsCellRemove = this.elListItem.querySelector('.subactions-cell-remove');
-            if (elSubactionsCellRemove) {
-                // Replace [remove] cell with [transition] cell
-                elSubactionsCellRemove.classList.remove('subactions-cell-remove');
-                elSubactionsCellRemove.classList.add('subactions-cell-transition');
-                switch (this.state) {
-                    case ACTION_STATE.QUEUED:
-                        // Queued action ready => replace "Remove" with "Start"
-                        elSubactionsCellRemove.innerHTML = /*html*/ `
-                            <div>Start</div>
-                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
-                        `;
-                        break;
-                    case ACTION_STATE.ONGOING:
-                        // Ongoing action ready => replace "Cancel" with "Finalize"
-                        elSubactionsCellRemove.innerHTML = /*html*/ `
-                            <div>Finalize</div>
-                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
-                        `;
-                        break;
-                }
-            }
-            const elSubactionsCellDrag = this.elListItem.querySelector('.subactions-cell-drag');
-            if (elSubactionsCellDrag) {
-                // Action ready => remove "drag" subaction (typically only for queued actions)
-                elSubactionsCellDrag.classList.remove('subactions-cell-drag');
-                elSubactionsCellDrag.innerHTML = '';
-            }
-        }
+    markStarted() {
+        this.startedDate = new Date();
+    }
+
+    markFinalized() {
+        this.finalizedDate = new Date();
     }
 
     markReady() {
@@ -123,7 +98,6 @@ class Action {
         this.isReady = true;
         if (this.elListItem) {
             this.elListItem.classList.add('ready');
-            this.updateListItemSubactions();
             if (this.state === ACTION_STATE.ONGOING) {
                 // Remove timer for ongoing action which has become ready
                 const elTimerCompact = this.elListItem.querySelector('.timer-compact');
@@ -133,12 +107,31 @@ class Action {
         }
     }
 
-    markStarted() {
-        this.startedDate = new Date();
+    markNotReady() {
+        if (!this.isActiveCrewAndAsteroid()) {
+            this.handleInvalidCrewOrAsteroid();
+            return;
+        }
+        if (!this.isReady) {
+            console.log(`%c--- ERROR: action is already not-ready => can NOT mark as not-ready`, 'color: orange;');
+            return;
+        }
+        this.isReady = false;
+        if (this.elListItem) {
+            this.elListItem.classList.remove('ready');
+        }
     }
 
-    markFinalized() {
-        this.finalizedDate = new Date();
+    setReadyIfDifferent(isReady) {
+        if (this.isReady === isReady) {
+            // No change needed
+            return;
+        }
+        if (isReady) {
+            this.markReady();
+        } else {
+            this.markNotReady();
+        }
     }
 
     setState(state) {
@@ -194,7 +187,7 @@ class Action {
 
     getListItemHtml() {
         const readyClass = this.isReady ? 'ready' : '';
-        const draggableAttribute = this.state === ACTION_STATE.QUEUED && !this.isReady ? 'draggable="true"' : '';
+        const draggableAttribute = this.state === ACTION_STATE.QUEUED ? 'draggable="true"' : '';
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
@@ -205,48 +198,38 @@ class Action {
         let subactionsHtml = '';
         switch (this.state) {
             case ACTION_STATE.QUEUED:
-                if (this.isReady) {
-                    subactionsHtml = /*html*/ `
-                        <div class="subactions-cell"></div>
-                        <div class="subactions-cell subactions-cell-transition">
-                            <div>Start</div>
-                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
-                        </div>
-                    `;
-                } else {
-                    subactionsHtml = /*html*/ `
-                        <div class="subactions-cell subactions-cell-drag">
-                            <div class="icon-button icon-move-vertical icon-tooltip icon-tooltip--drag-in-queue"></div>
-                        </div>
-                        <div class="subactions-cell subactions-cell-remove">
-                            <div>Remove</div>
-                            <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}')"></div>
-                        </div>
-                    `;
-                }
+                subactionsHtml = /*html*/ `
+                    <div class="subactions-cell subactions-cell-drag">
+                        <div class="icon-button icon-move-vertical icon-tooltip icon-tooltip--drag-in-queue"></div>
+                    </div>
+                    <div class="subactions-cell subactions-cell-remove subactions-cell-hidden-if-ready">
+                        <div>Remove</div>
+                        <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}')"></div>
+                    </div>
+                    <div class="subactions-cell subactions-cell-transition subactions-cell-hidden-if-not-ready">
+                        <div>Start</div>
+                        <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
+                    </div>
+                `;
                 break;
             case ACTION_STATE.ONGOING:
-                if (this.isReady) {
-                    subactionsHtml = /*html*/ `
-                        <div class="subactions-cell"></div>
-                        <div class="subactions-cell subactions-cell-transition">
-                            <div>Finalize</div>
-                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
-                        </div>
-                    `;
-                } else {
+                if (!this.isReady) {
                     const timeRemainingShort = msToShortTime(this.getOngoingTimeRemainingMs());
                     timerCompactHtml = /*html*/ `
                         <div class="timer-compact text-pulse">${timeRemainingShort}</div>
                     `;
-                    subactionsHtml = /*html*/ `
-                        <div class="subactions-cell"></div>
-                        <div class="subactions-cell subactions-cell-remove">
-                            <div>Cancel</div>
-                            <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}', true)"></div>
-                        </div>
-                    `;
                 }
+                subactionsHtml = /*html*/ `
+                    <div class="subactions-cell"></div>
+                    <div class="subactions-cell subactions-cell-remove subactions-cell-hidden-if-ready">
+                        <div>Cancel</div>
+                        <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}', true)"></div>
+                    </div>
+                    <div class="subactions-cell subactions-cell-transition subactions-cell-hidden-if-not-ready">
+                        <div>Finalize</div>
+                        <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
+                    </div>
+                `;
                 break;
             case ACTION_STATE.DONE:
                 subactionsHtml = /*html*/ `
@@ -480,11 +463,8 @@ class Action {
                 }
                 this.injectListItem();
                 this.flashListItem();
-                if (this.state === ACTION_STATE.ONGOING) {
-                    // Current action is now ongoing => mark the next queued action as ready
-                    //// TO DO: rework to properly update the readiness of queued actions, based on lots / action types
-                    actionService.markNextQueuedActionReady();
-                }
+                // Action fully transitioned => update queued actions
+                actionService.updateQueuedActionsReadiness();
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
@@ -500,12 +480,16 @@ class ActionService {
         return this.actionsById[actionId];
     }
 
-    markNextQueuedActionReady() {
-        const nextQueuedActionNotReady = document.querySelector('#actions-queued ul li:not(.ready)');
-        if (nextQueuedActionNotReady) {
-            const action = this.getActionForListItem(nextQueuedActionNotReady);
-            action.markReady();
-        }
+    updateQueuedActionsReadiness() {
+        document.querySelectorAll('#actions-queued ul li').forEach((elListItem, elListItemIndex) => {
+            const action = this.getActionForListItem(elListItem);
+            if (elListItemIndex === 0) {
+                action.setReadyIfDifferent(true);
+            } else {
+                action.setReadyIfDifferent(false);
+            }
+        });
+        //// TO DO: rework this method, to properly update the readiness of queued actions, based on e.g. [action-type vs. lot-availability]
     }
 
     /**
@@ -513,7 +497,7 @@ class ActionService {
      */
     updateQueuedDraggables() {
         const container = document.querySelector('#actions-queued ul');
-        const draggables = container.querySelectorAll('li:not(.ready)');
+        const draggables = container.querySelectorAll('li');
         draggables.forEach(draggable => {
             draggable.addEventListener('dragstart', () => {
                 container.classList.add('dragging-wrapper');
@@ -523,6 +507,7 @@ class ActionService {
                 container.classList.remove('dragging-wrapper');
                 draggable.classList.remove('dragging');
                 const action = this.getActionForListItem(draggable);
+                this.updateQueuedActionsReadiness();
                 action.flashListItem();
             });
         });

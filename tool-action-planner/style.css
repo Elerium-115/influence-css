@@ -341,6 +341,9 @@ ul.list-expanding-items li.ready .item-title {
 ul.list-expanding-items li.ready .item-title .icon-round::after {
   background-color: var(--color-ready);
 }
+ul.list-expanding-items li.ready .subactions-cell-hidden-if-ready {
+  display: none !important;
+}
 ul.list-expanding-items li.ready:hover .item-title {
   background-image: linear-gradient(90deg, var(--color-ready), transparent);
 }
@@ -359,6 +362,9 @@ ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:act
 }
 ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+}
+ul.list-expanding-items li:not(.ready) .subactions-cell-hidden-if-not-ready {
+  display: none !important;
 }
 ul.list-expanding-items li.animating {
   height: var(--this-height) !important;
@@ -428,6 +434,51 @@ ul.list-expanding-items li.transition-flash {
   -webkit-animation: transition-flash var(--transition-flash-duration) linear;
           animation: transition-flash var(--transition-flash-duration) linear;
 }
+ul.list-expanding-items li.transition-flash .item-title {
+  background-image: linear-gradient(90deg, var(--color-highlight), transparent);
+  color: white !important;
+}
+ul.list-expanding-items li.transition-flash .item-title .icon-round::after {
+  background-color: white !important;
+}
+ul.list-expanding-items li.transition-flash .item-expand {
+  color: inherit;
+}
+ul.list-expanding-items li.transition-flash .item-expand .action-details {
+  --color-leaderline-start: var(--color-warning);
+  --color-leaderline-end: var(--color-highlight);
+}
+ul.list-expanding-items li.transition-flash .item-expand .subactions {
+  color: var(--color-highlight);
+}
+ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button {
+  border-color: var(--color-highlight);
+}
+ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button:active, ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button::after {
+  background-color: var(--color-highlight);
+}
+ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button:hover {
+  background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
+}
+ul.list-expanding-items li.transition-flash.ready .item-title {
+  background-image: linear-gradient(90deg, var(--color-ready), transparent);
+}
+ul.list-expanding-items li.transition-flash.ready .item-expand .action-details {
+  --color-leaderline-start: var(--color-warning);
+  --color-leaderline-end: var(--color-ready);
+}
+ul.list-expanding-items li.transition-flash.ready .item-expand .subactions {
+  color: var(--color-ready);
+}
+ul.list-expanding-items li.transition-flash.ready .item-expand .subactions .icon-button {
+  border-color: var(--color-ready);
+}
+ul.list-expanding-items li.transition-flash.ready .item-expand .subactions .icon-button:active, ul.list-expanding-items li.transition-flash.ready .item-expand .subactions .icon-button::after {
+  background-color: var(--color-ready);
+}
+ul.list-expanding-items li.transition-flash.ready .item-expand .subactions .icon-button:hover {
+  background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+}
 @-webkit-keyframes transition-flash {
   0% {
     opacity: 0;
@@ -455,30 +506,4 @@ ul.list-expanding-items li.transition-flash {
   75% {
     opacity: 1;
   }
-}
-ul.list-expanding-items li.transition-flash .item-title {
-  background-image: linear-gradient(90deg, var(--color-highlight), transparent);
-  color: white !important;
-}
-ul.list-expanding-items li.transition-flash .item-title .icon-round::after {
-  background-color: white !important;
-}
-ul.list-expanding-items li.transition-flash .item-expand {
-  color: inherit;
-}
-ul.list-expanding-items li.transition-flash .item-expand .action-details {
-  --color-leaderline-start: var(--color-warning);
-  --color-leaderline-end: var(--color-highlight);
-}
-ul.list-expanding-items li.transition-flash .item-expand .subactions {
-  color: var(--color-highlight);
-}
-ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button {
-  border-color: var(--color-highlight);
-}
-ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button:active, ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button::after {
-  background-color: var(--color-highlight);
-}
-ul.list-expanding-items li.transition-flash .item-expand .subactions .icon-button:hover {
-  background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
 }/*# sourceMappingURL=style.css.map */

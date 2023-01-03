@@ -10,6 +10,7 @@
     --color-gray-light: rgb(204, 204, 204);
     --color-gray-medium: rgb(153, 153, 153);
     --color-gray-dark: rgb(102, 102, 102);
+    --color-black-faded-50: rgba(0, 0, 0, 0.5);
     --cursor-url-default: url('../assets/images/cursor.png');
     --cursor-url-active: url('../assets/images/cursor-active.png');
 }
@@ -148,7 +149,7 @@ input[type='checkbox']:checked {
 /* Notification */
 
 .notification {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--color-black-faded-50);
     border-left: 5px solid var(--color-highlight);
     box-shadow: 1px 3px 4px rgba(0, 0, 0, 0.2);
     cursor: var(--cursor-url-active) 5 5, auto;

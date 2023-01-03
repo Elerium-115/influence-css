@@ -3,24 +3,24 @@ import {deleteFromDOM} from './abstract.js';
 class NotificationService {
     constructor() {}
 
-    static createNotification(notificationHtml, isWarning = false) {
+    static createNotification(messageHtml, isWarning = false) {
         const warningClass = isWarning ? 'warning' : '';
-        const notificationWrapperHtml = /*html*/ `
-            <div class="notification-wrapper">
-                <div class="notification ${warningClass}">
-                    <div class="notification-close" onclick="onCloseNotification(this)"></div>
-                    <div>${notificationHtml}</div>
-                </div>
+        const elNotificationWrapper = document.createElement('div');
+        elNotificationWrapper.classList.add('notification-wrapper');
+        elNotificationWrapper.innerHTML = /*html*/ `
+            <div class="notification ${warningClass}">
+                <div class="notification-close" onclick="onCloseNotification(this)"></div>
+                <div>${messageHtml}</div>
             </div>
         `;
-        document.getElementById('notifications').innerHTML += notificationWrapperHtml;
+        document.getElementById('notifications').appendChild(elNotificationWrapper);
     }
 }
 
 // Global variables and functions
 
 globalThis.onCloseNotification = function(el) {
-    const closingDuration = 600;
+    const closingDuration = 300;
     const elNotificationWrapper = el.closest('.notification-wrapper');
     // Set initial height, to be animated via "closing" class
     elNotificationWrapper.style.setProperty('height', `${elNotificationWrapper.getBoundingClientRect().height}px`);

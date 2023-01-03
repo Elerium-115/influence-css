@@ -142,7 +142,7 @@ body {
     }
 
     .crew-panel {
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: var(--color-black-faded-50);
         display: flex;
         flex-direction: column;
         gap: 20px;
@@ -157,7 +157,7 @@ body {
 
 #plan-actions {
     #action-setup {
-        background-color: rgba(0, 0, 0, 0.5);
+        background-color: var(--color-black-faded-50);
         display: flex;
         flex-direction: column;
         gap: 20px;
@@ -187,7 +187,7 @@ body {
 }
 
 ul.list-expanding-items {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--color-black-faded-50);
 
     &.list-expanded {
         li,
@@ -504,6 +504,22 @@ ul.list-expanding-items {
 
         .notification {
             padding: 10px 30px 10px 20px;
+
+            @keyframes flash-notification {
+                0% { background-color: var(--color-highlight); }
+            }
+
+            @keyframes flash-warning {
+                0% { background-color: var(--color-warning); }
+            }
+
+            &:not(.warning) {
+                animation: flash-notification 600ms linear;
+            }
+
+            &.warning {
+                animation: flash-warning 600ms linear;
+            }
         }
 
         @keyframes close-notification {

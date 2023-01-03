@@ -40,7 +40,7 @@ body.mock-embed .example-wrapper {
 
 body.mock-embed .example-wrapper::before {
     backdrop-filter: blur(4px);
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--color-black-faded-50);
     bottom: 0;
     clip-path: polygon(0px 0px, 100% 0px, 100% calc(100% - 35px), calc(100% - 35px) 100%, 0px 100%);
     content: '';

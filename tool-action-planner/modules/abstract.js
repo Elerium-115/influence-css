@@ -67,6 +67,10 @@ function getPseudoUniqueId() {
 }
 
 function deleteFromDOM(el) {
+    if (!el.parentElement) {
+        // Element may already be deleted from DOM, e.g. if clicking twice on the same "remove" button
+        return;
+    }
     el.parentElement.removeChild(el);
 }
 

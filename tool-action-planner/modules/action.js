@@ -1,5 +1,6 @@
-import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js'
+import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js';
 import {leaderLineConnectElements} from './leader-line-utils.js';
+import {NotificationService} from './notification.js';
 
 const ACTION_STATE = {
     DONE: 'DONE',
@@ -75,7 +76,15 @@ class Action {
     }
 
     handleCrewOnCooldown() {
-        alert('Crew not ready'); //// TEST
+        /**
+         * Warning message format:
+         *      Crew not ready due to action:
+         *      Core Sample: Methane at Lot #4567
+         */
+        const crewNotReadyText = 'Crew not ready due to action:';
+        const crewAction = actionService.actionsById[crewService.activeCrew.cooldownActionId];
+        const crewActionText = `${ACTION_TYPE_TEXT[crewAction.type]}: ${crewAction.subject} at ${crewAction.sourceName} #${crewAction.sourceId}`;
+        NotificationService.createNotification(`${crewNotReadyText}<br>${crewActionText}`, true);
     }
 
     markStarted() {

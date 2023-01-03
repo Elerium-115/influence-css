@@ -1,4 +1,4 @@
-import {initializeExampleActionsById} from './modules/example-utils.js'
+import {initializeExampleActionsById} from './modules/example-utils.js';
 
 /**
  * Fix for Firefox bug re: checkbox inputs keeping

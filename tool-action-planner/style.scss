@@ -493,3 +493,25 @@ ul.list-expanding-items {
         }
     }
 }
+
+#notifications {
+    position: absolute;
+    top: 65px;
+    right: 5px;
+
+    .notification-wrapper {
+        padding-bottom: 15px;
+
+        .notification {
+            padding: 10px 30px 10px 20px;
+        }
+
+        @keyframes close-notification {
+            100% { height: 0; opacity: 0; padding-bottom: 0; }
+        }
+
+        &.closing {
+            animation: close-notification var(--close-duration) linear;
+        }
+    }
+}

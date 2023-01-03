@@ -1,4 +1,4 @@
-import {getPseudoUniqueId, msToShortTime} from './abstract.js'
+import {getPseudoUniqueId, msToShortTime} from './abstract.js';
 
 class Crew {
     constructor(name) {

@@ -336,6 +336,11 @@ ul.list-expanding-items li .item-expand {
     -webkit-mask-image: url('../assets/images/icon-crew-member.svg');
 }
 
+.icon-crew-members::after {
+    mask-image: url('../assets/images/icon-crew-members.svg');
+    -webkit-mask-image: url('../assets/images/icon-crew-members.svg');
+}
+
 .icon-fissiles::after {
     mask-image: url('../assets/images/icon-fissiles.svg');
     -webkit-mask-image: url('../assets/images/icon-fissiles.svg');

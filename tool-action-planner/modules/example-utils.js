@@ -1,4 +1,4 @@
-import {HOUR} from './abstract.js'
+import {HOUR} from './abstract.js';
 import {Action, ACTION_STATE, ACTION_TYPE} from './action.js';
 import {Crew} from './crew.js';
 import {Asteroid} from './asteroid.js';

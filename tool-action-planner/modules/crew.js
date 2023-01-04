@@ -64,6 +64,13 @@ class Crew {
             elSelectedCrew.classList.remove('ready');
             elSelectedCrew.classList.add('text-warning');
             elCrewReadiness.classList.add('text-pulse');
+            const crewAction = crewService.getActiveCrewAction();
+            /**
+             * Set tooltip text for crew-action via data-attribute, instead of CSS var,
+             * due to issues w/ assigning a string type to the CSS property "content".
+             * See: https://stackoverflow.com/a/64338767/11071601
+             */
+            elSelectedCrew.dataset.crewActionText = crewAction.getActionText();
         } else {
             elCrewReadiness.textContent = 'ready';
             elCrewReadiness.classList.remove('text-pulse');
@@ -71,6 +78,10 @@ class Crew {
             elSelectedCrew.classList.add('ready');
             // Bypass calling this function again from "clearCooldown", to avoid infinite loop
             this.clearCooldown(true);
+            // Remove tooltip text for crew-action
+            delete elSelectedCrew.dataset.crewActionText;
+            // Stop highlighting the list-item for the previous crew-action, in case the mouse is still hovering over "#active-crew"
+            onHoverActiveCrew(false);
         }
     }
 
@@ -156,11 +167,36 @@ class CrewService {
             elChangeCrewPanel.classList.remove('hidden');
         }
     }
+
+    getActiveCrewAction() {
+        const crewActionId = this.activeCrew.cooldownActionId;
+        if (!crewActionId) {
+            return null;
+        }
+        return actionService.actionsById[crewActionId];
+    }
 }
 
 // Global variables and functions
 
 globalThis.crewService = new CrewService();
+
+globalThis.onHoverActiveCrew = function(isMouseOver) {
+    const activeCrewAction = crewService.getActiveCrewAction();
+    if (isMouseOver && activeCrewAction) {
+        // Highlight list-item for crew-action, if crew not ready
+        activeCrewAction.elListItem.classList.add('highlight');
+    } else {
+        /**
+         * Select the first ongoing, non-ready list-item with class "highlight", if any.
+         * Not using "activeCrewAction.elListItem" b/c there may not be any crew-action at this point.
+         */
+        const elListItemHighlight = document.querySelector('#actions-ongoing ul li.highlight:not(.ready)');
+        if (elListItemHighlight) {
+            elListItemHighlight.classList.remove('highlight');
+        }
+    }
+}
 
 globalThis.onToggleActiveCrew = function() {
     crewService.toggleActiveCrew();

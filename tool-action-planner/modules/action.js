@@ -75,6 +75,10 @@ class Action {
         console.log(`%c--- ERROR: action restricted to crew ID #${crewService.activeCrew.id} on asteroid ID #${crewService.activeCrew.asteroidId}`, 'color: orange;');
     }
 
+    getActionText() {
+        return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at ${this.sourceName} #${this.sourceId}`;
+    }
+
     handleCrewOnCooldown() {
         /**
          * Warning message format:
@@ -82,9 +86,8 @@ class Action {
          *      Core Sample: Methane at Lot #4567
          */
         const crewNotReadyText = 'Crew not ready due to action:';
-        const crewAction = actionService.actionsById[crewService.activeCrew.cooldownActionId];
-        const crewActionText = `${ACTION_TYPE_TEXT[crewAction.type]}: ${crewAction.subject} at ${crewAction.sourceName} #${crewAction.sourceId}`;
-        NotificationService.createNotification(`${crewNotReadyText}<br>${crewActionText}`, true);
+        const crewAction = crewService.getActiveCrewAction();
+        NotificationService.createNotification(`${crewNotReadyText}<br>${crewAction.getActionText()}`, true);
         crewAction.flashListItem();
     }
 
@@ -522,11 +525,11 @@ class ActionService {
         draggables.forEach(draggable => {
             draggable.addEventListener('dragstart', () => {
                 container.classList.add('dragging-wrapper');
-                draggable.classList.add('dragging');
+                draggable.classList.add('dragging', 'highlight');
             });
             draggable.addEventListener('dragend', () => {
                 container.classList.remove('dragging-wrapper');
-                draggable.classList.remove('dragging');
+                draggable.classList.remove('dragging', 'highlight');
                 const action = this.getActionForListItem(draggable);
                 this.updateQueuedActionsReadiness();
                 action.flashListItem();

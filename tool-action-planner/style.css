@@ -145,6 +145,20 @@ body.embed {
 #manage-crews #active-crew.ready {
   color: var(--color-ready);
 }
+#manage-crews #active-crew:not(.ready):hover::after {
+  background-color: black;
+  bottom: -30px;
+  color: white;
+  content: attr(data-crew-action-text);
+  filter: drop-shadow(0 0 10px black);
+  font-size: 14px;
+  line-height: 30px;
+  position: absolute;
+  padding: 0 10px;
+  right: 0;
+  white-space: nowrap;
+  z-index: 1;
+}
 #manage-crews #active-asteroid,
 #manage-crews #active-base {
   opacity: 0.5;
@@ -312,34 +326,34 @@ ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-butto
 ul.list-expanding-items li:first-child .hidden-if-first-list-item {
   display: none;
 }
-ul.list-expanding-items li:hover, ul.list-expanding-items li.dragging {
+ul.list-expanding-items li:hover, ul.list-expanding-items li.highlight {
   height: calc(3.5 * var(--list-item-height));
   max-height: calc(3.5 * var(--list-item-height));
 }
-ul.list-expanding-items li:hover .item-title, ul.list-expanding-items li.dragging .item-title {
+ul.list-expanding-items li:hover .item-title, ul.list-expanding-items li.highlight .item-title {
   background-image: linear-gradient(90deg, var(--color-highlight), transparent);
   color: white !important;
 }
-ul.list-expanding-items li:hover .item-title .icon-round::after, ul.list-expanding-items li.dragging .item-title .icon-round::after {
+ul.list-expanding-items li:hover .item-title .icon-round::after, ul.list-expanding-items li.highlight .item-title .icon-round::after {
   background-color: white !important;
 }
-ul.list-expanding-items li:hover .item-expand, ul.list-expanding-items li.dragging .item-expand {
+ul.list-expanding-items li:hover .item-expand, ul.list-expanding-items li.highlight .item-expand {
   color: inherit;
 }
-ul.list-expanding-items li:hover .item-expand .action-details, ul.list-expanding-items li.dragging .item-expand .action-details {
+ul.list-expanding-items li:hover .item-expand .action-details, ul.list-expanding-items li.highlight .item-expand .action-details {
   --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions, ul.list-expanding-items li.dragging .item-expand .subactions {
+ul.list-expanding-items li:hover .item-expand .subactions, ul.list-expanding-items li.highlight .item-expand .subactions {
   color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions .icon-button, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button, ul.list-expanding-items li.highlight .item-expand .subactions .icon-button {
   border-color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li:hover .item-expand .subactions .icon-button::after, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button:active, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button::after {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li:hover .item-expand .subactions .icon-button::after, ul.list-expanding-items li.highlight .item-expand .subactions .icon-button:active, ul.list-expanding-items li.highlight .item-expand .subactions .icon-button::after {
   background-color: var(--color-highlight);
 }
-ul.list-expanding-items li:hover .item-expand .subactions .icon-button:hover, ul.list-expanding-items li.dragging .item-expand .subactions .icon-button:hover {
+ul.list-expanding-items li:hover .item-expand .subactions .icon-button:hover, ul.list-expanding-items li.highlight .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
 }
 ul.list-expanding-items li.ready .item-title {
@@ -526,6 +540,16 @@ ul.list-expanding-items li.transition-flash.ready .item-expand .subactions .icon
 #notifications .notification-wrapper .notification {
   padding: 10px 30px 10px 20px;
 }
+@-webkit-keyframes flash-notification {
+  0% {
+    background-color: var(--color-highlight);
+  }
+}
+@keyframes flash-notification {
+  0% {
+    background-color: var(--color-highlight);
+  }
+}
 @-webkit-keyframes flash-warning {
   0% {
     background-color: var(--color-warning);
@@ -535,6 +559,10 @@ ul.list-expanding-items li.transition-flash.ready .item-expand .subactions .icon
   0% {
     background-color: var(--color-warning);
   }
+}
+#notifications .notification-wrapper .notification:not(.warning) {
+  -webkit-animation: flash-notification 600ms linear;
+          animation: flash-notification 600ms linear;
 }
 #notifications .notification-wrapper .notification.warning {
   -webkit-animation: flash-warning 600ms linear;

@@ -204,7 +204,7 @@ class Action {
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
-                <div class="value value-destination">${this.destinationName} #${this.destinationId}</div>
+                <div class="value value-destination">Lot ${this.destinationId} (${this.destinationName})</div>
             `;
         }
         let timerCompactHtml = '';
@@ -267,7 +267,7 @@ class Action {
                 </div>
                 <div class="item-expand">
                     <div class="action-details">
-                        <div class="value value-source">${this.sourceName} #${this.sourceId}</div>
+                        <div class="value value-source">Lot ${this.sourceId} (${this.sourceName})</div>
                         ${destinationHtml}
                     </div>
                     <div class="subactions">

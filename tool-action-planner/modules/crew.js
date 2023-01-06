@@ -19,7 +19,7 @@ class Crew {
         this.asteroidId = asteroidId;
         // Update all occurrences of the active asteroid name and ID in the DOM
         document.querySelectorAll('.active-asteroid-name').forEach(el => {
-            el.textContent = asteroidsById[asteroidId].name;
+            el.textContent = `(${asteroidsById[asteroidId].name})`;
         });
         document.querySelectorAll('.active-asteroid-id').forEach(el => {
             el.textContent = `#${asteroidId}`;
@@ -40,10 +40,10 @@ class Crew {
         this.baseAssetName = baseAssetName;
         // Update all occurrences of the active base asset name and lot ID in the DOM
         document.querySelectorAll('.active-base-asset-name').forEach(el => {
-            el.textContent = baseAssetName ? baseAssetName : '';
+            el.textContent = baseAssetName ? `(${baseAssetName})` : '';
         });
         document.querySelectorAll('.active-base-lot-id').forEach(el => {
-            el.textContent = baseLotId ? `#${baseLotId}` : 'In Orbit';
+            el.textContent = baseLotId ? `Lot ${baseLotId}` : 'In Orbit';
         });
     }
 

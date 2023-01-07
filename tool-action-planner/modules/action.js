@@ -44,6 +44,12 @@ const ACTION_TYPE_ICON_CLASS = {
 
 const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
 
+const CREW_INVOLVEMENT = {
+    FINALIZING: 'Finalizing',
+    PERFORMING: 'Performing', // currently only for Core Sampling
+    STARTING: 'Starting',
+};
+
 class Action {
     constructor(crewId, asteroidId, type, subject, sourceName, sourceId, destinationName, destinationId, duration = null) {
         this.id = getPseudoUniqueId();
@@ -79,15 +85,33 @@ class Action {
         return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at ${this.sourceName} #${this.sourceId}`;
     }
 
+    getCrewInvolvement() {
+        let crewInvolvement = '';
+        switch (this.state) {
+            case ACTION_STATE.ONGOING:
+                if (this.type === ACTION_TYPE.CORE_SAMPLE) {
+                    crewInvolvement = CREW_INVOLVEMENT.PERFORMING;
+                } else {
+                    crewInvolvement = CREW_INVOLVEMENT.STARTING;
+                }
+                break;
+            case ACTION_STATE.DONE:
+                crewInvolvement = CREW_INVOLVEMENT.FINALIZING;
+                break;
+        }
+        return crewInvolvement;
+    }
+
     handleCrewOnCooldown() {
         /**
          * Warning message format:
          *      Crew not ready due to action:
-         *      Core Sample: Methane at Lot #4567
+         *      (Starting) Core Sample: Methane at Lot #4567
          */
         const crewNotReadyText = 'Crew not ready due to action:';
         const crewAction = crewService.getActiveCrewAction();
-        NotificationService.createNotification(`${crewNotReadyText}<br>${crewAction.getActionText()}`, true);
+        const messageHtml = `${crewNotReadyText}<br>${crewAction.getActionText()} (${crewAction.getCrewInvolvement()})`;
+        NotificationService.createNotification(messageHtml, true);
         crewAction.flashListItem();
     }
 

@@ -70,7 +70,7 @@ class Crew {
              * due to issues w/ assigning a string type to the CSS property "content".
              * See: https://stackoverflow.com/a/64338767/11071601
              */
-            elSelectedCrew.dataset.crewActionText = `${crewAction.getActionText()} (${crewAction.getCrewInvolvement()})`;
+            elSelectedCrew.dataset.crewActionText = `${crewAction.getActionText()} - ${crewAction.getCrewInvolvement()}`;
         } else {
             elCrewReadiness.textContent = 'ready';
             elCrewReadiness.classList.remove('text-pulse');

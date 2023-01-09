@@ -46,7 +46,7 @@ const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
 
 const CREW_INVOLVEMENT = {
     FINALIZING: 'Finalizing',
-    PERFORMING: 'Performing', // currently only for Core Sampling
+    REQUIRED_FOR_DURATION: 'Required for Duration', // currently only for Core Sampling
     STARTING: 'Starting',
 };
 
@@ -82,7 +82,7 @@ class Action {
     }
 
     getActionText() {
-        return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at ${this.sourceName} #${this.sourceId}`;
+        return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at Lot ${this.sourceId} (${this.sourceName})`;
     }
 
     getCrewInvolvement() {
@@ -90,7 +90,7 @@ class Action {
         switch (this.state) {
             case ACTION_STATE.ONGOING:
                 if (this.type === ACTION_TYPE.CORE_SAMPLE) {
-                    crewInvolvement = CREW_INVOLVEMENT.PERFORMING;
+                    crewInvolvement = CREW_INVOLVEMENT.REQUIRED_FOR_DURATION;
                 } else {
                     crewInvolvement = CREW_INVOLVEMENT.STARTING;
                 }
@@ -110,7 +110,7 @@ class Action {
          */
         const crewNotReadyText = 'Crew not ready due to action:';
         const crewAction = crewService.getActiveCrewAction();
-        const messageHtml = `${crewNotReadyText}<br>${crewAction.getActionText()} (${crewAction.getCrewInvolvement()})`;
+        const messageHtml = `${crewNotReadyText}<br>${crewAction.getActionText()} - ${crewAction.getCrewInvolvement()}`;
         NotificationService.createNotification(messageHtml, true);
         crewAction.flashListItem();
     }
@@ -382,6 +382,10 @@ class Action {
         // Put the crew on cooldown for the entire duration of the action, when starting a "Core Sample"
         if (this.type === ACTION_TYPE.CORE_SAMPLE && this.state === ACTION_STATE.QUEUED) {
             cooldown = this.duration;
+        }
+        // Crew presence not required for action "Transfer" => no cooldown
+        if (this.type === ACTION_TYPE.TRANSFER) {
+            cooldown = 0;
         }
         /**
          * Ensure the crew cooldown does not end too soon,

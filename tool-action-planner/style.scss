@@ -227,73 +227,6 @@ ul.list-expanding-items {
     }
 
     li {
-        @mixin listItemActive() {
-            .item-title {
-                background-image: linear-gradient(90deg, var(--color-highlight), transparent);
-                color: white !important;
-
-                .icon-round::after {
-                    background-color: white !important;
-                }
-            }
-
-            .item-expand {
-                color: inherit;
-
-                .action-details {
-                    --color-leaderline-start: var(--color-warning);
-                    --color-leaderline-end: var(--color-highlight);
-                }
-
-                .subactions {
-                    color: var(--color-highlight);
-
-                    .icon-button {
-                        border-color: var(--color-highlight);
-
-                        &:active,
-                        &::after {
-                            background-color: var(--color-highlight);
-                        }
-
-                        &:hover {
-                            background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
-                        }
-                    }
-                }
-            }
-        }
-
-        @mixin listItemActiveAndReady() {
-            .item-title {
-                background-image: linear-gradient(90deg, var(--color-ready), transparent);
-            }
-    
-            .item-expand {
-                .action-details {
-                    --color-leaderline-start: var(--color-warning);
-                    --color-leaderline-end: var(--color-ready);
-                }
-    
-                .subactions {
-                    color: var(--color-ready);
-    
-                    .icon-button {
-                        border-color: var(--color-ready);
-    
-                        &:active,
-                        &::after {
-                            background-color: var(--color-ready);
-                        }
-    
-                        &:hover {
-                            background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
-                        }
-                    }
-                }
-            }
-        }
-
         padding-left: 0;
 
         .item-title {
@@ -327,7 +260,7 @@ ul.list-expanding-items {
         .item-expand {
             color: var(--color-gray-dark);
             // Height of "li:hover" minus height of ".item-title"
-            height: calc(2.5 * var(--list-item-height));
+            height: calc(2.6 * var(--list-item-height));
             line-height: 1.25;
             padding-top: 10px;
             position: relative;
@@ -407,6 +340,143 @@ ul.list-expanding-items {
                         }    
                     }
                 }
+
+                .progress-wrapper {
+                    --progress-wrapper-height: 30px;
+                    --progress-bar-height: 4px;
+                    font-size: 12px;
+                    height: var(--progress-wrapper-height);
+                    position: relative;
+                    width: 100%;
+
+                    .progress-done {
+                        height: calc((var(--progress-wrapper-height) - var(--progress-bar-height)) / 2);
+                        line-height: 8px;
+                        text-align: center;
+
+                        &::before { content: 'Done '; }
+                        &::after { content: '%'; }
+                    }
+
+                    .progress-bars {
+                        display: flex;
+                        mask:
+                            linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+                            linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 1)) 0 / var(--progress-done) no-repeat;
+
+                        .progress-bar {
+                            height: var(--progress-bar-height);
+
+                            &--startup { background-color: var(--color-gray-medium); }
+                            &--runtime { background-color: var(--color-gray-dark); }
+                        }
+                    }
+
+                    &::before,
+                    &::after {
+                        bottom: 0;
+                        line-height: 12px;
+                        position: absolute;
+                    }
+
+                    &::before {
+                        content: 'Startup';
+                        left: 0;
+                    }
+
+                    &::after {
+                        content: 'Runtime';
+                        right: 0;
+                    }
+                }
+            }
+        }
+
+        @mixin listItemActive() {
+            .item-title {
+                background-image: linear-gradient(90deg, var(--color-highlight), transparent);
+                color: white !important;
+
+                .icon-round::after {
+                    background-color: white !important;
+                }
+            }
+
+            .item-expand {
+                color: inherit;
+
+                .action-details {
+                    --color-leaderline-start: var(--color-warning);
+                    --color-leaderline-end: var(--color-highlight);
+                }
+
+                .subactions {
+                    color: var(--color-highlight);
+
+                    .icon-button {
+                        border-color: var(--color-highlight);
+
+                        &:active,
+                        &::after {
+                            background-color: var(--color-highlight);
+                        }
+
+                        &:hover {
+                            background-image: linear-gradient(120deg, var(--color-highlight-faded-10), var(--color-highlight-faded-25));
+                        }
+                    }
+
+                    .progress-wrapper {
+                        .progress-done {
+                            color: var(--color-gray-light);
+                        }
+
+                        .progress-bars {
+                            .progress-bar {
+                                &--startup { background-color: var(--color-warning); }
+                                &--runtime { background-color: var(--color-highlight); }
+                            }
+                        }
+
+                        &::before {
+                            color: var(--color-warning);
+                        }
+
+                        &::after {
+                            color: var(--color-highlight);
+                        }
+                    }
+                }
+            }
+        }
+
+        @mixin listItemActiveAndReady() {
+            .item-title {
+                background-image: linear-gradient(90deg, var(--color-ready), transparent);
+            }
+    
+            .item-expand {
+                .action-details {
+                    --color-leaderline-start: var(--color-warning);
+                    --color-leaderline-end: var(--color-ready);
+                }
+    
+                .subactions {
+                    color: var(--color-ready);
+    
+                    .icon-button {
+                        border-color: var(--color-ready);
+    
+                        &:active,
+                        &::after {
+                            background-color: var(--color-ready);
+                        }
+    
+                        &:hover {
+                            background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
+                        }
+                    }
+                }
             }
         }
 
@@ -419,8 +489,18 @@ ul.list-expanding-items {
         &:hover,
         &.highlight {
             @include listItemActive();
-            height: calc(3.5 * var(--list-item-height));
-            max-height: calc(3.5 * var(--list-item-height));
+            height: calc(3.6 * var(--list-item-height));
+            max-height: calc(3.6 * var(--list-item-height));
+        }
+
+        &:not(:hover) {
+            .item-expand .subactions .progress-wrapper {
+                .progress-done,
+                &::before,
+                &::after {
+                    opacity: 0;
+                }
+            }
         }
 
         // Action ready

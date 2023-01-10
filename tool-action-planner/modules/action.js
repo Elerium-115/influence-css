@@ -251,23 +251,32 @@ class Action {
                 `;
                 break;
             case ACTION_STATE.ONGOING:
-                if (!this.isReady) {
+                if (this.isReady) {
+                    subactionsHtml = /*html*/ `
+                        <div class="subactions-cell"></div>
+                        <div class="subactions-cell subactions-cell-transition">
+                            <div>Finalize</div>
+                            <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
+                        </div>
+                    `;
+                } else {
                     const timeRemainingShort = msToShortTime(this.getOngoingTimeRemainingMs());
                     timerCompactHtml = /*html*/ `
                         <div class="timer-compact text-pulse">${timeRemainingShort}</div>
                     `;
+                    const startupRatio = 25; //// TEST
+                    const runtimeRatio = 75; //// TEST
+                    const progressPercent = 65; //// TEST
+                    subactionsHtml = /*html*/ `
+                        <div class="progress-wrapper">
+                            <div class="progress-done">${progressPercent}</div>
+                            <div class="progress-bars" style="--progress-done: ${progressPercent}%;">
+                                <div class="progress-bar progress-bar--startup" style="width: ${startupRatio}%;"></div>
+                                <div class="progress-bar progress-bar--runtime" style="width: ${runtimeRatio}%;"></div>
+                            </div>
+                        </div>
+                    `;
                 }
-                subactionsHtml = /*html*/ `
-                    <div class="subactions-cell"></div>
-                    <div class="subactions-cell subactions-cell-remove subactions-cell-hidden-if-ready">
-                        <div>Cancel</div>
-                        <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}', true)"></div>
-                    </div>
-                    <div class="subactions-cell subactions-cell-transition subactions-cell-hidden-if-not-ready">
-                        <div>Finalize</div>
-                        <div class="icon-button icon-arrow-right" onclick="onTransitionActionById('${this.id}')"></div>
-                    </div>
-                `;
                 break;
             case ACTION_STATE.DONE:
                 subactionsHtml = /*html*/ `
@@ -428,17 +437,21 @@ class Action {
             return;
         }
         if (crewService.activeCrew.cooldown && this.state === ACTION_STATE.ONGOING) {
-            /**
-             * The only ongoing action that can be canceled while the crew is on cooldown,
-             * is the action that triggered the cooldown (e.g. a "Core Sample" action can be canceled
-             * while the crew is "locked" to that action, thus also clearing the crew cooldown).
-             */
-            if (this.id === crewService.activeCrew.cooldownActionId) {
-                crewService.activeCrew.clearCooldown();
-            } else {
-                this.handleCrewOnCooldown();
-                return;
-            }
+            // Ongoing actions can not be canceled, as of 2023-01-10
+            return;
+            //// DISABLED -- START
+            // /**
+            //  * The only ongoing action that can be canceled while the crew is on cooldown,
+            //  * is the action that triggered the cooldown (e.g. a "Core Sample" action can be canceled
+            //  * while the crew is "locked" to that action, thus also clearing the crew cooldown).
+            //  */
+            // if (this.id === crewService.activeCrew.cooldownActionId) {
+            //     crewService.activeCrew.clearCooldown();
+            // } else {
+            //     this.handleCrewOnCooldown();
+            //     return;
+            // }
+            //// DISABLED -- END
         }
         this.prepareListItemForAnimating();
         // Fade out the list item, then slide it up
@@ -604,10 +617,15 @@ globalThis.onMoveToTopOfQueue = function(actionId) {
 }
 
 globalThis.onRemoveActionById = function(actionId, shouldConfirm = false) {
+    const action = actionService.actionsById[actionId];
+    if (!action || action.state === ACTION_STATE.ONGOING) {
+        // Ongoing actions can not be canceled, as of 2023-01-10
+        return;
+    }
     if (shouldConfirm && !confirm('Are you sure you want to remove this action?')) {
         return false;
     }
-    actionService.actionsById[actionId]?.removeAction();
+    action.removeAction();
 };
 
 globalThis.onTransitionActionById = function(actionId) {

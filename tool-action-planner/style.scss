@@ -388,6 +388,9 @@ ul.list-expanding-items {
                         content: 'Runtime';
                         right: 0;
                     }
+
+                    &.progress-no-startup::before { content: ''; }
+                    &.progress-no-runtime::after { content: ''; }
                 }
             }
         }

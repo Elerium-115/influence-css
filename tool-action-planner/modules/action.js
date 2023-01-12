@@ -42,6 +42,17 @@ const ACTION_TYPE_ICON_CLASS = {
     TRAVEL: 'icon-ship-right',
 };
 
+const ACTION_TYPE_STARTUP_DURATION = {
+    CONSTRUCT: 45 * 60 * 1000,
+    CORE_SAMPLE: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
+    DECONSTRUCT: 30 * 60 * 1000,
+    EXTRACT: 5 * 1000,
+    LAND: 5 * 1000,
+    LAUNCH: 5 * 1000,
+    TRANSFER: 5 * 1000, // Crew presence not required for action "Transfer" => no cooldown
+    TRAVEL: 5 * 1000,
+};
+
 const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
 
 const CREW_INVOLVEMENT = {
@@ -51,7 +62,17 @@ const CREW_INVOLVEMENT = {
 };
 
 class Action {
-    constructor(crewId, asteroidId, type, subject, sourceName, sourceId, destinationName, destinationId, duration = null) {
+    constructor(
+        crewId,
+        asteroidId,
+        type,
+        subject,
+        sourceName,
+        sourceId,
+        destinationName,
+        destinationId,
+        durationRuntime = null
+    ) {
         this.id = getPseudoUniqueId();
         this.createdDate = new Date();
         this.startedDate = null;
@@ -64,7 +85,18 @@ class Action {
         this.sourceId = sourceId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
         this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
         this.destinationId = destinationId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
-        this.duration = duration ? duration : 0; // number as milliseconds
+        this.durationStartup = ACTION_TYPE_STARTUP_DURATION[type];
+        this.durationRuntime = durationRuntime ? durationRuntime : 0; // number as milliseconds
+        this.durationTotal = this.durationStartup + this.durationRuntime;
+        this.startupRatio = Math.round(100 * this.durationStartup / this.durationTotal);
+        // Ensure startup ratio min. 1%, if non-zero startup duration is much shorter than runtime duration
+        if (this.durationStartup > 0) {
+            this.startupRatio = Math.max(this.startupRatio, 1);
+        }
+        // Ensure startup ratio max. 99%, if non-zero runtime duration is much shorter than startup duration
+        if (this.durationRuntime > 0) {
+            this.startupRatio = Math.min(this.startupRatio, 99);
+        }
         this.state = ACTION_STATE.QUEUED; // default state for new actions
         this.isReady = false;
         this.elListItem = null;
@@ -136,9 +168,15 @@ class Action {
         if (this.elListItem) {
             this.elListItem.classList.add('ready');
             if (this.state === ACTION_STATE.ONGOING) {
-                // Remove timer for ongoing action which has become ready
-                const elTimerCompact = this.elListItem.querySelector('.timer-compact');
-                deleteFromDOM(elTimerCompact);
+                /**
+                 * Update list item HTML, in order to:
+                 * - remove timer for ongoing action which has become ready
+                 * - replace progress bars with "Finalize" button
+                 */
+                const elTemp = document.createElement('div');
+                elTemp.innerHTML = this.getListItemHtml();
+                // Updating the HTML in this way is required, otherwise there may be issues e.g. with the transition to "Done"
+                this.elListItem.innerHTML = elTemp.firstElementChild.innerHTML;
                 this.clearRefreshOngoingInterval();
             }
         }
@@ -196,7 +234,7 @@ class Action {
         if (this.state !== ACTION_STATE.ONGOING || this.isReady || !this.startedDate) {
             return null;
         }
-        return this.startedDate.getTime() + this.duration - Date.now();
+        return this.startedDate.getTime() + this.durationTotal - Date.now();
     }
 
     getNextLongestOngoingAction() {
@@ -264,14 +302,15 @@ class Action {
                     timerCompactHtml = /*html*/ `
                         <div class="timer-compact text-pulse">${timeRemainingShort}</div>
                     `;
-                    const startupRatio = 25; //// TEST
-                    const runtimeRatio = 75; //// TEST
-                    const progressPercent = 65; //// TEST
+                    const startupClass = !this.durationStartup ? 'progress-no-startup' : '';
+                    const runtimeClass = !this.durationRuntime ? 'progress-no-runtime' : '';
+                    const progressPercent = 0;
+                    const runtimeRatio = 100 - this.startupRatio;
                     subactionsHtml = /*html*/ `
-                        <div class="progress-wrapper">
-                            <div class="progress-done">${progressPercent}</div>
+                        <div class="progress-wrapper ${startupClass} ${runtimeClass}">
+                            <div class="progress-done text-pulse">${progressPercent}</div>
                             <div class="progress-bars" style="--progress-done: ${progressPercent}%;">
-                                <div class="progress-bar progress-bar--startup" style="width: ${startupRatio}%;"></div>
+                                <div class="progress-bar progress-bar--startup" style="width: ${this.startupRatio}%;"></div>
                                 <div class="progress-bar progress-bar--runtime" style="width: ${runtimeRatio}%;"></div>
                             </div>
                         </div>
@@ -321,7 +360,9 @@ class Action {
             console.log(`%c--- WARNING: action ready => can NOT refresh time`, 'color: yellow;');
             return;
         }
-        const timeRemainingShort = msToShortTime(this.getOngoingTimeRemainingMs());
+        const ongoingTimeRemainingMs = this.getOngoingTimeRemainingMs();
+        // Update time remaining
+        const timeRemainingShort = msToShortTime(ongoingTimeRemainingMs);
         if (!timeRemainingShort) {
             // Ongoing action is now ready
             this.markReady();
@@ -331,6 +372,10 @@ class Action {
         if (elTimerCompact.textContent !== timeRemainingShort) {
             elTimerCompact.textContent = timeRemainingShort;
         }
+        // Update progress percent and progress bars
+        const progress = Math.round(100 * (this.durationTotal - ongoingTimeRemainingMs) / this.durationTotal);
+        this.elListItem.querySelector('.progress-done').textContent = progress;
+        this.elListItem.querySelector('.progress-bars').style.setProperty('--progress-done', `${progress}%`);
     }
 
     injectListItem() {
@@ -387,14 +432,19 @@ class Action {
     }
 
     setCrewCooldownBeforeTransition(transitionDuration) {
-        let cooldown = 5 * 1000; // default cooldown 5 seconds
-        // Put the crew on cooldown for the entire duration of the action, when starting a "Core Sample"
-        if (this.type === ACTION_TYPE.CORE_SAMPLE && this.state === ACTION_STATE.QUEUED) {
-            cooldown = this.duration;
-        }
-        // Crew presence not required for action "Transfer" => no cooldown
-        if (this.type === ACTION_TYPE.TRANSFER) {
-            cooldown = 0;
+        let cooldown = 0;
+        switch (this.state) {
+            case ACTION_STATE.QUEUED:
+                // Action transitioning from queued to ongoing => default cooldown = startup duration
+                cooldown = this.durationStartup;
+                if (this.type === ACTION_TYPE.TRAVEL) {
+                    cooldown = this.durationTotal;
+                }
+                break;
+            case ACTION_STATE.ONGOING:
+                // Action transitioning from ongoing to done => default cooldown = surface travel time for crew
+                cooldown = 3 * 1000; //// TEST
+                break;
         }
         /**
          * Ensure the crew cooldown does not end too soon,

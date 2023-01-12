@@ -369,6 +369,12 @@ ul.list-expanding-items li .item-expand .subactions .progress-wrapper::after {
   content: "Runtime";
   right: 0;
 }
+ul.list-expanding-items li .item-expand .subactions .progress-wrapper.progress-no-startup::before {
+  content: "";
+}
+ul.list-expanding-items li .item-expand .subactions .progress-wrapper.progress-no-runtime::after {
+  content: "";
+}
 ul.list-expanding-items li:first-child .hidden-if-first-list-item {
   display: none;
 }

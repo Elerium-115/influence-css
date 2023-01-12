@@ -259,8 +259,8 @@ ul.list-expanding-items {
 
         .item-expand {
             color: var(--color-gray-dark);
-            // Height of "li:hover" minus height of ".item-title"
-            height: calc(2.6 * var(--list-item-height));
+            // Height of "li:hover" minus height of ".item-title", minus top+bottom borders (2px)
+            height: calc(2.6 * var(--list-item-height) - 2px);
             line-height: 1.25;
             padding-top: 10px;
             position: relative;
@@ -396,6 +396,10 @@ ul.list-expanding-items {
         }
 
         @mixin listItemActive() {
+            background-color: rgba(40, 40, 40, 0.5);
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+
             .item-title {
                 background-image: linear-gradient(90deg, var(--color-highlight), transparent);
                 color: white !important;
@@ -483,6 +487,20 @@ ul.list-expanding-items {
             }
         }
 
+        @mixin listItemActiveAndStartupInProgress() {
+            @include listItemActiveAndReady();
+
+            .item-title {
+                background-image: linear-gradient(90deg, var(--color-warning), transparent);
+            }
+    
+            .item-expand {    
+                .subactions {
+                    color: var(--color-warning);
+                }
+            }
+        }
+
         &:first-child {
             .hidden-if-first-list-item {
                 display: none;
@@ -494,9 +512,13 @@ ul.list-expanding-items {
             @include listItemActive();
             height: calc(3.6 * var(--list-item-height));
             max-height: calc(3.6 * var(--list-item-height));
+
+            &.startup-in-progress {
+                @include listItemActiveAndStartupInProgress();
+            }
         }
 
-        &:not(:hover) {
+        &:not(:hover):not(.highlight)  {
             .item-expand .subactions .progress-wrapper {
                 .progress-done,
                 &::before,
@@ -510,10 +532,10 @@ ul.list-expanding-items {
         &.ready {
             .item-title {
                 color: var(--color-ready);
-            }
 
-            .item-title .icon-round::after {
-                background-color: var(--color-ready);
+                .icon-round::after {
+                    background-color: var(--color-ready);
+                }
             }
 
             .subactions-cell-hidden-if-ready {
@@ -529,6 +551,21 @@ ul.list-expanding-items {
         &:not(.ready) {
             .subactions-cell-hidden-if-not-ready {
                 display: none !important;
+            }
+        }
+
+        // Action startup duration in progress
+        &.startup-in-progress {
+            .item-title {
+                color: var(--color-warning);
+
+                .icon-round::after {
+                    background-color: var(--color-warning);
+                }
+            }
+
+            &:hover {
+                @include listItemActiveAndStartupInProgress();
             }
         }
 
@@ -581,6 +618,10 @@ ul.list-expanding-items {
 
             &.ready {
                 @include listItemActiveAndReady();
+            }
+
+            &.startup-in-progress {
+                @include listItemActiveAndStartupInProgress();
             }
 
             @keyframes transition-flash {

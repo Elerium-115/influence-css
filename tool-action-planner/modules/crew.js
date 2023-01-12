@@ -188,11 +188,11 @@ globalThis.onHoverActiveCrew = function(isMouseOver) {
         activeCrewAction.elListItem.classList.add('highlight');
     } else {
         /**
-         * Stop highlighting the list-item for crew-action, if crew became ready while still hovering over it.
-         * Select the first ongoing-or-done, non-ready list-item with class "highlight", if any.
+         * Stop highlighting the list-item for crew-action, if the crew became ready while still hovering over it.
+         * Select the first ongoing-or-done list-item with class "highlight", if any.
          * Not using "activeCrewAction.elListItem" b/c there may not be any crew-action at this point.
          */
-        const elListItemHighlight = document.querySelector('#actions-ongoing ul li.highlight:not(.ready), #actions-done ul li.highlight:not(.ready)');
+        const elListItemHighlight = document.querySelector('#actions-ongoing ul li.highlight, #actions-done ul li.highlight');
         if (elListItemHighlight) {
             elListItemHighlight.classList.remove('highlight');
         }

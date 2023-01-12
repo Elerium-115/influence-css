@@ -218,8 +218,8 @@ ul.list-expanding-items li .item-title {
 
 ul.list-expanding-items li .item-expand {
     line-height: 1.5;
-    /* height of "li:hover" minus height of ".item-title" */
-    height: calc(2 * var(--list-item-height));
+    /* height of "li:hover" minus height of ".item-title", minus top+bottom borders (2px) */
+    height: calc(2 * var(--list-item-height) - 2px);
     white-space: nowrap;
 }
 

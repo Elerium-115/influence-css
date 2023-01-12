@@ -57,7 +57,7 @@ const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
 
 const CREW_INVOLVEMENT = {
     FINALIZING: 'Finalizing',
-    REQUIRED_FOR_DURATION: 'Required for Duration', // currently only for Core Sampling
+    REQUIRED_FOR_DURATION: 'Required for Duration',
     STARTING: 'Starting',
 };
 
@@ -121,7 +121,8 @@ class Action {
         let crewInvolvement = '';
         switch (this.state) {
             case ACTION_STATE.ONGOING:
-                if (this.type === ACTION_TYPE.CORE_SAMPLE) {
+                if (this.durationStartup && !this.durationRuntime) {
+                    // Currently only for Core Sampling
                     crewInvolvement = CREW_INVOLVEMENT.REQUIRED_FOR_DURATION;
                 } else {
                     crewInvolvement = CREW_INVOLVEMENT.STARTING;
@@ -168,6 +169,7 @@ class Action {
         if (this.elListItem) {
             this.elListItem.classList.add('ready');
             if (this.state === ACTION_STATE.ONGOING) {
+                this.elListItem.classList.remove('startup-in-progress');
                 /**
                  * Update list item HTML, in order to:
                  * - remove timer for ongoing action which has become ready
@@ -361,6 +363,7 @@ class Action {
             return;
         }
         const ongoingTimeRemainingMs = this.getOngoingTimeRemainingMs();
+        const ongoingTimeElapsedMs = this.durationTotal - ongoingTimeRemainingMs;
         // Update time remaining
         const timeRemainingShort = msToShortTime(ongoingTimeRemainingMs);
         if (!timeRemainingShort) {
@@ -373,9 +376,15 @@ class Action {
             elTimerCompact.textContent = timeRemainingShort;
         }
         // Update progress percent and progress bars
-        const progress = Math.round(100 * (this.durationTotal - ongoingTimeRemainingMs) / this.durationTotal);
+        const progress = Math.round(100 * (ongoingTimeElapsedMs) / this.durationTotal);
         this.elListItem.querySelector('.progress-done').textContent = progress;
         this.elListItem.querySelector('.progress-bars').style.setProperty('--progress-done', `${progress}%`);
+        // Mark the list item if non-zero startup duration in progress (i.e. crew on cooldown because of it)
+        if (this.durationStartup && ongoingTimeElapsedMs < this.durationStartup) {
+            this.elListItem.classList.add('startup-in-progress');
+        } else {
+            this.elListItem.classList.remove('startup-in-progress');
+        }
     }
 
     injectListItem() {
@@ -582,6 +591,17 @@ class Action {
         document.querySelector('#actions-queued ul').prepend(this.elListItem);
         actionService.updateQueuedActionsReadiness();
         this.flashListItem();
+    }
+
+    /**
+     * Used only for example actions, to force actions that are created as
+     * ongoing and not ready, to NOT be marked as "startup-in-progress".
+     */
+    forceStartupFinished() {
+        if (this.state === ACTION_STATE.ONGOING && !this.isReady) {
+            // Move the started date in the past, such that the duration-startup is no longer in progress
+            this.startedDate = new Date(this.startedDate.getTime() - this.durationStartup);
+        }
     }
 }
 

@@ -37,6 +37,12 @@ body.embed {
   transform: rotate(90deg);
 }
 
+.icon-plus::after {
+  -webkit-mask-image: url("./assets/images/icon-x.svg");
+          mask-image: url("./assets/images/icon-x.svg");
+  transform: rotate(45deg);
+}
+
 .icon-ship-right::after {
   -webkit-mask-image: url("./assets/images/icon-ship.svg");
           mask-image: url("./assets/images/icon-ship.svg");
@@ -106,46 +112,53 @@ body.embed {
   right: 0;
   top: 0;
 }
-
-.primary-buttons {
+.root-section .section-title-sidebar .active-crew-name::before,
+.root-section .section-title-sidebar .active-crew-name::after {
+  content: '"';
+}
+.root-section .primary-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 25px;
   margin-top: 25px;
 }
-.primary-buttons button {
+.root-section .primary-buttons button {
   align-items: center;
   display: flex;
   gap: 5px;
   white-space: nowrap;
 }
-.primary-buttons button .icon-round {
+.root-section .primary-buttons button .icon-round {
   transition: inherit;
 }
-.primary-buttons button .icon-round::after {
+.root-section .primary-buttons button .icon-round::after {
   background-color: var(--color-highlight);
   transition: inherit;
 }
-.primary-buttons button.active {
+.root-section .primary-buttons button.active {
   background-color: var(--color-highlight);
   color: white;
 }
-.primary-buttons button:hover .icon-round, .primary-buttons button:active .icon-round, .primary-buttons button.active .icon-round {
+.root-section .primary-buttons button:hover .icon-round, .root-section .primary-buttons button:active .icon-round, .root-section .primary-buttons button.active .icon-round {
   background-color: transparent;
 }
-.primary-buttons button:hover .icon-round::after, .primary-buttons button:active .icon-round::after, .primary-buttons button.active .icon-round::after {
+.root-section .primary-buttons button:hover .icon-round::after, .root-section .primary-buttons button:active .icon-round::after, .root-section .primary-buttons button.active .icon-round::after {
   background-color: white;
 }
-
-.active-crew-name::before,
-.active-crew-name::after {
-  content: '"';
+.root-section .config-panels .config-panel {
+  background-color: var(--color-black-faded-50);
+  gap: 20px;
+  margin-top: 20px;
+  padding: 20px;
+}
+.root-section .config-panels .config-panel button:not(.no-margin) {
+  margin-left: 20px;
 }
 
-#manage-crews #active-crew.ready {
+#plan-actions #active-crew.ready {
   color: var(--color-ready);
 }
-#manage-crews #active-crew:not(.ready):hover::after {
+#plan-actions #active-crew:not(.ready):hover::after {
   background-color: black;
   bottom: -30px;
   color: white;
@@ -159,41 +172,69 @@ body.embed {
   white-space: nowrap;
   z-index: 1;
 }
-#manage-crews #active-asteroid,
-#manage-crews #active-base {
+#plan-actions #active-asteroid,
+#plan-actions #active-base {
   opacity: 0.5;
 }
-#manage-crews #active-asteroid .hover-detail,
-#manage-crews #active-base .hover-detail {
+#plan-actions #active-asteroid .hover-detail,
+#plan-actions #active-base .hover-detail {
   display: none;
 }
-#manage-crews #active-asteroid:hover,
-#manage-crews #active-base:hover {
+#plan-actions #active-asteroid:hover,
+#plan-actions #active-base:hover {
   opacity: 1;
 }
-#manage-crews #active-asteroid:hover .hover-detail,
-#manage-crews #active-base:hover .hover-detail {
+#plan-actions #active-asteroid:hover .hover-detail,
+#plan-actions #active-base:hover .hover-detail {
   display: unset;
 }
-#manage-crews .crew-panel {
-  background-color: var(--color-black-faded-50);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 20px;
-  padding: 20px;
-}
-#manage-crews .crew-panel button:not(.no-margin) {
-  margin-left: 20px;
-}
-
 #plan-actions #action-setup {
   background-color: var(--color-black-faded-50);
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  font-size: 14px;
+  gap: 50px;
   margin-top: 20px;
   padding: 20px;
+}
+#plan-actions #action-setup #action-setup-type ul li {
+  --item-height: 30px;
+  align-items: center;
+  -webkit-clip-path: polygon(0 0, calc(100% - var(--item-height) / 2) 0, 100% 50%, calc(100% - var(--item-height) / 2) 100%, 0 100%);
+          clip-path: polygon(0 0, calc(100% - var(--item-height) / 2) 0, 100% 50%, calc(100% - var(--item-height) / 2) 100%, 0 100%);
+  cursor: var(--cursor-url-active) 5 5, auto;
+  display: flex;
+  gap: 5px;
+  height: var(--item-height);
+  padding: 0 20px 0 10px;
+  white-space: nowrap;
+}
+#plan-actions #action-setup #action-setup-type ul li:not(:first-child) {
+  margin-top: 5px;
+}
+#plan-actions #action-setup #action-setup-type ul li:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+#plan-actions #action-setup #action-setup-type ul li:hover .icon-round {
+  background-color: unset;
+}
+#plan-actions #action-setup #action-setup-type ul li:hover .icon-round::after {
+  background-color: white;
+}
+#plan-actions #action-setup #action-setup-type ul li.active {
+  background-color: var(--color-highlight);
+  color: white;
+}
+#plan-actions #action-setup #action-setup-type ul li.active .icon-round::after {
+  background-color: white;
+}
+#plan-actions #active-crew-panel {
+  display: flex;
+  flex-direction: column;
+}
+#plan-actions #change-crew-panel {
+  display: flex;
+  flex-direction: column;
 }
 
 #manage-actions #action-groups {

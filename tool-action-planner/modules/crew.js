@@ -142,27 +142,27 @@ class CrewService {
         crew.updateCrewReadiness();
     }
 
-    toggleActiveCrew(forceInactive = false) {
+    toggleActiveCrew() {
         const elActiveCrewButton = document.getElementById('active-crew-button');
         const elActiveCrewPanel = document.getElementById('active-crew-panel');
-        if (elActiveCrewButton.classList.contains('active') || forceInactive) {
+        if (elActiveCrewButton.classList.contains('active')) {
             elActiveCrewButton.classList.remove('active');
             elActiveCrewPanel.classList.add('hidden');
         } else {
-            this.toggleChangeCrew(true); // force inactive
+            closeConfigPanels();
             elActiveCrewButton.classList.add('active');
             elActiveCrewPanel.classList.remove('hidden');
         }
     }
 
-    toggleChangeCrew(forceInactive = false) {
+    toggleChangeCrew() {
         const elChangeCrewButton = document.getElementById('change-crew-button');
         const elChangeCrewPanel = document.getElementById('change-crew-panel');
-        if (elChangeCrewButton.classList.contains('active') || forceInactive) {
+        if (elChangeCrewButton.classList.contains('active')) {
             elChangeCrewButton.classList.remove('active');
             elChangeCrewPanel.classList.add('hidden');
         } else {
-            this.toggleActiveCrew(true); // force inactive
+            closeConfigPanels();
             elChangeCrewButton.classList.add('active');
             elChangeCrewPanel.classList.remove('hidden');
         }

@@ -19,6 +19,17 @@ document.querySelectorAll('label > input').forEach(elInput => {
 const urlParams = new URLSearchParams(location.search);
 const influenceAsteroidId = urlParams.get('influence_asteroid');
 
+// Global variables and functions
+
+globalThis.closeConfigPanels = function() {
+    for (const elConfigPanel of document.querySelectorAll('.config-panel')) {
+        elConfigPanel.classList.add('hidden');
+    }
+    for (const elButton of document.querySelectorAll('.primary-buttons button')) {
+        elButton.classList.remove('active');
+    }
+}
+
 // Source: https://gist.github.com/Machy8/1b0e3cd6c61f140a6b520269acdd645f
 function on(eventType, selector, callback) {
     document.addEventListener(eventType, event => {
@@ -66,9 +77,6 @@ initializeExampleActionsById();
 actionService.updateQueuedDraggables();
 
 //// TEST
-// document.getElementById('manage-crews').classList.add('hidden'); // hide "Manage Crews"
-// document.getElementById('crew-setup-wrapper').classList.add('hidden'); // hide buttons from "Manage Crews"
 // document.getElementById('plan-actions').classList.add('hidden'); // hide "Plan Actions"
-document.getElementById('action-setup').classList.add('hidden'); // hide action-setup from "Plan Actions"
 // document.getElementById('toggle-action-types-label').click(); // hide action types
 // document.getElementById('toggle-compact-lists-label').click(); // show expanded lists

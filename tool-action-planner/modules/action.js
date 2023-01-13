@@ -676,6 +676,19 @@ class ActionService {
             }
         }, {offset: Number.NEGATIVE_INFINITY}).element;
     }
+
+    toggleAddAction() {
+        const elAddActionButton = document.getElementById('add-action-button');
+        const elActionSetupPanel = document.getElementById('action-setup');
+        if (elAddActionButton.classList.contains('active')) {
+            elAddActionButton.classList.remove('active');
+            elActionSetupPanel.classList.add('hidden');
+        } else {
+            closeConfigPanels();
+            elAddActionButton.classList.add('active');
+            elActionSetupPanel.classList.remove('hidden');
+        }
+    }
 }
 
 // Global variables and functions
@@ -700,6 +713,10 @@ globalThis.onRemoveActionById = function(actionId, shouldConfirm = false) {
 
 globalThis.onTransitionActionById = function(actionId) {
     actionService.actionsById[actionId]?.transitionAction();
+}
+
+globalThis.onToggleAddAction = function() {
+    actionService.toggleAddAction();
 }
 
 export {Action, ACTION_STATE, ACTION_TYPE};

@@ -264,17 +264,24 @@ button {
                     text-overflow: ellipsis;
                 }
 
-                .active { color: var(--color-ready); }
-                .available { color: var(--color-highlight); }
-                .unavailable { color: var(--color-warning); }
+                .lot-state {
+                    position: relative;
 
-                .ongoing-stats {
-                    margin-left: 10px;
-                    opacity: 0.5;
+                    &.active .state-text { color: var(--color-ready); }
+                    &.available .state-text { color: var(--color-highlight); }
+                    &.unavailable .state-text { color: var(--color-warning); }
+    
+                    .ongoing-stats {
+                        position: absolute;
+                        right: 0;
 
-                    &::after { content: ')'; }
-                    &::before { content: '('; }
+                        .remaining-time {
+                            margin-left: 10px;
+                            opacity: 0.5;
+                        }
+                    }
                 }
+
             }
         }
     }

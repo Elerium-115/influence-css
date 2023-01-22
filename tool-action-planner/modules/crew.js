@@ -112,8 +112,7 @@ class Crew {
         this.refreshCooldownInterval = setInterval(() => this.updateCrewReadiness(), 1000); // refresh every 1 second
     }
 
-    initializeLot(lotId, asteroidId, lotState, lotAssetName) {
-        console.log(`%c--- initializeLot #${lotId}`, 'color: cyan;'); //// TEST
+    initializeLot(lotId, asteroidId, lotState = LOT_STATE.EMPTY, lotAssetName = null) {
         if (!this.lotsByAsteroidId[asteroidId]) {
             this.lotsByAsteroidId[asteroidId] = [];
         }
@@ -128,30 +127,19 @@ class Crew {
         this.injectLotsListItem(lot);
     }
 
+    /**
+     * NOTE: This method always returns the basic HTML for a lots-list item, without detailing the lot's state
+     * based on any action. That is done separately, when the action's state changes, via "Action.updateLotsList".
+     */
     getLotsListItemHtml(lot) {
-        let stateClass = [LOT_STATE.BUILDING_SITE_PLAN, LOT_STATE.BUILDING_UNDER_CONSTRUCTION].includes(lot.state) ? 'unavailable' : 'available';
-        //// TO DO: determine the state of assets that can be "activated" - e.g. active Extractor has state "Extracting"
-        let stateHtml = LOT_STATE_TEXT_SHORT[lot.state];
-        const ongoingAction = actionService.getOngoingActionForActiveCrewAtLotId(lot.id);
-        console.log(`--- ongoingAction @ Lot ${lot.id}:`, ongoingAction); //// TEST
-        if (ongoingAction) {
-            stateHtml += /*html*/ `
-                <span class="ongoing-stats">Done 10%, Remaining 2h</span>
-            `;
-        }
-        //// TEST - hardcoding for Extractor at lot 89
-        if (lot.id === 89) {
-            stateClass = 'active';
-            stateHtml = 'Extracting: Water';
-            stateHtml += /*html*/ `
-                <span class="ongoing-stats">Done 0%, Remaining 5h</span>
-            `;
-        }
         return /*html*/ `
             <li id="lot_${lot.id}">
-                <div>${lot.id}</div>
-                <div>${lot.assetName || ''}</div>
-                <div class="${stateClass}">${stateHtml}</div>
+                <div class="lot-id">${lot.id}</div>
+                <div class="lot-asset">${lot.assetName || ''}</div>
+                <div class="lot-state ${lot.getStateClassBasedOnAction()}">
+                    <span class="state-text">${LOT_STATE_TEXT_SHORT[lot.state]}</span>
+                    <span class="ongoing-stats"></span>
+                </div>
             </li>
         `;
     }
@@ -174,7 +162,6 @@ class Crew {
         const asteroidLots = this.lotsByAsteroidId[this.asteroidId];
         const nextHighestIdLot = asteroidLots[asteroidLots.indexOf(lot) + 1];
         if (nextHighestIdLot) {
-            console.log(`--- nextHighestIdLot:`, nextHighestIdLot); //// TEST
             nextHighestIdLot.elLotsListItem.insertAdjacentElement('beforebegin', lot.elLotsListItem);
         } else {
             // This is the new longest ongoing action

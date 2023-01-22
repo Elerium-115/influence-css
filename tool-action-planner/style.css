@@ -263,24 +263,25 @@ button .icon-round {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .active {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state {
+  position: relative;
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state.active .state-text {
   color: var(--color-ready);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .available {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state.available .state-text {
   color: var(--color-highlight);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .unavailable {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state.unavailable .state-text {
   color: var(--color-warning);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .ongoing-stats {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state .ongoing-stats {
+  position: absolute;
+  right: 0;
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state .ongoing-stats .remaining-time {
   margin-left: 10px;
   opacity: 0.5;
-}
-#plan-actions #manage-lots-panel #manage-lots-list li .ongoing-stats::after {
-  content: ")";
-}
-#plan-actions #manage-lots-panel #manage-lots-list li .ongoing-stats::before {
-  content: "(";
 }
 #plan-actions #active-crew-panel {
   flex-direction: column;

@@ -1,5 +1,6 @@
 import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js';
 import {leaderLineConnectElements} from './leader-line-utils.js';
+import {LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
 import {NotificationService} from './notification.js';
 
 const ACTION_STATE = {
@@ -16,6 +17,7 @@ const ACTION_TYPE = {
     EXTRACT: 'EXTRACT',
     LAND: 'LAND',
     LAUNCH: 'LAUNCH',
+    REFINE: 'REFINE',
     TRANSFER: 'TRANSFER',
     TRAVEL: 'TRAVEL',
 };
@@ -27,9 +29,22 @@ const ACTION_TYPE_TEXT = {
     EXTRACT: 'Extract',
     LAND: 'Land', // Land from orbit
     LAUNCH: 'Launch', // Launch to orbit
+    REFINE: 'Refine',
     TRANSFER: 'Transfer',
     TRAVEL: 'Travel',
 };
+
+const ACTION_TYPE_TEXT_ING = {
+    CONSTRUCT: 'Constructing',
+    CORE_SAMPLE: 'Core Sampling',
+    DECONSTRUCT: 'Deconstructing',
+    EXTRACT: 'Extracting',
+    LAND: 'Landing', // Landing from orbit
+    LAUNCH: 'Launching', // Launching to orbit
+    REFINE: 'Refining',
+    TRANSFER: 'Transfering',
+    TRAVEL: 'Traveling',
+}
 
 const ACTION_TYPE_ICON_CLASS = {
     CONSTRUCT: 'icon-construct',
@@ -38,6 +53,7 @@ const ACTION_TYPE_ICON_CLASS = {
     EXTRACT: 'icon-yield',
     LAND: 'icon-ship-down',
     LAUNCH: 'icon-ship-up',
+    REFINE: 'icon-refine',
     TRANSFER: 'icon-trade',
     TRAVEL: 'icon-ship-right',
 };
@@ -49,6 +65,7 @@ const ACTION_TYPE_STARTUP_DURATION = {
     EXTRACT: 5 * 1000,
     LAND: 5 * 1000,
     LAUNCH: 5 * 1000,
+    REFINE: 5 * 1000,
     TRANSFER: 5 * 1000, // Crew presence not required for action "Transfer" => no cooldown
     TRAVEL: 5 * 1000,
 };
@@ -101,6 +118,7 @@ class Action {
         this.isReady = false;
         this.elListItem = null;
         this.refreshOngoingInterval = null;
+        this.updateLotsList();
         actionService.actionsById[this.id] = this;
     }
 
@@ -114,7 +132,8 @@ class Action {
     }
 
     getActionText() {
-        return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at Lot ${this.sourceId} (${this.sourceName})`;
+        const sourceType = this.type === ACTION_TYPE.TRAVEL ? 'Asteroid' : 'Lot';
+        return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at ${sourceType} ${this.sourceId} (${this.sourceName})`;
     }
 
     getCrewInvolvement() {
@@ -223,6 +242,7 @@ class Action {
         if (state === ACTION_STATE.DONE) {
             this.markFinalized();
         }
+        this.updateLotsList();
     }
 
     clearRefreshOngoingInterval() {
@@ -603,6 +623,149 @@ class Action {
             this.startedDate = new Date(this.startedDate.getTime() - this.durationStartup);
         }
     }
+
+    /**
+     * Return the new lot state, as a result of an ongoing / done action
+     */
+    getNewLotStateData() {
+        if (this.state === ACTION_STATE.QUEUED) {
+            console.log(`%c--- ERROR: action queued => can NOT get new lot state`, 'color: orange;');
+            return;
+        }
+        let newStateData = {
+            state: null,
+            stateCustomText: null,
+        };
+        switch (this.type) {
+            case ACTION_TYPE.TRANSFER:
+            case ACTION_TYPE.TRAVEL:
+                // These types of actions do not affect a lot's state
+                return newStateData;
+            case ACTION_TYPE.EXTRACT:
+            case ACTION_TYPE.REFINE:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.ACTIVE;
+                    newStateData.stateCustomText = ACTION_TYPE_TEXT_ING[this.type]; // e.g. "Extracting", "Refining" etc.
+                    newStateData.stateCustomText += `: ${this.subject}`; // e.g. "Extracting: Water"
+                } else {
+                    // Activity done => revert the lot's state to "Ready" (i.e. BUILDING_COMPLETED)
+                    newStateData.state = LOT_STATE.BUILDING_COMPLETED;
+                }
+                break;
+            case ACTION_TYPE.CONSTRUCT:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.BUILDING_UNDER_CONSTRUCTION;
+                } else {
+                    newStateData.state = LOT_STATE.BUILDING_COMPLETED;
+                }
+                break;
+            case ACTION_TYPE.DECONSTRUCT:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.BUILDING_UNDER_DECONSTRUCTION;
+                } else {
+                    // Building deconstructed => revert the lot's state to "EMPTY"
+                    newStateData.state = LOT_STATE.EMPTY;
+                }
+                break;
+            case ACTION_TYPE.LAND:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.ACTIVE;
+                    newStateData.stateCustomText = 'Landing';
+                } else {
+                    newStateData.state = LOT_STATE.SHIP_LANDED;
+                }
+                break;
+            case ACTION_TYPE.LAUNCH:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.SHIP_LAUNCHING;
+                } else {
+                    // Ship launched => revert the lot's state to "EMPTY"
+                    newStateData.state = LOT_STATE.EMPTY;
+                }
+                break;
+        }
+        return newStateData;
+    }
+
+    /**
+     * Return the new lot asset name, as a result of an ongoing / done action
+     */
+    getNewLotAssetName() {
+        if (this.state === ACTION_STATE.QUEUED) {
+            console.log(`%c--- ERROR: action queued => can NOT get new lot asset name`, 'color: orange;');
+            return;
+        }
+        let newAssetName = null;
+        switch (this.type) {
+            case ACTION_TYPE.CORE_SAMPLE:
+            case ACTION_TYPE.EXTRACT:
+            case ACTION_TYPE.REFINE:
+            case ACTION_TYPE.TRANSFER:
+            case ACTION_TYPE.TRAVEL:
+                // These types of actions do not affect a lot's asset name
+                return newAssetName;
+            case ACTION_TYPE.CONSTRUCT:
+            case ACTION_TYPE.LAND:
+                /**
+                 * For these types of actions, the lot's asset is the action's subject:
+                 * e.g. Construct "Warehouse", Land "Light Transport"
+                 */
+                newAssetName = this.subject;
+                break;
+            case ACTION_TYPE.DECONSTRUCT:
+            case ACTION_TYPE.LAUNCH:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newAssetName = this.subject;
+                } else {
+                    // Activity done => revert the lot's asset name to NULL
+                    newAssetName = null;
+                }
+                break;
+        }
+        return newAssetName;
+    }
+
+    updateLotsList() {
+        if (this.state === ACTION_STATE.QUEUED) {
+            // Queued actions do not affect a lot's state or asset
+            return;
+        }
+        const lotId = this.sourceId;
+        const activeCrew = crewService.activeCrew;
+        const lots = activeCrew.lotsByAsteroidId[activeCrew.asteroidId];
+        const actionLot = lots.find(lot => lot.id === lotId);
+        if (!actionLot) {
+            console.log(`%c--- ERROR: lot not found for action #${this.id} => can NOT update lots list`, 'color: orange;');
+            return;
+        }
+        let newAssetName = this.getNewLotAssetName();
+        let newStateData = this.getNewLotStateData();
+        const newState = newStateData.state;
+        const newStateCustomText = newStateData.stateCustomText;
+        const elLotsListItem = actionLot.elLotsListItem;
+        if (newAssetName) {
+            actionLot.assetName = newAssetName;
+            elLotsListItem.querySelector('.lot-asset').textContent = newAssetName;
+        }
+        if (newState) {
+            actionLot.state = newState;
+            const elLotState = elLotsListItem.querySelector('.lot-state');
+            const stateClass = actionLot.getStateClassBasedOnAction(this);
+            elLotState.classList.remove('active', 'available', 'unavailable');
+            elLotState.classList.add(stateClass);
+            const newStateText = newStateCustomText || LOT_STATE_TEXT_SHORT[newState];
+            elLotState.querySelector('.state-text').textContent = `${newStateText}`;
+            const elOngoingStats = elLotsListItem.querySelector('.ongoing-stats');
+            if (this.state === ACTION_STATE.ONGOING) {
+                //// TO DO: update ongoing stats for ongoing action
+                elOngoingStats.innerHTML = /*html*/ `
+                    Done 10%<span class="remaining-time">Remaining 2h</span>
+                `;
+            } else {
+                elOngoingStats.textContent = '';
+            }
+        }
+    }
 }
 
 class ActionService {
@@ -675,21 +838,6 @@ class ActionService {
                 return closest;
             }
         }, {offset: Number.NEGATIVE_INFINITY}).element;
-    }
-
-    getOngoingActionForActiveCrewAtLotId(lotId) {
-        const activeCrew = crewService.activeCrew;
-        if (!activeCrew) {
-            // Lots being initialized before the existence of an active crew
-            return null;
-        }
-        const activeAsteroidId = activeCrew.asteroidId;
-        return Object.values(actionService.actionsById).find(action => {
-            return action.crewId === activeCrew.id &&
-                action.asteroidId === activeAsteroidId &&
-                action.sourceId === lotId &&
-                action.state === ACTION_STATE.ONGOING;
-        });
     }
 
     toggleAddAction() {

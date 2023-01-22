@@ -2,7 +2,6 @@ import {HOUR} from './abstract.js';
 import {Action, ACTION_STATE, ACTION_TYPE} from './action.js';
 import {Crew} from './crew.js';
 import {Asteroid} from './asteroid.js';
-import {LOT_STATE} from './lot.js';
 
 // Example asteroids
 new Asteroid(1, 'Adalia Prime');
@@ -16,13 +15,9 @@ exampleCrew.setBase(666, 'Light Transport'); // Light Transport at lot #666
 // exampleCrew.setIsLanded(false); //// TEST
 
 // Example lots on asteroid #1 for example crew
-exampleCrew.initializeLot(666, 1, LOT_STATE.SHIP_LANDED, 'Light Transport');
-exampleCrew.initializeLot(777, 1, LOT_STATE.BUILDING_COMPLETED, 'Warehouse');
-exampleCrew.initializeLot(89, 1, LOT_STATE.BUILDING_COMPLETED, 'Extractor');
-exampleCrew.initializeLot(123, 1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Extractor');
-exampleCrew.initializeLot(1, 1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Marketplace');
-exampleCrew.initializeLot(2, 1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Spaceport');
-exampleCrew.initializeLot(4567, 1, LOT_STATE.EMPTY);
+for (const lotId of [666, 777, 89, 123, 1, 2, 4567]) {
+    exampleCrew.initializeLot(lotId, 1);
+}
 
 /**
  * Example action template:
@@ -39,8 +34,26 @@ exampleCrew.initializeLot(4567, 1, LOT_STATE.EMPTY);
  *      forceStartupFinished = false,
  *      forceFinalizedHoursAgo = null,
  * ]
+ * 
+ * NOTE: Parse example actions in their chronological order:
+ * 1. oldest-done
+ * 2. ongoing (order irrelevant re: only 1 ongoing action per lot)
+ * 3. latest-queued
  */
 const exampleActionsTemplate = [
+    // Done actions, defined in reverse b/c they are prepended, NOT appended
+    [ACTION_TYPE.LAND,          'Light Transport',  'Empty Lot',        666,    null,               null,   0,              false,  ACTION_STATE.DONE,      false,  120 ], // done 5 days ago
+    [ACTION_TYPE.CONSTRUCT,     'Warehouse',        'Empty Lot',        777,    null,               null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  96  ], // done 4 days ago
+    [ACTION_TYPE.TRANSFER,      'Core Samplers',    'Light Transport',  666,    'Warehouse',        777,    1 * HOUR,       false,  ACTION_STATE.DONE,      false,  72  ], // done 3 days ago
+    [ACTION_TYPE.CORE_SAMPLE,   'Water',            'Empty Lot',        89,     null,               null,   0,              false,  ACTION_STATE.DONE,      false,  48  ], // done 2 days ago, NO runtime duration (only startup duration) for Core Sample
+    [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Empty Lot',        89,     null,               null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  24  ], // done 1 day ago
+    [ACTION_TYPE.EXTRACT,       'Water',            'Extractor',        89,     'Warehouse',        777,    5 * HOUR,       false,  ACTION_STATE.DONE,      false,  19  ], // done 19 hours ago
+    [ACTION_TYPE.CORE_SAMPLE,   'Hydrogen',         'Empty Lot',        123,    null,               null,   0,              false,  ACTION_STATE.DONE,      false,  18  ], // done 18 hours ago, NO runtime duration (only startup duration) for Core Sample
+    // Ongoing actions
+    [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Empty Lot',        123,    null,               null,   23 * HOUR,      true,   ACTION_STATE.ONGOING                ],
+    [ACTION_TYPE.EXTRACT,       'Water',            'Extractor',        89,     'Warehouse',        777,    5 * HOUR,       false,  ACTION_STATE.ONGOING,   true        ], // startup finished
+    [ACTION_TYPE.CONSTRUCT,     'Marketplace',      'Empty Lot',        1,      null,               null,   23 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
+    [ACTION_TYPE.CONSTRUCT,     'Spaceport',        'Empty Lot',        2,      null,               null,   12 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
     // Queued actions
     [ACTION_TYPE.EXTRACT,       'Hydrogen',         'Extractor',        123,    'Warehouse',        777,    0.0125 * HOUR, true                                         ], // duration 45 seconds (test fast completion)
     [ACTION_TYPE.CORE_SAMPLE,   'Methane',          'Empty Lot',        4567,   null,               null,   0,                                                          ], // NO runtime duration (only startup duration) for Core Sample
@@ -48,17 +61,6 @@ const exampleActionsTemplate = [
     [ACTION_TYPE.EXTRACT,       'Methane',          'Extractor',        4567,   'Warehouse',        777,    8 * HOUR,                                                   ],
     [ACTION_TYPE.DECONSTRUCT,   'Extractor',        'Extractor',        89,     'Warehouse',        777,    2 * HOUR,                                                   ],
     [ACTION_TYPE.TRANSFER,      '[multiple]',       'Warehouse',        777,    'Light Transport',  666,    1 * HOUR,                                                   ],
-    // Ongoing actions
-    [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Empty Lot',        123,    null,               null,   23 * HOUR,      true,   ACTION_STATE.ONGOING                ],
-    [ACTION_TYPE.EXTRACT,       'Water',            'Extractor',        89,     'Warehouse',        777,    5 * HOUR,       false,  ACTION_STATE.ONGOING,   true        ], // startup finished
-    [ACTION_TYPE.CONSTRUCT,     'Marketplace',      'Empty Lot',        1,      null,               null,   23 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
-    [ACTION_TYPE.CONSTRUCT,     'Spaceport',        'Empty Lot',        2,      null,               null,   12 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
-    // Done actions, defined in reverse b/c they are prepended, NOT appended
-    [ACTION_TYPE.CONSTRUCT,     'Warehouse',        'Empty Lot',        777,    null,               null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  96  ], // done 4 days ago
-    [ACTION_TYPE.TRANSFER,      'Core Samplers',    'Light Transport',  666,    'Warehouse',        777,    1 * HOUR,       false,  ACTION_STATE.DONE,      false,  72  ], // done 3 days ago
-    [ACTION_TYPE.CORE_SAMPLE,   'Water',            'Empty Lot',        89,     null,               null,   0,              false,  ACTION_STATE.DONE,      false,  48  ], // done 2 days ago, NO runtime duration (only startup duration) for Core Sample
-    [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Empty Lot',        89,     null,               null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  24  ], // done 1 day ago
-    [ACTION_TYPE.CORE_SAMPLE,   'Hydrogen',         'Empty Lot',        123,    null,               null,   0,              false,  ACTION_STATE.DONE,      false,  18  ], // done 18 hours ago, NO runtime duration (only startup duration) for Core Sample
 ];
 
 function initializeExampleActionsById() {

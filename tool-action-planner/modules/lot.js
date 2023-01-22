@@ -15,13 +15,15 @@ const LOT_STATE_TEXT_SHORT = {
 };
 
 /**
- * Lots only exist within an asteroid's "lots" array, so they do not need an explicit asteroid ID
+ * Lots only exist within a crew's "lotsByAsteroidId",
+ * so they do not need an explicit asteroid ID or crew ID.
  */
 class Lot {
     constructor(id, state, assetName = null) {
         this.id = id;
         this.state = state; // expecting "LOT_STATE" value
         this.assetName = assetName; // name of asset located at this lot (only for non-empty lots)
+        this.elLotsListItem = null;
     }
 }
 

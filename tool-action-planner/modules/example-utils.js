@@ -8,22 +8,21 @@ import {LOT_STATE} from './lot.js';
 new Asteroid(1, 'Adalia Prime');
 new Asteroid(296, 'Tortuga');
 
-// Example lots on asteroid #1
-const exampleAsteroid = asteroidService.asteroidsById[1];
-exampleAsteroid.initializeLot(666, LOT_STATE.SHIP_LANDED, 'Light Transport');
-exampleAsteroid.initializeLot(777, LOT_STATE.BUILDING_COMPLETED, 'Warehouse');
-exampleAsteroid.initializeLot(89, LOT_STATE.BUILDING_COMPLETED, 'Extractor');
-exampleAsteroid.initializeLot(123, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Extractor');
-exampleAsteroid.initializeLot(1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Marketplace');
-exampleAsteroid.initializeLot(2, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Spaceport');
-exampleAsteroid.initializeLot(4567, LOT_STATE.EMPTY);
-
 // Example crew
 const exampleCrew = new Crew('Dragon');
 exampleCrew.setAsteroidId(1); // Adalia Prime
 exampleCrew.setIsLanded(true);
 exampleCrew.setBase(666, 'Light Transport'); // Light Transport at lot #666
 // exampleCrew.setIsLanded(false); //// TEST
+
+// Example lots on asteroid #1 for example crew
+exampleCrew.initializeLot(666, 1, LOT_STATE.SHIP_LANDED, 'Light Transport');
+exampleCrew.initializeLot(777, 1, LOT_STATE.BUILDING_COMPLETED, 'Warehouse');
+exampleCrew.initializeLot(89, 1, LOT_STATE.BUILDING_COMPLETED, 'Extractor');
+exampleCrew.initializeLot(123, 1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Extractor');
+exampleCrew.initializeLot(1, 1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Marketplace');
+exampleCrew.initializeLot(2, 1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Spaceport');
+exampleCrew.initializeLot(4567, 1, LOT_STATE.EMPTY);
 
 /**
  * Example action template:

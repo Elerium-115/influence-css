@@ -240,6 +240,9 @@ button .icon-round {
 #plan-actions #manage-lots-panel {
   flex-direction: column;
 }
+#plan-actions #manage-lots-panel #manage-lots-list {
+  font-size: 14px;
+}
 #plan-actions #manage-lots-panel #manage-lots-list li {
   align-items: center;
   display: grid;
@@ -256,6 +259,10 @@ button .icon-round {
   background-color: rgba(255, 255, 255, 0.1);
   color: white;
 }
+#plan-actions #manage-lots-panel #manage-lots-list li > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 #plan-actions #manage-lots-panel #manage-lots-list li .active {
   color: var(--color-ready);
 }
@@ -265,9 +272,15 @@ button .icon-round {
 #plan-actions #manage-lots-panel #manage-lots-list li .unavailable {
   color: var(--color-warning);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li > * {
-  overflow: hidden;
-  text-overflow: ellipsis;
+#plan-actions #manage-lots-panel #manage-lots-list li .ongoing-stats {
+  margin-left: 10px;
+  opacity: 0.5;
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .ongoing-stats::after {
+  content: ")";
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .ongoing-stats::before {
+  content: "(";
 }
 #plan-actions #active-crew-panel {
   flex-direction: column;

@@ -242,7 +242,7 @@ class Action {
     getNextLongestOngoingAction() {
         const thisTimeRemainingMs = this.getOngoingTimeRemainingMs();
         let nextLongestOngoingAction = null;
-        for (const [actionId, action] of Object.entries(actionService.actionsById)) {
+        for (const action of Object.values(actionService.actionsById)) {
             // Parse only other actions which are ongoing and not ready
             if (action.id === this.id || action.state !== ACTION_STATE.ONGOING || action.isReady) {
                 continue;
@@ -675,6 +675,21 @@ class ActionService {
                 return closest;
             }
         }, {offset: Number.NEGATIVE_INFINITY}).element;
+    }
+
+    getOngoingActionForActiveCrewAtLotId(lotId) {
+        const activeCrew = crewService.activeCrew;
+        if (!activeCrew) {
+            // Lots being initialized before the existence of an active crew
+            return null;
+        }
+        const activeAsteroidId = activeCrew.asteroidId;
+        return Object.values(actionService.actionsById).find(action => {
+            return action.crewId === activeCrew.id &&
+                action.asteroidId === activeAsteroidId &&
+                action.sourceId === lotId &&
+                action.state === ACTION_STATE.ONGOING;
+        });
     }
 
     toggleAddAction() {

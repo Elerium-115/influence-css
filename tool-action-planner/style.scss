@@ -239,6 +239,8 @@ button {
         flex-direction: column;
 
         #manage-lots-list {
+            font-size: 14px;
+
             li {
                 align-items: center;
                 display: grid;
@@ -257,13 +259,21 @@ button {
                     color: white;
                 }
 
+                > * {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
                 .active { color: var(--color-ready); }
                 .available { color: var(--color-highlight); }
                 .unavailable { color: var(--color-warning); }
 
-                > * {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
+                .ongoing-stats {
+                    margin-left: 10px;
+                    opacity: 0.5;
+
+                    &::after { content: ')'; }
+                    &::before { content: '('; }
                 }
             }
         }

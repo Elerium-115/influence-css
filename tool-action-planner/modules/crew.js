@@ -1,4 +1,5 @@
 import {getPseudoUniqueId, msToShortTime} from './abstract.js';
+import {Lot, LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
 
 class Crew {
     constructor(name) {
@@ -12,6 +13,7 @@ class Crew {
         this.cooldownActionId = null; // action ID that triggered the crew cooldown
         this.cooldownStartedDate = null;
         this.refreshCooldownInterval = null;
+        this.lotsByAsteroidId = {}; // array of "Lot" associated with each asteroid ID
         crewService.addCrew(this);
     }
 
@@ -109,6 +111,76 @@ class Crew {
         this.updateCrewReadiness();
         this.refreshCooldownInterval = setInterval(() => this.updateCrewReadiness(), 1000); // refresh every 1 second
     }
+
+    initializeLot(lotId, asteroidId, lotState, lotAssetName) {
+        console.log(`%c--- initializeLot #${lotId}`, 'color: cyan;'); //// TEST
+        if (!this.lotsByAsteroidId[asteroidId]) {
+            this.lotsByAsteroidId[asteroidId] = [];
+        }
+        const asteroidLots = this.lotsByAsteroidId[asteroidId];
+        if (asteroidLots.find(lot => lot.id === lotId)) {
+            console.log(`%c--- ERROR: lotId already initialized on asteroidId for this crew => can NOT initialize lot`, 'color: orange;');
+            return;
+        }
+        const lot = new Lot(lotId, lotState, lotAssetName);
+        asteroidLots.push(lot);
+        asteroidLots.sort((a, b) => a.id > b.id);
+        this.injectLotsListItem(lot);
+    }
+
+    getLotsListItemHtml(lot) {
+        let stateClass = [LOT_STATE.BUILDING_SITE_PLAN, LOT_STATE.BUILDING_UNDER_CONSTRUCTION].includes(lot.state) ? 'unavailable' : 'available';
+        //// TO DO: determine the state of assets that can be "activated" - e.g. active Extractor has state "Extracting"
+        let stateHtml = LOT_STATE_TEXT_SHORT[lot.state];
+        const ongoingAction = actionService.getOngoingActionForActiveCrewAtLotId(lot.id);
+        console.log(`--- ongoingAction @ Lot ${lot.id}:`, ongoingAction); //// TEST
+        if (ongoingAction) {
+            stateHtml += /*html*/ `
+                <span class="ongoing-stats">Done 10%, Remaining 2h</span>
+            `;
+        }
+        //// TEST - hardcoding for Extractor at lot 89
+        if (lot.id === 89) {
+            stateClass = 'active';
+            stateHtml = 'Extracting: Water';
+            stateHtml += /*html*/ `
+                <span class="ongoing-stats">Done 0%, Remaining 5h</span>
+            `;
+        }
+        return /*html*/ `
+            <li id="lot_${lot.id}">
+                <div>${lot.id}</div>
+                <div>${lot.assetName || ''}</div>
+                <div class="${stateClass}">${stateHtml}</div>
+            </li>
+        `;
+    }
+
+    injectLotsListItem(lot) {
+        const lotsList = document.getElementById('manage-lots-list');
+        if (!lotsList.childElementCount) {
+            lotsList.innerHTML = /*html*/ `
+                <li class="header">
+                    <div>Lot</div>
+                    <div>Asset</div>
+                    <div>State</div>
+                </li>
+            `;
+        }
+        const elTemp = document.createElement('div');
+        elTemp.innerHTML = this.getLotsListItemHtml(lot);
+        lot.elLotsListItem = elTemp.firstElementChild;
+        // Inject before the next-highest lot ID
+        const asteroidLots = this.lotsByAsteroidId[this.asteroidId];
+        const nextHighestIdLot = asteroidLots[asteroidLots.indexOf(lot) + 1];
+        if (nextHighestIdLot) {
+            console.log(`--- nextHighestIdLot:`, nextHighestIdLot); //// TEST
+            nextHighestIdLot.elLotsListItem.insertAdjacentElement('beforebegin', lot.elLotsListItem);
+        } else {
+            // This is the new longest ongoing action
+            lotsList.append(lot.elLotsListItem);
+        }
+    }
 }
 
 class CrewService {
@@ -142,6 +214,27 @@ class CrewService {
         crew.updateCrewReadiness();
     }
 
+    getActiveCrewAction() {
+        const crewActionId = this.activeCrew.cooldownActionId;
+        if (!crewActionId) {
+            return null;
+        }
+        return actionService.actionsById[crewActionId];
+    }
+
+    toggleManageLots() {
+        const elManageLotsButton = document.getElementById('manage-lots-button');
+        const elManageLotsPanel = document.getElementById('manage-lots-panel');
+        if (elManageLotsButton.classList.contains('active')) {
+            elManageLotsButton.classList.remove('active');
+            elManageLotsPanel.classList.add('hidden');
+        } else {
+            closeConfigPanels();
+            elManageLotsButton.classList.add('active');
+            elManageLotsPanel.classList.remove('hidden');
+        }
+    }
+
     toggleActiveCrew() {
         const elActiveCrewButton = document.getElementById('active-crew-button');
         const elActiveCrewPanel = document.getElementById('active-crew-panel');
@@ -167,14 +260,6 @@ class CrewService {
             elChangeCrewPanel.classList.remove('hidden');
         }
     }
-
-    getActiveCrewAction() {
-        const crewActionId = this.activeCrew.cooldownActionId;
-        if (!crewActionId) {
-            return null;
-        }
-        return actionService.actionsById[crewActionId];
-    }
 }
 
 // Global variables and functions
@@ -197,6 +282,10 @@ globalThis.onHoverActiveCrew = function(isMouseOver) {
             elListItemHighlight.classList.remove('highlight');
         }
     }
+}
+
+globalThis.onToggleManageLots = function() {
+    crewService.toggleManageLots();
 }
 
 globalThis.onToggleActiveCrew = function() {

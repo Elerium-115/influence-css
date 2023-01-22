@@ -2,10 +2,23 @@ import {HOUR} from './abstract.js';
 import {Action, ACTION_STATE, ACTION_TYPE} from './action.js';
 import {Crew} from './crew.js';
 import {Asteroid} from './asteroid.js';
+import {LOT_STATE} from './lot.js';
 
+// Example asteroids
 new Asteroid(1, 'Adalia Prime');
 new Asteroid(296, 'Tortuga');
 
+// Example lots on asteroid #1
+const exampleAsteroid = asteroidService.asteroidsById[1];
+exampleAsteroid.initializeLot(666, LOT_STATE.SHIP_LANDED, 'Light Transport');
+exampleAsteroid.initializeLot(777, LOT_STATE.BUILDING_COMPLETED, 'Warehouse');
+exampleAsteroid.initializeLot(89, LOT_STATE.BUILDING_COMPLETED, 'Extractor');
+exampleAsteroid.initializeLot(123, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Extractor');
+exampleAsteroid.initializeLot(1, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Marketplace');
+exampleAsteroid.initializeLot(2, LOT_STATE.BUILDING_UNDER_CONSTRUCTION, 'Spaceport');
+exampleAsteroid.initializeLot(4567, LOT_STATE.EMPTY);
+
+// Example crew
 const exampleCrew = new Crew('Dragon');
 exampleCrew.setAsteroidId(1); // Adalia Prime
 exampleCrew.setIsLanded(true);

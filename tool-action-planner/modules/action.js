@@ -679,7 +679,7 @@ class ActionService {
 
     toggleAddAction() {
         const elAddActionButton = document.getElementById('add-action-button');
-        const elActionSetupPanel = document.getElementById('action-setup');
+        const elActionSetupPanel = document.getElementById('action-setup-panel');
         if (elAddActionButton.classList.contains('active')) {
             elAddActionButton.classList.remove('active');
             elActionSetupPanel.classList.add('hidden');

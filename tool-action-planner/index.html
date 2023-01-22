@@ -43,11 +43,12 @@
                 </div>
                 <div class="primary-buttons">
                     <button id="add-action-button" onclick="onToggleAddAction()"><span class="icon-round icon-plus"></span>Add Action</button>
+                    <button id="manage-lots-button" onclick="onToggleManageLots()"><span class="icon-round icon-location"></span>Manage Lots</button>
                     <button id="active-crew-button" onclick="onToggleActiveCrew()"><span class="icon-round icon-crew-member"></span>Active Crew</button>
                     <button id="change-crew-button" onclick="onToggleChangeCrew()"><span class="icon-round icon-crew-members"></span>Switch / Add Crew</button>
                 </div>
                 <div class="config-panels">
-                    <div id="action-setup" class="config-panel hidden">
+                    <div id="action-setup-panel" class="config-panel hidden">
                         <div id="action-setup-type">
                             <ul>
                                 <li><span class="icon-round icon-core-sample"></span>Core Sample</li>
@@ -71,6 +72,14 @@
                                 Destination Lot ID: [dropdown] &raquo; DESTINATION_ITEM [auto-complete based on action-type]<br>
                                 &raquo; (dropdown values = only lots that contain an asset compatible with the DESTINATION of action-type)<br>
                             </div> -->
+                        </div>
+                    </div>
+                    <div id="manage-lots-panel" class="config-panel hidden">
+                        <div>
+                            <button class="no-margin">Add Lot</button>
+                        </div>
+                        <div>
+                            <ul id="manage-lots-list"></ul>
                         </div>
                     </div>
                     <div id="active-crew-panel" class="config-panel hidden">
@@ -100,10 +109,10 @@
                     </div>
                     <div id="change-crew-panel" class="config-panel hidden">
                         <div>
-                            [LIST of crews w/ "SELECT" button next to the NON-active crews]
+                            <button class="no-margin">Add Crew</button>
                         </div>
                         <div>
-                            <button class="no-margin">Add Crew</button>
+                            [LIST of crews w/ "SELECT" button next to the NON-active crews]
                         </div>
                     </div>
                 </div>

@@ -19,7 +19,7 @@ class Crew {
         this.asteroidId = asteroidId;
         // Update all occurrences of the active asteroid name and ID in the DOM
         document.querySelectorAll('.active-asteroid-name').forEach(el => {
-            el.textContent = `(${asteroidsById[asteroidId].name})`;
+            el.textContent = `(${asteroidService.asteroidsById[asteroidId].name})`;
         });
         document.querySelectorAll('.active-asteroid-id').forEach(el => {
             el.textContent = `#${asteroidId}`;

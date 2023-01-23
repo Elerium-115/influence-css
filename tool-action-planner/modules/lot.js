@@ -42,6 +42,7 @@ class Lot {
         ].includes(this.state) ? 'unavailable' : 'available';
         // Use class "active" for ongoing action at Extractor / Refinery etc.
         const actionTypesCanBeActivated = [
+            ACTION_TYPE.CORE_SAMPLE,
             ACTION_TYPE.EXTRACT,
             ACTION_TYPE.REFINE,
         ];

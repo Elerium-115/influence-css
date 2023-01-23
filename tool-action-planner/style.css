@@ -247,7 +247,7 @@ button .icon-round {
   align-items: center;
   display: grid;
   gap: 25px;
-  grid-template-columns: 20% 25% 1fr;
+  grid-template-columns: 15% 20% 1fr 25%;
   padding: 5px 10px;
 }
 #plan-actions #manage-lots-panel #manage-lots-list li.header {
@@ -263,9 +263,6 @@ button .icon-round {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state {
-  position: relative;
-}
 #plan-actions #manage-lots-panel #manage-lots-list li .lot-state.active .state-text {
   color: var(--color-ready);
 }
@@ -275,13 +272,21 @@ button .icon-round {
 #plan-actions #manage-lots-panel #manage-lots-list li .lot-state.unavailable .state-text {
   color: var(--color-warning);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state .ongoing-stats {
-  position: absolute;
-  right: 0;
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress.ready::before {
+  content: "Ready to finalize";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state .ongoing-stats .remaining-time {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .progress-done:not(:empty)::after {
+  content: "%";
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .progress-done:not(:empty)::before {
+  content: "Done ";
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .timer-compact:not(:empty) {
   margin-left: 10px;
   opacity: 0.5;
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .timer-compact:not(:empty)::before {
+  content: "Remaining ";
 }
 #plan-actions #active-crew-panel {
   flex-direction: column;

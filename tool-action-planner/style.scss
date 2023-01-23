@@ -245,7 +245,7 @@ button {
                 align-items: center;
                 display: grid;
                 gap: 25px;
-                grid-template-columns: 20% 25% 1fr;
+                grid-template-columns: 15% 20% 1fr 25%;
                 padding: 5px 10px;
 
                 &.header {
@@ -265,23 +265,26 @@ button {
                 }
 
                 .lot-state {
-                    position: relative;
-
                     &.active .state-text { color: var(--color-ready); }
                     &.available .state-text { color: var(--color-highlight); }
                     &.unavailable .state-text { color: var(--color-warning); }
-    
-                    .ongoing-stats {
-                        position: absolute;
-                        right: 0;
-
-                        .remaining-time {
-                            margin-left: 10px;
-                            opacity: 0.5;
-                        }
-                    }
                 }
 
+                .lot-progress {
+                    &.ready::before { content: 'Ready to finalize'; }
+
+                    .progress-done:not(:empty) {
+                        &::after { content: '%'; }
+                        &::before { content: 'Done '; }
+                    }
+
+                    .timer-compact:not(:empty) {
+                        margin-left: 10px;
+                        opacity: 0.5;
+
+                        &::before { content: 'Remaining '; }
+                    }
+                }
             }
         }
     }

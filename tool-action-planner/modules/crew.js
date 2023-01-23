@@ -138,8 +138,8 @@ class Crew {
                 <div class="lot-asset">${lot.assetName || ''}</div>
                 <div class="lot-state ${lot.getStateClassBasedOnAction()}">
                     <span class="state-text">${LOT_STATE_TEXT_SHORT[lot.state]}</span>
-                    <span class="ongoing-stats"></span>
                 </div>
+                <div class="lot-progress"></div>
             </li>
         `;
     }
@@ -152,6 +152,7 @@ class Crew {
                     <div>Lot</div>
                     <div>Asset</div>
                     <div>State</div>
+                    <div>Progress</div>
                 </li>
             `;
         }

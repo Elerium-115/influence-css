@@ -116,6 +116,7 @@ class Action {
         }
         this.state = ACTION_STATE.QUEUED; // default state for new actions
         this.isReady = false;
+        this.isActionOnLot = this.type !== ACTION_TYPE.TRAVEL; // "Travel" is currently the only action whose source ID is not a lot ID
         this.elListItem = null;
         this.refreshOngoingInterval = null;
         this.updateLotsList();
@@ -132,7 +133,7 @@ class Action {
     }
 
     getActionText() {
-        const sourceType = this.type === ACTION_TYPE.TRAVEL ? 'Asteroid' : 'Lot';
+        const sourceType = this.isActionOnLot ? 'Lot' : 'Asteroid';
         return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at ${sourceType} ${this.sourceId} (${this.sourceName})`;
     }
 
@@ -198,6 +199,12 @@ class Action {
                 elTemp.innerHTML = this.getListItemHtml();
                 // Updating the HTML in this way is required, otherwise there may be issues e.g. with the transition to "Done"
                 this.elListItem.innerHTML = elTemp.firstElementChild.innerHTML;
+                // Update lot progress in lots-list, if the source ID for this type of action is a lot ID
+                if (this.isActionOnLot) {
+                    const elLotsListItemLotProgress = document.getElementById(`lot_${this.sourceId}`).querySelector('.lot-progress');
+                    elLotsListItemLotProgress.classList.add('ready');
+                    elLotsListItemLotProgress.textContent = '';
+                }
                 this.clearRefreshOngoingInterval();
             }
         }
@@ -392,9 +399,7 @@ class Action {
             return;
         }
         const elTimerCompact = this.elListItem.querySelector('.timer-compact');
-        if (elTimerCompact.textContent !== timeRemainingShort) {
-            elTimerCompact.textContent = timeRemainingShort;
-        }
+        elTimerCompact.textContent = timeRemainingShort;
         // Update progress percent and progress bars
         const progress = Math.round(100 * (ongoingTimeElapsedMs) / this.durationTotal);
         this.elListItem.querySelector('.progress-done').textContent = progress;
@@ -404,6 +409,12 @@ class Action {
             this.elListItem.classList.add('startup-in-progress');
         } else {
             this.elListItem.classList.remove('startup-in-progress');
+        }
+        // Update lot progress in lots-list, if the source ID for this type of action is a lot ID
+        if (this.isActionOnLot) {
+            const elLotsListItem = document.getElementById(`lot_${this.sourceId}`);
+            elLotsListItem.querySelector('.progress-done').textContent = progress;
+            elLotsListItem.querySelector('.timer-compact').textContent = timeRemainingShort;
         }
     }
 
@@ -625,69 +636,6 @@ class Action {
     }
 
     /**
-     * Return the new lot state, as a result of an ongoing / done action
-     */
-    getNewLotStateData() {
-        if (this.state === ACTION_STATE.QUEUED) {
-            console.log(`%c--- ERROR: action queued => can NOT get new lot state`, 'color: orange;');
-            return;
-        }
-        let newStateData = {
-            state: null,
-            stateCustomText: null,
-        };
-        switch (this.type) {
-            case ACTION_TYPE.TRANSFER:
-            case ACTION_TYPE.TRAVEL:
-                // These types of actions do not affect a lot's state
-                return newStateData;
-            case ACTION_TYPE.EXTRACT:
-            case ACTION_TYPE.REFINE:
-                if (this.state === ACTION_STATE.ONGOING) {
-                    newStateData.state = LOT_STATE.ACTIVE;
-                    newStateData.stateCustomText = ACTION_TYPE_TEXT_ING[this.type]; // e.g. "Extracting", "Refining" etc.
-                    newStateData.stateCustomText += `: ${this.subject}`; // e.g. "Extracting: Water"
-                } else {
-                    // Activity done => revert the lot's state to "Ready" (i.e. BUILDING_COMPLETED)
-                    newStateData.state = LOT_STATE.BUILDING_COMPLETED;
-                }
-                break;
-            case ACTION_TYPE.CONSTRUCT:
-                if (this.state === ACTION_STATE.ONGOING) {
-                    newStateData.state = LOT_STATE.BUILDING_UNDER_CONSTRUCTION;
-                } else {
-                    newStateData.state = LOT_STATE.BUILDING_COMPLETED;
-                }
-                break;
-            case ACTION_TYPE.DECONSTRUCT:
-                if (this.state === ACTION_STATE.ONGOING) {
-                    newStateData.state = LOT_STATE.BUILDING_UNDER_DECONSTRUCTION;
-                } else {
-                    // Building deconstructed => revert the lot's state to "EMPTY"
-                    newStateData.state = LOT_STATE.EMPTY;
-                }
-                break;
-            case ACTION_TYPE.LAND:
-                if (this.state === ACTION_STATE.ONGOING) {
-                    newStateData.state = LOT_STATE.ACTIVE;
-                    newStateData.stateCustomText = 'Landing';
-                } else {
-                    newStateData.state = LOT_STATE.SHIP_LANDED;
-                }
-                break;
-            case ACTION_TYPE.LAUNCH:
-                if (this.state === ACTION_STATE.ONGOING) {
-                    newStateData.state = LOT_STATE.SHIP_LAUNCHING;
-                } else {
-                    // Ship launched => revert the lot's state to "EMPTY"
-                    newStateData.state = LOT_STATE.EMPTY;
-                }
-                break;
-        }
-        return newStateData;
-    }
-
-    /**
      * Return the new lot asset name, as a result of an ongoing / done action
      */
     getNewLotAssetName() {
@@ -725,6 +673,75 @@ class Action {
         return newAssetName;
     }
 
+    /**
+     * Return the new lot state, as a result of an ongoing / done action
+     */
+    getNewLotStateData(lot) {
+        if (this.state === ACTION_STATE.QUEUED) {
+            console.log(`%c--- ERROR: action queued => can NOT get new lot state`, 'color: orange;');
+            return;
+        }
+        let newStateData = {
+            state: null,
+            stateCustomText: null,
+        };
+        switch (this.type) {
+            case ACTION_TYPE.TRANSFER:
+            case ACTION_TYPE.TRAVEL:
+                // These types of actions do not affect a lot's state
+                return newStateData;
+            case ACTION_TYPE.CORE_SAMPLE:
+            case ACTION_TYPE.EXTRACT:
+            case ACTION_TYPE.REFINE:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.ACTIVE;
+                    newStateData.stateCustomText = ACTION_TYPE_TEXT_ING[this.type]; // e.g. "Extracting", "Refining" etc.
+                    newStateData.stateCustomText += `: ${this.subject}`; // e.g. "Extracting: Water"
+                } else {
+                    if (lot.assetName) {
+                        // Activity done on a non-empty lot => revert the lot's state to "Ready" (i.e. BUILDING_COMPLETED)
+                        newStateData.state = LOT_STATE.BUILDING_COMPLETED;
+                    } else {
+                        // Activity done on an empty lot (i.e. Core Sampling) => revert the lot's state to "EMPTY"
+                        newStateData.state = LOT_STATE.EMPTY;
+                    }
+                }
+                break;
+            case ACTION_TYPE.CONSTRUCT:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.BUILDING_UNDER_CONSTRUCTION;
+                } else {
+                    newStateData.state = LOT_STATE.BUILDING_COMPLETED;
+                }
+                break;
+            case ACTION_TYPE.DECONSTRUCT:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.BUILDING_UNDER_DECONSTRUCTION;
+                } else {
+                    // Building deconstructed => revert the lot's state to "EMPTY"
+                    newStateData.state = LOT_STATE.EMPTY;
+                }
+                break;
+            case ACTION_TYPE.LAND:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.ACTIVE;
+                    newStateData.stateCustomText = 'Landing';
+                } else {
+                    newStateData.state = LOT_STATE.SHIP_LANDED;
+                }
+                break;
+            case ACTION_TYPE.LAUNCH:
+                if (this.state === ACTION_STATE.ONGOING) {
+                    newStateData.state = LOT_STATE.SHIP_LAUNCHING;
+                } else {
+                    // Ship launched => revert the lot's state to "EMPTY"
+                    newStateData.state = LOT_STATE.EMPTY;
+                }
+                break;
+        }
+        return newStateData;
+    }
+
     updateLotsList() {
         if (this.state === ACTION_STATE.QUEUED) {
             // Queued actions do not affect a lot's state or asset
@@ -739,7 +756,7 @@ class Action {
             return;
         }
         let newAssetName = this.getNewLotAssetName();
-        let newStateData = this.getNewLotStateData();
+        let newStateData = this.getNewLotStateData(actionLot);
         const newState = newStateData.state;
         const newStateCustomText = newStateData.stateCustomText;
         const elLotsListItem = actionLot.elLotsListItem;
@@ -755,14 +772,19 @@ class Action {
             elLotState.classList.add(stateClass);
             const newStateText = newStateCustomText || LOT_STATE_TEXT_SHORT[newState];
             elLotState.querySelector('.state-text').textContent = `${newStateText}`;
-            const elOngoingStats = elLotsListItem.querySelector('.ongoing-stats');
+            const elLotProgress = elLotsListItem.querySelector('.lot-progress');
             if (this.state === ACTION_STATE.ONGOING) {
-                //// TO DO: update ongoing stats for ongoing action
-                elOngoingStats.innerHTML = /*html*/ `
-                    Done 10%<span class="remaining-time">Remaining 2h</span>
-                `;
+                if (this.isReady) {
+                    elLotProgress.classList.add('ready');
+                    elLotProgress.textContent = '';
+                } else {
+                    elLotProgress.innerHTML = /*html*/ `
+                        <span class="progress-done"></span><span class="timer-compact"></span>
+                    `;
+                }
             } else {
-                elOngoingStats.textContent = '';
+                elLotProgress.classList.remove('ready');
+                elLotProgress.textContent = '';
             }
         }
     }

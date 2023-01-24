@@ -51,7 +51,7 @@ const exampleActionsTemplate = [
     [ACTION_TYPE.CORE_SAMPLE,   'Hydrogen',         'Empty Lot',        123,    null,               null,   0,              false,  ACTION_STATE.DONE,      false,  18  ], // done 18 hours ago, NO runtime duration (only startup duration) for Core Sample
     // Ongoing actions
     [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Empty Lot',        123,    null,               null,   23 * HOUR,      true,   ACTION_STATE.ONGOING                ],
-    [ACTION_TYPE.EXTRACT,       'Water',            'Extractor',        89,     'Warehouse',        777,    5 * HOUR,       false,  ACTION_STATE.ONGOING,   true        ], // startup finished
+    [ACTION_TYPE.EXTRACT,       'Water',            'Extractor',        89,     'Warehouse',        777,    0.0125 * HOUR,  false,  ACTION_STATE.ONGOING,   true        ], // startup finished
     [ACTION_TYPE.CONSTRUCT,     'Marketplace',      'Empty Lot',        1,      null,               null,   23 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
     [ACTION_TYPE.CONSTRUCT,     'Spaceport',        'Empty Lot',        2,      null,               null,   12 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
     // Queued actions
@@ -59,8 +59,8 @@ const exampleActionsTemplate = [
     [ACTION_TYPE.CORE_SAMPLE,   'Methane',          'Empty Lot',        4567,   null,               null,   0,                                                          ], // NO runtime duration (only startup duration) for Core Sample
     [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Empty Lot',        4567,   null,               null,   12 * HOUR,                                                  ],
     [ACTION_TYPE.EXTRACT,       'Methane',          'Extractor',        4567,   'Warehouse',        777,    8 * HOUR,                                                   ],
-    [ACTION_TYPE.DECONSTRUCT,   'Extractor',        'Extractor',        89,     'Warehouse',        777,    2 * HOUR,                                                   ],
-    [ACTION_TYPE.TRANSFER,      '[multiple]',       'Warehouse',        777,    'Light Transport',  666,    1 * HOUR,                                                   ],
+    [ACTION_TYPE.DECONSTRUCT,   'Extractor',        'Extractor',        89,     'Warehouse',        777,    0.0125 * HOUR,                                              ],
+    [ACTION_TYPE.TRANSFER,      '[multiple]',       'Warehouse',        777,    'Light Transport',  666,    0.0125 * HOUR,                                              ],
 ];
 
 function initializeExampleActionsById() {

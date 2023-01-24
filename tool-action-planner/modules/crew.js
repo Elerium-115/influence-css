@@ -136,7 +136,7 @@ class Crew {
             <li id="lot_${lot.id}">
                 <div class="lot-id">${lot.id}</div>
                 <div class="lot-asset">${lot.assetName || ''}</div>
-                <div class="lot-state ${lot.getStateClassBasedOnAction()}">
+                <div class="lot-state ${lot.getLotStateClass()}">
                     <span class="state-text">${LOT_STATE_TEXT_SHORT[lot.state]}</span>
                 </div>
                 <div class="lot-progress"></div>

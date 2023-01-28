@@ -205,6 +205,7 @@ class Action {
                 elTemp.innerHTML = this.getListItemHtml();
                 // Updating the HTML in this way is required, otherwise there may be issues e.g. with the transition to "Done"
                 this.elListItem.innerHTML = elTemp.firstElementChild.innerHTML;
+                this.injectLeaderLineIfNeeded();
                 // Update lot progress in lots-list, if the source ID for this type of action is a lot ID
                 if (this.isActionOnLot) {
                     const elLotsListItemLotProgress = document.getElementById(`lot_${this.sourceId}`).querySelector('.lot-progress');
@@ -462,18 +463,23 @@ class Action {
                 actionGroupList.prepend(this.elListItem);
                 break;
         }
-        const elDestination = this.elListItem.querySelector('.value-destination');
-        if (elDestination) {
-            // Inject Leader Line from source to destination
-            const elSource = this.elListItem.querySelector('.value-source');
-            leaderLineConnectElements(elSource, elDestination);
-        }
+        this.injectLeaderLineIfNeeded();
         if (this.state === ACTION_STATE.ONGOING && !this.isReady) {
             /**
              * Use arrow function re: "this" problem
              * Source: https://developer.mozilla.org/en-US/docs/Web/API/setInterval#a_possible_solution
              */
             this.refreshOngoingInterval = setInterval(() => this.refreshOngoingTime(), 1000); // refresh every 1 second
+        }
+    }
+
+    injectLeaderLineIfNeeded() {
+        const elDestination = this.elListItem.querySelector('.value-destination');
+        const elLeaderLine = this.elListItem.querySelector('.leader-line');
+        if (elDestination && !elLeaderLine) {
+            // Inject Leader Line from source to destination
+            const elSource = this.elListItem.querySelector('.value-source');
+            leaderLineConnectElements(elSource, elDestination);
         }
     }
 

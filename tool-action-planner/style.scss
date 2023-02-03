@@ -763,6 +763,7 @@ ul.list-expanding-items {
         padding-bottom: 15px;
 
         .notification {
+            backdrop-filter: blur(4px);
             padding: 10px 30px 10px 20px;
 
             @keyframes flash-notification {

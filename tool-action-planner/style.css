@@ -809,6 +809,8 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   padding-bottom: 15px;
 }
 #notifications .notification-wrapper .notification {
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
   padding: 10px 30px 10px 20px;
 }
 @-webkit-keyframes flash-notification {

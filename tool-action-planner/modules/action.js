@@ -167,9 +167,11 @@ class Action {
          *      Crew not ready due to action:
          *      (Starting) Core Sample: Methane at Lot #4567
          */
-        const crewNotReadyText = 'Crew not ready due to action:';
         const crewAction = crewService.getActiveCrewAction();
-        const messageHtml = `${crewNotReadyText}<br>${crewAction.getActionText()} - ${crewAction.getCrewInvolvement()}`;
+        const messageHtml = /*html*/ `
+            Crew not ready due to action:<br>
+            <span class="text-highlight">${crewAction.getActionText()} - ${crewAction.getCrewInvolvement()}</span>
+        `;
         NotificationService.createNotification(messageHtml, true);
         crewAction.flashListItem();
     }
@@ -588,6 +590,16 @@ class Action {
             console.log(`%c--- ERROR: action already done => can NOT transition`, 'color: orange;');
             return;
         }
+        const blockingOngoingAction = this.getBlockingOngoingAction();
+        if (blockingOngoingAction) {
+            const messageHtml = /*html*/ `
+                Can not start, due to ongoing action exclusive on the same lot:<br>
+                <span class="text-highlight">${blockingOngoingAction.getActionText()}</span>
+            `;
+            NotificationService.createNotification(messageHtml, true);
+            blockingOngoingAction.flashListItem();
+            return;
+        }
         /**
          * The action is actually transitioned after 2 animations of
          * "ACTION_LIST_ITEM_TRANSITION_DURATION" each (see "setTimeout" calls below).
@@ -849,6 +861,25 @@ class Action {
             elLotProgress.textContent = '';
         }
     }
+
+    /**
+     * Return the blocking ongoing action (if any) when attempting to
+     * start a queued action which can not be transitioned to ongoing
+     * (i.e. the same lot already has an ongoing action,
+     * and BOTH actions are "on lot" AND "exclusive per lot").
+     */
+    getBlockingOngoingAction() {
+        if (this.state !== ACTION_STATE.QUEUED || !this.isActionOnLot || !this.isActionExclusivePerLot) {
+            return null;
+        }
+        // The queued action is "on lot" AND "exclusive per lot"
+        const ongoingActionOnSameLot = actionService.getOngoingActionForActiveCrewAtLotId(this.sourceId);
+        if (ongoingActionOnSameLot && ongoingActionOnSameLot.isActionExclusivePerLot) {
+            // There is an ongoing action on the same lot, and it is also "exclusive per lot"
+            return ongoingActionOnSameLot;
+        }
+        return null;
+    }
 }
 
 class ActionService {
@@ -934,6 +965,21 @@ class ActionService {
             elAddActionButton.classList.add('active');
             elActionSetupPanel.classList.remove('hidden');
         }
+    }
+
+    getOngoingActionForActiveCrewAtLotId(lotId) {
+        const activeCrew = crewService.activeCrew;
+        if (!activeCrew) {
+            // Lots being initialized before the existence of an active crew
+            return null;
+        }
+        return Object.values(actionService.actionsById).find(action => {
+            return action.crewId === activeCrew.id &&
+                action.asteroidId === activeCrew.asteroidId &&
+                action.isActionOnLot === true &&
+                action.sourceId === lotId &&
+                action.state === ACTION_STATE.ONGOING;
+        });
     }
 }
 

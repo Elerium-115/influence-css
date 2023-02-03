@@ -133,10 +133,10 @@ class Crew {
      */
     getLotsListItemHtml(lot) {
         return /*html*/ `
-            <li id="lot_${lot.id}">
+            <li id="lot_${lot.id}" data-state-class="${lot.getLotStateClass()}">
                 <div class="lot-id">${lot.id}</div>
                 <div class="lot-asset">${lot.assetName || ''}</div>
-                <div class="lot-state ${lot.getLotStateClass()}">
+                <div class="lot-state">
                     <span class="state-text">${LOT_STATE_TEXT_SHORT[lot.state]}</span>
                 </div>
                 <div class="lot-progress"></div>

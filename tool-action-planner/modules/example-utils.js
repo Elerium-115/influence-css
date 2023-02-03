@@ -60,7 +60,7 @@ const exampleActionsTemplate = [
     [ACTION_TYPE.CONSTRUCT,     'Extractor',        'Empty Lot',        4567,   null,               null,   12 * HOUR,                                                  ],
     [ACTION_TYPE.EXTRACT,       'Methane',          'Extractor',        4567,   'Warehouse',        777,    8 * HOUR,                                                   ],
     [ACTION_TYPE.DECONSTRUCT,   'Extractor',        'Extractor',        89,     'Warehouse',        777,    0.0125 * HOUR,                                              ],
-    [ACTION_TYPE.TRANSFER,      '[multiple]',       'Warehouse',        777,    'Light Transport',  666,    0.0125 * HOUR,                                              ],
+    [ACTION_TYPE.TRANSFER,      '[multiple]',       'Warehouse',        777,    'Light Transport',  666,    0.0025 * HOUR,                                              ],
 ];
 
 function initializeExampleActionsById() {

@@ -264,15 +264,17 @@ button {
                     text-overflow: ellipsis;
                 }
 
-                .lot-state {
-                    &.active .state-text { color: var(--color-ready); }
-                    &.available .state-text { color: var(--color-highlight); }
-                    &.unavailable .state-text { color: var(--color-warning); }
+                &[data-state-class='active'] .lot-state .state-text { color: var(--color-ready); }
+                &[data-state-class='available'] .lot-state .state-text { color: var(--color-highlight); }
+                &[data-state-class='unavailable'] .lot-state .state-text { color: var(--color-warning); }
+
+                &:not([data-state-class='available']) {
+                    .lot-progress {
+                        &.ready::before { content: 'Ready to finalize'; }
+                    }
                 }
 
                 .lot-progress {
-                    &.ready::before { content: 'Ready to finalize'; }
-
                     .progress-done:not(:empty) {
                         &::after { content: '%'; }
                         &::before { content: 'Done '; }

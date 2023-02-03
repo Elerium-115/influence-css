@@ -810,14 +810,13 @@ class Action {
             actionLot.assetName = newLotAssetData.assetName;
             elLotsListItem.querySelector('.lot-asset').textContent = newLotAssetData.assetName || '';
         }
+        const elLotProgress = elLotsListItem.querySelector('.lot-progress');
         if (newLotStateData && (newLotStateData.shouldUpdateState || newLotStateData.shouldUpdateCustomText)) {
             if (newLotStateData.shouldUpdateState) {
                 actionLot.state = newLotStateData.state;
             }
+            elLotsListItem.dataset.stateClass = actionLot.getLotStateClass();
             const elLotState = elLotsListItem.querySelector('.lot-state');
-            const lotStateClass = actionLot.getLotStateClass();
-            elLotState.classList.remove('active', 'available', 'unavailable');
-            elLotState.classList.add(lotStateClass);
             /**
              * Update the text based on this priority:
              * 1. new custom text, if set
@@ -829,7 +828,6 @@ class Action {
                 LOT_STATE_TEXT_SHORT[actionLot.state]
                 ;
             elLotState.querySelector('.state-text').textContent = `${newStateText}`;
-            const elLotProgress = elLotsListItem.querySelector('.lot-progress');
             if (this.state === ACTION_STATE.ONGOING) {
                 if (this.isReady) {
                     elLotProgress.classList.add('ready');
@@ -839,10 +837,16 @@ class Action {
                         <span class="progress-done"></span><span class="timer-compact"></span>
                     `;
                 }
-            } else {
-                elLotProgress.classList.remove('ready');
-                elLotProgress.textContent = '';
             }
+        }
+        if (this.state === ACTION_STATE.DONE) {
+            /**
+             * Ensure the "ready" class is removed from lot-progress,
+             * even if nothing was updated due to "newLotStateData"
+             * (e.g. after finalizing a Transfer action).
+             */
+            elLotProgress.classList.remove('ready');
+            elLotProgress.textContent = '';
         }
     }
 }

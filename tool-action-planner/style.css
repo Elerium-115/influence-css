@@ -263,16 +263,16 @@ button .icon-round {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state.active .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list li[data-state-class=active] .lot-state .state-text {
   color: var(--color-ready);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state.available .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list li[data-state-class=available] .lot-state .state-text {
   color: var(--color-highlight);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state.unavailable .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list li[data-state-class=unavailable] .lot-state .state-text {
   color: var(--color-warning);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress.ready::before {
+#plan-actions #manage-lots-panel #manage-lots-list li:not([data-state-class=available]) .lot-progress.ready::before {
   content: "Ready to finalize";
 }
 #plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .progress-done:not(:empty)::after {

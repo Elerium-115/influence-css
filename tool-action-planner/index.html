@@ -34,19 +34,20 @@
     <div class="example-wrapper">
         <div class="example-main">
             <!-- TOOL TEMPLATE -- START -->
+            <section id="active-crew-sticky">
+                <div id="active-crew" onmouseenter="onHoverActiveCrew(true)" onmouseleave="onHoverActiveCrew(false)">
+                    Crew: <span class="active-crew-name"></span> <span class="crew-readiness"></span>
+                </div>
+                <div id="active-asteroid">
+                    Asteroid: <span class="active-asteroid-id"></span> <span class="active-asteroid-name hover-detail"></span>
+                </div>
+                <div id="active-base">
+                    Base: <span class="active-base-lot-id"></span> <span class="active-base-asset-name hover-detail"></span>
+                </div>
+            </section>
+            <section id="notifications"></section>
             <section id="plan-actions" class="root-section">
                 <h2>Plan Actions</h2>
-                <div class="section-title-sidebar">
-                    <div id="active-crew" onmouseenter="onHoverActiveCrew(true)" onmouseleave="onHoverActiveCrew(false)">
-                        Crew: <span class="active-crew-name"></span> <span class="crew-readiness"></span>
-                    </div>
-                    <div id="active-asteroid">
-                        Asteroid: <span class="active-asteroid-id"></span> <span class="active-asteroid-name hover-detail"></span>
-                    </div>
-                    <div id="active-base">
-                        Base: <span class="active-base-lot-id"></span> <span class="active-base-asset-name hover-detail"></span>
-                    </div>
-                </div>
                 <div class="primary-buttons">
                     <button id="add-action-button" onclick="onToggleAddAction()"><span class="icon-round icon-plus"></span>Add Action</button>
                     <button id="manage-lots-button" onclick="onToggleManageLots()"><span class="icon-round icon-location"></span>Manage Lots</button>
@@ -144,7 +145,6 @@
                     </div>
                 </div>
             </section>
-            <div id="notifications"></div>
             <!-- TOOL TEMPLATE -- END -->
         </div>
     </div>

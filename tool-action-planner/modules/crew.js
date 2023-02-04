@@ -152,7 +152,7 @@ class Crew {
                     <div>Lot</div>
                     <div>Asset</div>
                     <div>State</div>
-                    <div>Ongoing Actions and Progress</div>
+                    <div>Ongoing Actions</div>
                 </li>
             `;
         }

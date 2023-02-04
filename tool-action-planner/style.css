@@ -110,7 +110,7 @@ button .icon-round {
   margin-right: 20px;
   position: relative;
 }
-.root-section:not(:first-child) {
+.root-section + .root-section {
   margin-top: 50px;
 }
 .root-section .section-title-sidebar {
@@ -120,10 +120,6 @@ button .icon-round {
   position: absolute;
   right: 0;
   top: 0;
-}
-.root-section .section-title-sidebar .active-crew-name::before,
-.root-section .section-title-sidebar .active-crew-name::after {
-  content: '"';
 }
 .root-section .primary-buttons {
   display: flex;
@@ -165,38 +161,139 @@ button .icon-round {
   margin-left: 20px;
 }
 
-#plan-actions #active-crew.ready {
+#active-crew-sticky {
+  --sticky-line-height: 40px;
+  display: flex;
+  gap: 25px;
+  height: 0;
+  justify-content: flex-end;
+  line-height: var(--sticky-line-height);
+  margin-right: 20px;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+#active-crew-sticky::before {
+  background-image: linear-gradient(90deg, transparent, var(--color-black-faded-50));
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  content: "";
+  border-bottom: 1px solid var(--color-gray-dark);
+  height: 39px;
+  position: absolute;
+  width: 100%;
+  z-index: -1;
+}
+#active-crew-sticky #active-crew.ready {
   color: var(--color-ready);
 }
-#plan-actions #active-crew:not(.ready):hover::after {
+#active-crew-sticky #active-crew:not(.ready):hover::after {
+  --tooltip-line-height: 30px;
   background-color: black;
-  bottom: -30px;
+  bottom: calc(0px - (var(--sticky-line-height) + var(--tooltip-line-height)));
   color: white;
   content: attr(data-crew-action-text);
   filter: drop-shadow(0 0 10px black);
   font-size: 14px;
-  line-height: 30px;
+  line-height: var(--tooltip-line-height);
   position: absolute;
   padding: 0 10px;
   right: 0;
   white-space: nowrap;
   z-index: 1;
 }
-#plan-actions #active-asteroid,
-#plan-actions #active-base {
+#active-crew-sticky #active-crew .active-crew-name::before,
+#active-crew-sticky #active-crew .active-crew-name::after {
+  content: '"';
+}
+#active-crew-sticky #active-asteroid,
+#active-crew-sticky #active-base {
   opacity: 0.5;
 }
-#plan-actions #active-asteroid .hover-detail,
-#plan-actions #active-base .hover-detail {
+#active-crew-sticky #active-asteroid .hover-detail,
+#active-crew-sticky #active-base .hover-detail {
   display: none;
 }
-#plan-actions #active-asteroid:hover,
-#plan-actions #active-base:hover {
+#active-crew-sticky #active-asteroid:hover,
+#active-crew-sticky #active-base:hover {
   opacity: 1;
 }
-#plan-actions #active-asteroid:hover .hover-detail,
-#plan-actions #active-base:hover .hover-detail {
+#active-crew-sticky #active-asteroid:hover .hover-detail,
+#active-crew-sticky #active-base:hover .hover-detail {
   display: unset;
+}
+
+#notifications {
+  display: grid;
+  height: 0;
+  justify-content: end;
+  margin-right: 5px;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 65px;
+  z-index: 1;
+}
+#notifications .notification-wrapper {
+  padding-bottom: 15px;
+}
+#notifications .notification-wrapper .notification {
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  padding: 10px 30px 10px 20px;
+}
+@-webkit-keyframes flash-notification {
+  0% {
+    background-color: var(--color-highlight);
+  }
+}
+@keyframes flash-notification {
+  0% {
+    background-color: var(--color-highlight);
+  }
+}
+@-webkit-keyframes flash-warning {
+  0% {
+    background-color: var(--color-warning);
+  }
+}
+@keyframes flash-warning {
+  0% {
+    background-color: var(--color-warning);
+  }
+}
+#notifications .notification-wrapper .notification:not(.warning) {
+  -webkit-animation: flash-notification 600ms linear;
+          animation: flash-notification 600ms linear;
+}
+#notifications .notification-wrapper .notification.warning {
+  -webkit-animation: flash-warning 600ms linear;
+          animation: flash-warning 600ms linear;
+}
+@-webkit-keyframes close-notification {
+  100% {
+    height: 0;
+    opacity: 0;
+    padding-bottom: 0;
+  }
+}
+@keyframes close-notification {
+  100% {
+    height: 0;
+    opacity: 0;
+    padding-bottom: 0;
+  }
+}
+#notifications .notification-wrapper.closing {
+  -webkit-animation: close-notification var(--close-duration) linear;
+          animation: close-notification var(--close-duration) linear;
+}
+
+#plan-actions h2 {
+  border-bottom: none;
+  display: inline-block;
+  position: relative;
+  z-index: 1;
 }
 #plan-actions #action-setup-panel {
   background-color: var(--color-black-faded-50);
@@ -805,64 +902,4 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   75% {
     opacity: 1;
   }
-}
-
-#notifications {
-  position: absolute;
-  top: 65px;
-  right: 5px;
-}
-#notifications .notification-wrapper {
-  padding-bottom: 15px;
-}
-#notifications .notification-wrapper .notification {
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
-  padding: 10px 30px 10px 20px;
-}
-@-webkit-keyframes flash-notification {
-  0% {
-    background-color: var(--color-highlight);
-  }
-}
-@keyframes flash-notification {
-  0% {
-    background-color: var(--color-highlight);
-  }
-}
-@-webkit-keyframes flash-warning {
-  0% {
-    background-color: var(--color-warning);
-  }
-}
-@keyframes flash-warning {
-  0% {
-    background-color: var(--color-warning);
-  }
-}
-#notifications .notification-wrapper .notification:not(.warning) {
-  -webkit-animation: flash-notification 600ms linear;
-          animation: flash-notification 600ms linear;
-}
-#notifications .notification-wrapper .notification.warning {
-  -webkit-animation: flash-warning 600ms linear;
-          animation: flash-warning 600ms linear;
-}
-@-webkit-keyframes close-notification {
-  100% {
-    height: 0;
-    opacity: 0;
-    padding-bottom: 0;
-  }
-}
-@keyframes close-notification {
-  100% {
-    height: 0;
-    opacity: 0;
-    padding-bottom: 0;
-  }
-}
-#notifications .notification-wrapper.closing {
-  -webkit-animation: close-notification var(--close-duration) linear;
-          animation: close-notification var(--close-duration) linear;
 }/*# sourceMappingURL=style.css.map */

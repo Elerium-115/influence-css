@@ -66,7 +66,7 @@ button {
     margin-right: 20px;
     position: relative;
 
-    &:not(:first-child) {
+    + .root-section {
         margin-top: 50px;
     }
 
@@ -77,11 +77,6 @@ button {
         position: absolute;
         right: 0;
         top: 0;
-
-        .active-crew-name::before,
-        .active-crew-name::after {
-            content: '"';
-        }
     }
 
     .primary-buttons {
@@ -139,7 +134,29 @@ button {
     }
 }
 
-#plan-actions {
+#active-crew-sticky {
+    --sticky-line-height: 40px;
+    display: flex;
+    gap: 25px;
+    height: 0;
+    justify-content: flex-end;
+    line-height: var(--sticky-line-height);
+    margin-right: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    &::before {
+        background-image: linear-gradient(90deg, transparent, var(--color-black-faded-50));
+        backdrop-filter: blur(4px);
+        content: '';
+        border-bottom: 1px solid var(--color-gray-dark);
+        height: 39px;
+        position: absolute;
+        width: 100%;
+        z-index: -1;
+    }
+
     #active-crew {
         &.ready {
             color: var(--color-ready);
@@ -148,19 +165,25 @@ button {
         &:not(.ready):hover {
             &::after {
                 // Tooltip for crew-action
+                --tooltip-line-height: 30px;
                 background-color: black;
-                bottom: -30px; // match line-height
+                bottom: calc(0px - (var(--sticky-line-height) + var(--tooltip-line-height)));
                 color: white;
                 content: attr(data-crew-action-text);
                 filter: drop-shadow(0 0 10px black);
                 font-size: 14px;
-                line-height: 30px;
+                line-height: var(--tooltip-line-height);
                 position: absolute;
                 padding: 0 10px;
                 right: 0;
                 white-space: nowrap;
                 z-index: 1;
             }
+        }
+
+        .active-crew-name::before,
+        .active-crew-name::after {
+            content: '"';
         }
     }
 
@@ -179,6 +202,58 @@ button {
                 display: unset;
             }
         }
+    }
+}
+
+#notifications {
+    display: grid;
+    height: 0;
+    justify-content: end;
+    margin-right: 5px;
+    position: sticky;
+    top: 65px;
+    z-index: 1;
+
+    .notification-wrapper {
+        padding-bottom: 15px;
+
+        .notification {
+            backdrop-filter: blur(4px);
+            padding: 10px 30px 10px 20px;
+
+            @keyframes flash-notification {
+                0% { background-color: var(--color-highlight); }
+            }
+
+            @keyframes flash-warning {
+                0% { background-color: var(--color-warning); }
+            }
+
+            &:not(.warning) {
+                animation: flash-notification 600ms linear;
+            }
+
+            &.warning {
+                animation: flash-warning 600ms linear;
+            }
+        }
+
+        @keyframes close-notification {
+            100% { height: 0; opacity: 0; padding-bottom: 0; }
+        }
+
+        &.closing {
+            animation: close-notification var(--close-duration) linear;
+        }
+    }
+}
+
+#plan-actions {
+    h2 {
+        border-bottom: none;
+        display: inline-block;
+        position: relative;
+        z-index: 1;
     }
 
     // "Add Action" button toggles this panel
@@ -294,7 +369,7 @@ button {
 
                         .timer-compact:not(:empty) {
                             opacity: 0.5;
-    
+
                             &::before { content: 'Remaining '; }
                         }
                     }
@@ -762,45 +837,6 @@ ul.list-expanding-items {
             }
 
             animation: transition-flash var(--transition-flash-duration) linear;
-        }
-    }
-}
-
-#notifications {
-    position: absolute;
-    top: 65px;
-    right: 5px;
-
-    .notification-wrapper {
-        padding-bottom: 15px;
-
-        .notification {
-            backdrop-filter: blur(4px);
-            padding: 10px 30px 10px 20px;
-
-            @keyframes flash-notification {
-                0% { background-color: var(--color-highlight); }
-            }
-
-            @keyframes flash-warning {
-                0% { background-color: var(--color-warning); }
-            }
-
-            &:not(.warning) {
-                animation: flash-notification 600ms linear;
-            }
-
-            &.warning {
-                animation: flash-warning 600ms linear;
-            }
-        }
-
-        @keyframes close-notification {
-            100% { height: 0; opacity: 0; padding-bottom: 0; }
-        }
-
-        &.closing {
-            animation: close-notification var(--close-duration) linear;
         }
     }
 }

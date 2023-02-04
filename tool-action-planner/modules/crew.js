@@ -133,13 +133,13 @@ class Crew {
      */
     getLotsListItemHtml(lot) {
         return /*html*/ `
-            <li id="lot_${lot.id}" data-state-class="${lot.getLotStateClass()}">
+            <li id="lot_${lot.id}">
                 <div class="lot-id">${lot.id}</div>
                 <div class="lot-asset">${lot.assetName || ''}</div>
-                <div class="lot-state">
+                <div class="lot-state" data-state-class="${lot.getLotStateClass()}">
                     <span class="state-text">${LOT_STATE_TEXT_SHORT[lot.state]}</span>
                 </div>
-                <div class="lot-progress"></div>
+                <div class="lot-actions"></div>
             </li>
         `;
     }
@@ -152,7 +152,7 @@ class Crew {
                     <div>Lot</div>
                     <div>Asset</div>
                     <div>State</div>
-                    <div>Progress</div>
+                    <div>Ongoing Actions and Progress</div>
                 </li>
             `;
         }

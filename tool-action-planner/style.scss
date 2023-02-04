@@ -245,7 +245,7 @@ button {
                 align-items: center;
                 display: grid;
                 gap: 25px;
-                grid-template-columns: 15% 20% 1fr 25%;
+                grid-template-columns: 10% 15% 20% 1fr;
                 padding: 5px 10px;
 
                 &.header {
@@ -264,27 +264,39 @@ button {
                     text-overflow: ellipsis;
                 }
 
-                &[data-state-class='active'] .lot-state .state-text { color: var(--color-ready); }
-                &[data-state-class='available'] .lot-state .state-text { color: var(--color-highlight); }
-                &[data-state-class='unavailable'] .lot-state .state-text { color: var(--color-warning); }
-
-                &:not([data-state-class='available']) {
-                    .lot-progress {
-                        &.ready::before { content: 'Ready to finalize'; }
-                    }
+                .lot-state {
+                    &[data-state-class='available'] .state-text { color: var(--color-highlight); }
+                    &[data-state-class='unavailable'] .state-text { color: var(--color-gray-dark); }
                 }
 
-                .lot-progress {
-                    .progress-done:not(:empty) {
-                        &::after { content: '%'; }
-                        &::before { content: 'Done '; }
-                    }
+                .lot-actions {
+                    .lot-action {
+                        display: flex;
+                        gap: 10px;
 
-                    .timer-compact:not(:empty) {
-                        margin-left: 10px;
-                        opacity: 0.5;
+                        &.ready .progress-done::before {
+                            color: var(--color-ready);
+                            content: 'Ready to finalize';
+                        }
 
-                        &::before { content: 'Remaining '; }
+                        .action-text {
+                            color: var(--color-highlight);
+
+                            &.startup-in-progress {
+                                color: var(--color-warning);
+                            }
+                        }
+
+                        .progress-done:not(:empty) {
+                            &::after { content: '%'; }
+                            &::before { content: 'Done '; }
+                        }
+
+                        .timer-compact:not(:empty) {
+                            opacity: 0.5;
+    
+                            &::before { content: 'Remaining '; }
+                        }
                     }
                 }
             }

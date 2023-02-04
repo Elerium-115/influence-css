@@ -11,7 +11,7 @@ const LOT_STATE = {
 
 const LOT_STATE_TEXT_SHORT = {
     BUILDING_COMPLETED: 'Ready',
-    BUILDING_SITE_PLAN: 'Site Plan',
+    BUILDING_SITE_PLAN: 'Planned',
     BUILDING_UNDER_CONSTRUCTION: 'Under Construction',
     BUILDING_UNDER_DECONSTRUCTION: 'Under Deconstruction',
     EMPTY: 'Empty',
@@ -43,9 +43,6 @@ class Lot {
     getLotStateClass() {
         if (this.assetName && !this.isAssetAvailableOnLot()) {
             return 'unavailable';
-        }
-        if (this.hasBlockingOngoingAction) {
-            return 'active';
         }
         return 'available';
     }

@@ -59,7 +59,7 @@ const ACTION_TYPE_ICON_CLASS = {
 };
 
 const ACTION_TYPE_STARTUP_DURATION = {
-    CONSTRUCT: 45 * 60 * 1000,
+    CONSTRUCT: 15 * 1000,
     CORE_SAMPLE: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
     DECONSTRUCT: 15 * 1000,
     EXTRACT: 5 * 1000,
@@ -79,6 +79,7 @@ const CREW_INVOLVEMENT = {
 };
 
 const ACTIONS_NOT_EXCLUSIVE_PER_LOT = [
+    ACTION_TYPE.CORE_SAMPLE,
     ACTION_TYPE.TRANSFER,
     ACTION_TYPE.TRAVEL,
 ];
@@ -208,11 +209,15 @@ class Action {
                 // Updating the HTML in this way is required, otherwise there may be issues e.g. with the transition to "Done"
                 this.elListItem.innerHTML = elTemp.firstElementChild.innerHTML;
                 this.injectLeaderLineIfNeeded();
-                // Update lot progress in lots-list, if the source ID for this type of action is a lot ID
+                // Update lot action and progress in lots-list
                 if (this.isActionOnLot) {
-                    const elLotsListItemLotProgress = document.getElementById(`lot_${this.sourceId}`).querySelector('.lot-progress');
-                    elLotsListItemLotProgress.classList.add('ready');
-                    elLotsListItemLotProgress.textContent = '';
+                    const elLotsListItem = document.getElementById(`lot_${this.sourceId}`);
+                    const elLotAction = elLotsListItem.querySelector(`.lot-action[data-action-id="${this.id}"]`);
+                    elLotAction.classList.add('ready');
+                    const elLotActionText = elLotAction.querySelector('.action-text');
+                    elLotActionText.classList.remove('startup-in-progress');
+                    elLotAction.querySelector('.progress-done').textContent = '';
+                    elLotAction.querySelector('.timer-compact').textContent = '';
                 }
                 this.clearRefreshOngoingInterval();
             }
@@ -414,16 +419,26 @@ class Action {
         this.elListItem.querySelector('.progress-done').textContent = progress;
         this.elListItem.querySelector('.progress-bars').style.setProperty('--progress-done', `${progress}%`);
         // Mark the list item if non-zero startup duration in progress (i.e. crew on cooldown because of it)
+        let isStartupInProgress = false;
         if (this.durationStartup && ongoingTimeElapsedMs < this.durationStartup) {
             this.elListItem.classList.add('startup-in-progress');
+            isStartupInProgress = true;
         } else {
             this.elListItem.classList.remove('startup-in-progress');
         }
-        // Update lot progress in lots-list, if the source ID for this type of action is a lot ID
-        if (this.isActionOnLot && this.isActionExclusivePerLot) {
+        // Update lot action and progress in lots-list
+        if (this.isActionOnLot) {
             const elLotsListItem = document.getElementById(`lot_${this.sourceId}`);
-            elLotsListItem.querySelector('.progress-done').textContent = progress;
-            elLotsListItem.querySelector('.timer-compact').textContent = timeRemainingShort;
+            const elLotAction = elLotsListItem.querySelector(`.lot-action[data-action-id="${this.id}"]`);
+            // Color the action-text based on whether it's in "startup" or "runtime"
+            const elLotActionText = elLotAction.querySelector('.action-text');
+            if (isStartupInProgress) {
+                elLotActionText.classList.add('startup-in-progress');
+            } else {
+                elLotActionText.classList.remove('startup-in-progress');
+            }
+            elLotAction.querySelector('.progress-done').textContent = progress;
+            elLotAction.querySelector('.timer-compact').textContent = timeRemainingShort;
         }
     }
 
@@ -727,7 +742,7 @@ class Action {
     }
 
     /**
-     * Return the new lot state or custom text, as a result of an ongoing / done action
+     * Return the new lot state, as a result of an ongoing / done action
      */
     getNewLotStateData() {
         if (this.state === ACTION_STATE.QUEUED) {
@@ -735,33 +750,22 @@ class Action {
             return;
         }
         let newLotStateData = {
-            customText: null,
-            shouldUpdateCustomText: false,
             shouldUpdateState: false,
             state: null,
         };
         switch (this.type) {
             case ACTION_TYPE.TRANSFER:
             case ACTION_TYPE.TRAVEL:
-                // These types of actions do not affect a lot's state
-                break;
             case ACTION_TYPE.CORE_SAMPLE:
             case ACTION_TYPE.EXTRACT:
             case ACTION_TYPE.REFINE:
-                // These types of ongoing actions do not affect a lot's state, but they enforce / reset a custom text
-                if (this.state === ACTION_STATE.ONGOING) {
-                    // Action ongoing => show a custom text
-                    newLotStateData.customText = `${ACTION_TYPE_TEXT_ING[this.type]}: ${this.subject}`; // e.g. "Extracting: Water"
-                } else {
-                    // Action done => reset the custom text
-                    newLotStateData.customText = null;
-                }
-                newLotStateData.shouldUpdateCustomText = true;
+                // These types of actions do not affect a lot's state
                 break;
             case ACTION_TYPE.CONSTRUCT:
                 if (this.state === ACTION_STATE.ONGOING) {
                     newLotStateData.state = LOT_STATE.BUILDING_UNDER_CONSTRUCTION;
                 } else {
+                    // Building constructed
                     newLotStateData.state = LOT_STATE.BUILDING_COMPLETED;
                 }
                 newLotStateData.shouldUpdateState = true;
@@ -779,6 +783,7 @@ class Action {
                 if (this.state === ACTION_STATE.ONGOING) {
                     newLotStateData.state = LOT_STATE.SHIP_LANDING;
                 } else {
+                    // Ship landed
                     newLotStateData.state = LOT_STATE.SHIP_LANDED;
                 }
                 newLotStateData.shouldUpdateState = true;
@@ -794,6 +799,31 @@ class Action {
                 break;
         }
         return newLotStateData;
+    }
+
+    /**
+     * Return the new lot action, as a result of an ongoing / done action
+     */
+    getNewLotActionData() {
+        if (this.state === ACTION_STATE.QUEUED) {
+            console.log(`%c--- ERROR: action queued => can NOT get new lot action`, 'color: orange;');
+            return;
+        }
+        let newLotActionData = {
+            actionText: null,
+            shouldUpdateActionText: false,
+        };
+        if (this.isActionOnLot) {
+            if (this.state === ACTION_STATE.ONGOING) {
+                // Action ongoing => show an action text
+                newLotActionData.actionText = `${ACTION_TYPE_TEXT_ING[this.type]}: ${this.subject}`; // e.g. "Extracting: Water"
+            } else {
+                // Action done => reset the action text
+                newLotActionData.actionText = null;
+            }
+            newLotActionData.shouldUpdateActionText = true;
+        }
+        return newLotActionData;
     }
 
     updateLotsList() {
@@ -813,6 +843,7 @@ class Action {
         let newLotHasBlockingOngoingActionData = this.getNewLotHasBlockingOngoingActionData();
         let newLotAssetData = this.getNewLotAssetData();
         let newLotStateData = this.getNewLotStateData();
+        let newLotActionData = this.getNewLotActionData();
         if (newLotHasBlockingOngoingActionData && newLotHasBlockingOngoingActionData.shouldUpdateHasBlockingOngoingAction) {
             // This lot property needs to be set BEFORE calling "getLotStateClass"
             actionLot.hasBlockingOngoingAction = newLotHasBlockingOngoingActionData.hasBlockingOngoingAction;
@@ -822,43 +853,40 @@ class Action {
             actionLot.assetName = newLotAssetData.assetName;
             elLotsListItem.querySelector('.lot-asset').textContent = newLotAssetData.assetName || '';
         }
-        const elLotProgress = elLotsListItem.querySelector('.lot-progress');
-        if (newLotStateData && (newLotStateData.shouldUpdateState || newLotStateData.shouldUpdateCustomText)) {
+        if (newLotStateData && newLotStateData.shouldUpdateState) {
             if (newLotStateData.shouldUpdateState) {
                 actionLot.state = newLotStateData.state;
             }
-            elLotsListItem.dataset.stateClass = actionLot.getLotStateClass();
             const elLotState = elLotsListItem.querySelector('.lot-state');
-            /**
-             * Update the text based on this priority:
-             * 1. new custom text, if set
-             * 2. new state, if set
-             * 3. previous state (e.g. if Core Sample done, the custom text is reset, and no new state is enforced)
-             */
-            const newStateText = newLotStateData.customText ||
-                LOT_STATE_TEXT_SHORT[newLotStateData.state] ||
-                LOT_STATE_TEXT_SHORT[actionLot.state]
-                ;
-            elLotState.querySelector('.state-text').textContent = `${newStateText}`;
-            if (this.state === ACTION_STATE.ONGOING) {
-                if (this.isReady) {
-                    elLotProgress.classList.add('ready');
-                    elLotProgress.textContent = '';
-                } else {
-                    elLotProgress.innerHTML = /*html*/ `
-                        <span class="progress-done"></span><span class="timer-compact"></span>
-                    `;
-                }
-            }
+            elLotState.dataset.stateClass = actionLot.getLotStateClass();
+            elLotState.querySelector('.state-text').textContent = LOT_STATE_TEXT_SHORT[newLotStateData.state];
         }
+        // Update cell for this specific action, from within ".lot-actions"
+        let elLotActions = elLotsListItem.querySelector('.lot-actions');
+        let elLotAction = elLotActions.querySelector(`.lot-action[data-action-id="${this.id}"]`);
         if (this.state === ACTION_STATE.DONE) {
-            /**
-             * Ensure the "ready" class is removed from lot-progress,
-             * even if nothing was updated due to "newLotStateData"
-             * (e.g. after finalizing a Transfer action).
-             */
-            elLotProgress.classList.remove('ready');
-            elLotProgress.textContent = '';
+            if (elLotAction) {
+                deleteFromDOM(elLotAction);
+            }
+            return;
+        }
+        // Action ongoing
+        if (!elLotAction) {
+            // Inject cell for this specific action
+            elLotAction = document.createElement('div');
+            elLotAction.classList.add('lot-action');
+            elLotAction.dataset.actionId = this.id;
+            elLotActions.append(elLotAction);
+        }
+        if (newLotActionData && newLotActionData.shouldUpdateActionText) {
+            elLotAction.innerHTML = /*html*/ `
+                <span class="action-text">${newLotActionData.actionText}</span>
+                <span class="progress-done"></span>
+                <span class="timer-compact"></span>
+            `;
+            if (this.isReady) {
+                elLotAction.classList.add('ready');
+            }
         }
     }
 

@@ -247,7 +247,7 @@ button .icon-round {
   align-items: center;
   display: grid;
   gap: 25px;
-  grid-template-columns: 15% 20% 1fr 25%;
+  grid-template-columns: 10% 15% 20% 1fr;
   padding: 5px 10px;
 }
 #plan-actions #manage-lots-panel #manage-lots-list li.header {
@@ -263,29 +263,36 @@ button .icon-round {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li[data-state-class=active] .lot-state .state-text {
-  color: var(--color-ready);
-}
-#plan-actions #manage-lots-panel #manage-lots-list li[data-state-class=available] .lot-state .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state[data-state-class=available] .state-text {
   color: var(--color-highlight);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li[data-state-class=unavailable] .lot-state .state-text {
-  color: var(--color-warning);
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-state[data-state-class=unavailable] .state-text {
+  color: var(--color-gray-dark);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li:not([data-state-class=available]) .lot-progress.ready::before {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action {
+  display: flex;
+  gap: 10px;
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action.ready .progress-done::before {
+  color: var(--color-ready);
   content: "Ready to finalize";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .progress-done:not(:empty)::after {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .action-text {
+  color: var(--color-highlight);
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .action-text.startup-in-progress {
+  color: var(--color-warning);
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .progress-done:not(:empty)::after {
   content: "%";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .progress-done:not(:empty)::before {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .progress-done:not(:empty)::before {
   content: "Done ";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .timer-compact:not(:empty) {
-  margin-left: 10px;
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .timer-compact:not(:empty) {
   opacity: 0.5;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-progress .timer-compact:not(:empty)::before {
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .timer-compact:not(:empty)::before {
   content: "Remaining ";
 }
 #plan-actions #active-crew-panel {

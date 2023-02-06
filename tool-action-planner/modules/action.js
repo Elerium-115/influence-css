@@ -1,5 +1,6 @@
 import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js';
 import {leaderLineConnectElements} from './leader-line-utils.js';
+import {CREW_INVOLVEMENT} from './crew.js';
 import {LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
 import {NotificationService} from './notification.js';
 
@@ -22,67 +23,82 @@ const ACTION_TYPE = {
     TRAVEL: 'TRAVEL',
 };
 
-const ACTION_TYPE_TEXT = {
-    CONSTRUCT: 'Construct',
-    CORE_SAMPLE: 'Core Sample',
-    DECONSTRUCT: 'Deconstruct',
-    EXTRACT: 'Extract',
-    LAND: 'Land', // Land from orbit
-    LAUNCH: 'Launch', // Launch to orbit
-    REFINE: 'Refine',
-    TRANSFER: 'Transfer',
-    TRAVEL: 'Travel',
-};
-
-const ACTION_TYPE_TEXT_ING = {
-    CONSTRUCT: 'Constructing',
-    CORE_SAMPLE: 'Core Sampling',
-    DECONSTRUCT: 'Deconstructing',
-    EXTRACT: 'Extracting',
-    LAND: 'Landing', // Landing from orbit
-    LAUNCH: 'Launching', // Launching to orbit
-    REFINE: 'Refining',
-    TRANSFER: 'Transfering',
-    TRAVEL: 'Traveling',
-}
-
-const ACTION_TYPE_ICON_CLASS = {
-    CONSTRUCT: 'icon-construct',
-    CORE_SAMPLE: 'icon-core-sample',
-    DECONSTRUCT: 'icon-deconstruct',
-    EXTRACT: 'icon-yield',
-    LAND: 'icon-ship-down',
-    LAUNCH: 'icon-ship-up',
-    REFINE: 'icon-refine',
-    TRANSFER: 'icon-trade',
-    TRAVEL: 'icon-ship-right',
-};
-
-const ACTION_TYPE_STARTUP_DURATION = {
-    CONSTRUCT: 15 * 1000,
-    CORE_SAMPLE: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
-    DECONSTRUCT: 15 * 1000,
-    EXTRACT: 5 * 1000,
-    LAND: 5 * 1000,
-    LAUNCH: 5 * 1000,
-    REFINE: 5 * 1000,
-    TRANSFER: 0, // Crew presence not required for action "Transfer" => no cooldown
-    TRAVEL: 5 * 1000,
+const ACTION_TYPE_DATA = {
+    CONSTRUCT: {
+        ICON_CLASS: 'icon-construct',
+        IS_ACTION_ON_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: true,
+        STARTUP_DURATION: 15 * 1000,
+        TEXT: 'Construct',
+        TEXT_ING: 'Constructing',
+    },
+    CORE_SAMPLE: {
+        ICON_CLASS: 'icon-core-sample',
+        IS_ACTION_ON_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: false,
+        STARTUP_DURATION: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
+        TEXT: 'Core Sample',
+        TEXT_ING: 'Core Sampling',
+    },
+    DECONSTRUCT: {
+        ICON_CLASS: 'icon-deconstruct',
+        IS_ACTION_ON_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: true,
+        STARTUP_DURATION: 15 * 1000,
+        TEXT: 'Deconstruct',
+        TEXT_ING: 'Deconstructing',
+    },
+    EXTRACT: {
+        ICON_CLASS: 'icon-yield',
+        IS_ACTION_ON_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: true,
+        STARTUP_DURATION: 5 * 1000,
+        TEXT: 'Extract',
+        TEXT_ING: 'Extracting',
+    },
+    LAND: {
+        ICON_CLASS: 'icon-ship-down',
+        IS_ACTION_ON_LOT: true, // WARNING: "Land" actions will use "sourceId" (NOT "destinationId") as the lot ID to land at
+        IS_EXCLUSIVE_PER_LOT: true,
+        STARTUP_DURATION: 5 * 1000,
+        TEXT: 'Land', // Land from orbit
+        TEXT_ING: 'Landing', // Landing from orbit
+    },
+    LAUNCH: {
+        ICON_CLASS: 'icon-ship-up',
+        IS_ACTION_ON_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: true,
+        STARTUP_DURATION: 5 * 1000,
+        TEXT: 'Launch', // Launch to orbit
+        TEXT_ING: 'Launching', // Launching to orbit
+    },
+    REFINE: {
+        ICON_CLASS: 'icon-refine',
+        IS_ACTION_ON_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: true,
+        STARTUP_DURATION: 5 * 1000,
+        TEXT: 'Refine',
+        TEXT_ING: 'Refining',
+    },
+    TRANSFER: {
+        ICON_CLASS: 'icon-trade',
+        IS_ACTION_ON_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: false,
+        STARTUP_DURATION: 0, // Crew presence not required for action "Transfer" => no cooldown
+        TEXT: 'Transfer',
+        TEXT_ING: 'Transfering',
+    },
+    TRAVEL: {
+        ICON_CLASS: 'icon-ship-right',
+        IS_ACTION_ON_LOT: false, // "Travel" is currently the only action whose source ID is not a lot ID
+        IS_EXCLUSIVE_PER_LOT: true,
+        STARTUP_DURATION: 5 * 1000,
+        TEXT: 'Travel',
+        TEXT_ING: 'Traveling',
+    },
 };
 
 const ACTION_LIST_ITEM_TRANSITION_DURATION = 300; // milliseconds
-
-const CREW_INVOLVEMENT = {
-    FINALIZING: 'Finalizing',
-    REQUIRED_FOR_DURATION: 'Required for Duration',
-    STARTING: 'Starting',
-};
-
-const ACTIONS_NOT_EXCLUSIVE_PER_LOT = [
-    ACTION_TYPE.CORE_SAMPLE,
-    ACTION_TYPE.TRANSFER,
-    ACTION_TYPE.TRAVEL,
-];
 
 class Action {
     constructor(
@@ -108,7 +124,7 @@ class Action {
         this.sourceId = sourceId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
         this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
         this.destinationId = destinationId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
-        this.durationStartup = ACTION_TYPE_STARTUP_DURATION[type];
+        this.durationStartup = ACTION_TYPE_DATA[type].STARTUP_DURATION;
         this.durationRuntime = durationRuntime ? durationRuntime : 0; // number as milliseconds
         this.durationTotal = this.durationStartup + this.durationRuntime;
         this.startupRatio = Math.round(100 * this.durationStartup / this.durationTotal);
@@ -122,8 +138,8 @@ class Action {
         }
         this.state = ACTION_STATE.QUEUED; // default state for new actions
         this.isReady = false;
-        this.isActionOnLot = this.type !== ACTION_TYPE.TRAVEL; // "Travel" is currently the only action whose source ID is not a lot ID
-        this.isActionExclusivePerLot = !ACTIONS_NOT_EXCLUSIVE_PER_LOT.includes(this.type);
+        this.isActionOnLot = ACTION_TYPE_DATA[this.type].IS_ACTION_ON_LOT;
+        this.isActionExclusivePerLot = ACTION_TYPE_DATA[this.type].IS_EXCLUSIVE_PER_LOT;
         this.elListItem = null;
         this.refreshOngoingInterval = null;
         this.updateLotsList();
@@ -141,7 +157,7 @@ class Action {
 
     getActionText() {
         const sourceType = this.isActionOnLot ? 'Lot' : 'Asteroid';
-        return `${ACTION_TYPE_TEXT[this.type]}: ${this.subject} at ${sourceType} ${this.sourceId} (${this.sourceName})`;
+        return `${ACTION_TYPE_DATA[this.type].TEXT}: ${this.subject} at ${sourceType} ${this.sourceId} (${this.sourceName})`;
     }
 
     getCrewInvolvement() {
@@ -373,9 +389,9 @@ class Action {
         return /*html*/ `
             <li id="action_${this.id}" class="${readyClass}" ${draggableAttribute}>
                 <div class="item-title">
-                    <div class="icon-round ${ACTION_TYPE_ICON_CLASS[this.type]}"></div>
+                    <div class="icon-round ${ACTION_TYPE_DATA[this.type].ICON_CLASS}"></div>
                     <div class="item-title-text">
-                        <span class="action-type-text">${ACTION_TYPE_TEXT[this.type]}:</span>
+                        <span class="action-type-text">${ACTION_TYPE_DATA[this.type].TEXT}:</span>
                         ${this.subject}
                     </div>
                     ${timerCompactHtml}
@@ -675,32 +691,6 @@ class Action {
     }
 
     /**
-     * Return the new lot flag for "hasBlockingOngoingAction", as a result of an ongoing / done action
-     */
-    getNewLotHasBlockingOngoingActionData() {
-        if (this.state === ACTION_STATE.QUEUED) {
-            console.log(`%c--- ERROR: action queued => can NOT get new lot hasBlockingOngoingAction`, 'color: orange;');
-            return;
-        }
-        let hasBlockingOngoingActionData = {
-            hasBlockingOngoingAction: false,
-            shouldUpdateHasBlockingOngoingAction: false,
-        };
-        if (this.isActionExclusivePerLot) {
-            /**
-             * This type of action should set a lot's "hasBlockingOngoingAction",
-             * based on the action being ongoing (TRUE) or done (FALSE).
-             */
-            hasBlockingOngoingActionData.hasBlockingOngoingAction = this.state === ACTION_STATE.ONGOING;
-            hasBlockingOngoingActionData.shouldUpdateHasBlockingOngoingAction = true;
-        } else {
-            // Any other type of action does not affect a lot's "hasBlockingOngoingAction"
-            hasBlockingOngoingActionData.shouldUpdateHasBlockingOngoingAction = false;
-        }
-        return hasBlockingOngoingActionData;
-    }
-
-    /**
      * Return the new lot asset name, as a result of an ongoing / done action
      */
     getNewLotAssetData() {
@@ -816,7 +806,7 @@ class Action {
         if (this.isActionOnLot) {
             if (this.state === ACTION_STATE.ONGOING) {
                 // Action ongoing => show an action text
-                newLotActionData.actionText = `${ACTION_TYPE_TEXT_ING[this.type]}: ${this.subject}`; // e.g. "Extracting: Water"
+                newLotActionData.actionText = `${ACTION_TYPE_DATA[this.type].TEXT_ING}: ${this.subject}`; // e.g. "Extracting: Water"
             } else {
                 // Action done => reset the action text
                 newLotActionData.actionText = null;
@@ -840,14 +830,9 @@ class Action {
             return;
         }
         const elLotsListItem = actionLot.elLotsListItem;
-        let newLotHasBlockingOngoingActionData = this.getNewLotHasBlockingOngoingActionData();
         let newLotAssetData = this.getNewLotAssetData();
         let newLotStateData = this.getNewLotStateData();
         let newLotActionData = this.getNewLotActionData();
-        if (newLotHasBlockingOngoingActionData && newLotHasBlockingOngoingActionData.shouldUpdateHasBlockingOngoingAction) {
-            // This lot property needs to be set BEFORE calling "getLotStateClass"
-            actionLot.hasBlockingOngoingAction = newLotHasBlockingOngoingActionData.hasBlockingOngoingAction;
-        }
         if (newLotAssetData && newLotAssetData.shouldUpdateAssetName) {
             // This lot property needs to be set BEFORE calling "getLotStateClass"
             actionLot.assetName = newLotAssetData.assetName;
@@ -901,10 +886,10 @@ class Action {
             return null;
         }
         // The queued action is "on lot" AND "exclusive per lot"
-        const ongoingActionOnSameLot = actionService.getOngoingActionForActiveCrewAtLotId(this.sourceId);
-        if (ongoingActionOnSameLot && ongoingActionOnSameLot.isActionExclusivePerLot) {
+        const exclusiveOngoingActionOnSameLot = actionService.getExclusiveOngoingActionForActiveCrewAtLotId(this.sourceId);
+        if (exclusiveOngoingActionOnSameLot) {
             // There is an ongoing action on the same lot, and it is also "exclusive per lot"
-            return ongoingActionOnSameLot;
+            return exclusiveOngoingActionOnSameLot;
         }
         return null;
     }
@@ -995,7 +980,7 @@ class ActionService {
         }
     }
 
-    getOngoingActionForActiveCrewAtLotId(lotId) {
+    getExclusiveOngoingActionForActiveCrewAtLotId(lotId) {
         const activeCrew = crewService.activeCrew;
         if (!activeCrew) {
             // Lots being initialized before the existence of an active crew
@@ -1005,6 +990,7 @@ class ActionService {
             return action.crewId === activeCrew.id &&
                 action.asteroidId === activeCrew.asteroidId &&
                 action.isActionOnLot === true &&
+                action.isActionExclusivePerLot === true &&
                 action.sourceId === lotId &&
                 action.state === ACTION_STATE.ONGOING;
         });

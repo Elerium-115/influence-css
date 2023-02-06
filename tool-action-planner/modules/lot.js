@@ -29,7 +29,6 @@ class Lot {
         this.id = id;
         this.state = state; // expecting "LOT_STATE" value
         this.assetName = assetName; // name of asset located at this lot (only for non-empty lots)
-        this.hasBlockingOngoingAction = false;
         this.elLotsListItem = null;
     }
 

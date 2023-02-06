@@ -1,6 +1,12 @@
 import {getPseudoUniqueId, msToShortTime} from './abstract.js';
 import {Lot, LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
 
+const CREW_INVOLVEMENT = {
+    FINALIZING: 'Finalizing',
+    REQUIRED_FOR_DURATION: 'Required for Duration',
+    STARTING: 'Starting',
+};
+
 class Crew {
     constructor(name) {
         this.id = getPseudoUniqueId();
@@ -284,4 +290,4 @@ globalThis.onToggleChangeCrew = function() {
     crewService.toggleChangeCrew();
 }
 
-export {Crew, CrewService};
+export {Crew, CrewService, CREW_INVOLVEMENT};

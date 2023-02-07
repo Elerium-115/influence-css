@@ -388,8 +388,17 @@ button {
                     right: 0;
                     top: 0;
 
-                    &::before { content: '✕'; }
-                    &:hover::before { content: attr(data-abandon-lot-id); }
+                    &::before {
+                        content: '✕';
+                        max-width: 20px;
+                        transition: all 300ms ease 0s;
+                        white-space: nowrap;
+                    }
+
+                    &:hover::before {
+                        content: attr(data-abandon-lot-id);
+                        max-width: 200px;
+                    }
                 }
 
                 &:not(:hover) .lot-abandon {

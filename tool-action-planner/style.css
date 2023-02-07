@@ -408,9 +408,13 @@ button .icon-round {
 }
 #plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon::before {
   content: "✕";
+  max-width: 20px;
+  transition: all 300ms ease 0s;
+  white-space: nowrap;
 }
 #plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon:hover::before {
   content: attr(data-abandon-lot-id);
+  max-width: 200px;
 }
 #plan-actions #manage-lots-panel #manage-lots-list li:not(:hover) .lot-abandon {
   display: none;

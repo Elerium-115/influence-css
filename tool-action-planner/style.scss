@@ -322,6 +322,7 @@ button {
                 gap: 25px;
                 grid-template-columns: 10% 15% 20% 1fr;
                 padding: 5px 10px;
+                position: relative;
 
                 &.header {
                     border-bottom: 1px solid var(--color-gray-dark);
@@ -373,6 +374,26 @@ button {
                             &::before { content: 'Remaining '; }
                         }
                     }
+                }
+
+                .lot-abandon {
+                    align-items: center;
+                    background-color: var(--color-warning);
+                    bottom: 0;
+                    color: white;
+                    cursor: var(--cursor-url-active) 5 5, auto;
+                    display: flex;
+                    padding: 0 10px;
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+
+                    &::before { content: '✕'; }
+                    &:hover::before { content: attr(data-abandon-lot-id); }
+                }
+
+                &:not(:hover) .lot-abandon {
+                    display: none;
                 }
             }
         }

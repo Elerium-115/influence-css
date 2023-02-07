@@ -74,4 +74,12 @@ function deleteFromDOM(el) {
     el.parentElement.removeChild(el);
 }
 
-export {HOUR, deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime};
+function deleteFromArray(arr, value) {
+    var index = arr.indexOf(value);
+    if (index > -1) {
+      arr.splice(index, 1);
+    }
+    return arr;
+}
+
+export {HOUR, deleteFromArray, deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime};

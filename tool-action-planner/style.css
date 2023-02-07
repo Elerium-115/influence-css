@@ -1,3 +1,4 @@
+@charset "UTF-8";
 :root {
   --color-ready: rgb(54, 205, 54);
   --color-ready-faded-10: rgba(54, 205, 54, 0.1);
@@ -346,6 +347,7 @@ button .icon-round {
   gap: 25px;
   grid-template-columns: 10% 15% 20% 1fr;
   padding: 5px 10px;
+  position: relative;
 }
 #plan-actions #manage-lots-panel #manage-lots-list li.header {
   border-bottom: 1px solid var(--color-gray-dark);
@@ -391,6 +393,27 @@ button .icon-round {
 }
 #plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .timer-compact:not(:empty)::before {
   content: "Remaining ";
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon {
+  align-items: center;
+  background-color: var(--color-warning);
+  bottom: 0;
+  color: white;
+  cursor: var(--cursor-url-active) 5 5, auto;
+  display: flex;
+  padding: 0 10px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon::before {
+  content: "✕";
+}
+#plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon:hover::before {
+  content: attr(data-abandon-lot-id);
+}
+#plan-actions #manage-lots-panel #manage-lots-list li:not(:hover) .lot-abandon {
+  display: none;
 }
 #plan-actions #active-crew-panel {
   flex-direction: column;

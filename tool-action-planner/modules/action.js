@@ -445,6 +445,10 @@ class Action {
         // Update lot action and progress in lots-list
         if (this.isActionOnLot) {
             const elLotsListItem = document.getElementById(`lot_${this.sourceId}`);
+            if (!elLotsListItem) {
+                // The lots-list item must have just been deleted (e.g. via "abandonLotId")
+                return;
+            }
             const elLotAction = elLotsListItem.querySelector(`.lot-action[data-action-id="${this.id}"]`);
             // Color the action-text based on whether it's in "startup" or "runtime"
             const elLotActionText = elLotAction.querySelector('.action-text');
@@ -565,28 +569,35 @@ class Action {
         }
     }
 
-    removeAction() {
-        // Queued actions can be removed without the need for the crew to be active and on the same asteroid
-        if (!this.isActiveCrewAndAsteroid() && this.state !== ACTION_STATE.QUEUED) {
-            this.handleInvalidCrewOrAsteroid();
-            return;
-        }
-        if (crewService.activeCrew.cooldown && this.state === ACTION_STATE.ONGOING) {
-            // Ongoing actions can not be canceled, as of 2023-01-10
-            return;
-            //// DISABLED -- START
-            // /**
-            //  * The only ongoing action that can be canceled while the crew is on cooldown,
-            //  * is the action that triggered the cooldown (e.g. a "Core Sample" action can be canceled
-            //  * while the crew is "locked" to that action, thus also clearing the crew cooldown).
-            //  */
-            // if (this.id === crewService.activeCrew.cooldownActionId) {
-            //     crewService.activeCrew.clearCooldown();
-            // } else {
-            //     this.handleCrewOnCooldown();
-            //     return;
-            // }
-            //// DISABLED -- END
+    removeAction(forceRemove = false) {
+        if (forceRemove) {
+            if (this.id === crewService.activeCrew.cooldownActionId) {
+                // The action being removed was keeping the crew on cooldown
+                crewService.activeCrew.clearCooldown();
+            }
+        } else {
+            // Queued actions can be removed without the need for the crew to be active and on the same asteroid
+            if (!this.isActiveCrewAndAsteroid() && this.state !== ACTION_STATE.QUEUED) {
+                this.handleInvalidCrewOrAsteroid();
+                return;
+            }
+            if (this.state === ACTION_STATE.ONGOING) {
+                // Ongoing actions can not be canceled, as of 2023-01-10
+                return;
+                //// DISABLED -- START
+                // /**
+                //  * The only ongoing action that can be canceled while the crew is on cooldown,
+                //  * is the action that triggered the cooldown (e.g. a "Core Sample" action can be canceled
+                //  * while the crew is "locked" to that action, thus also clearing the crew cooldown).
+                //  */
+                // if (this.id === crewService.activeCrew.cooldownActionId) {
+                //     crewService.activeCrew.clearCooldown();
+                // } else {
+                //     this.handleCrewOnCooldown();
+                //     return;
+                // }
+                //// DISABLED -- END
+            }
         }
         this.prepareListItemForAnimating();
         // Fade out the list item, then slide it up
@@ -597,8 +608,11 @@ class Action {
             setTimeout(() => {
                 // Done sliding up => remove the list item
                 this.removeListItem();
+                this.clearRefreshOngoingInterval();
                 // Remove global reference
                 delete actionService.actionsById[this.id];
+                // Ensure the top queued action is ready, in case the previously-ready action has just been removed
+                actionService.updateQueuedActionsReadiness();
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
@@ -822,8 +836,7 @@ class Action {
             return;
         }
         const lotId = this.sourceId;
-        const activeCrew = crewService.activeCrew;
-        const lots = activeCrew.lotsByAsteroidId[activeCrew.asteroidId];
+        const lots = crewService.getLotsForActiveCrewAndAsteroid();
         const actionLot = lots.find(lot => lot.id === lotId);
         if (!actionLot) {
             console.log(`%c--- ERROR: lot not found for action #${this.id} => can NOT update lots list`, 'color: orange;');
@@ -980,18 +993,28 @@ class ActionService {
         }
     }
 
+    getActionsForActiveCrewAtLotId(lotId) {
+        const activeCrew = crewService.activeCrew;
+        if (!activeCrew) {
+            // Lots being initialized before the existence of an active crew
+            return [];
+        }
+        return Object.values(actionService.actionsById).filter(action => {
+            return action.crewId === activeCrew.id &&
+                action.asteroidId === activeCrew.asteroidId &&
+                action.isActionOnLot === true &&
+                action.sourceId === lotId;
+        });
+    }
+
     getExclusiveOngoingActionForActiveCrewAtLotId(lotId) {
         const activeCrew = crewService.activeCrew;
         if (!activeCrew) {
             // Lots being initialized before the existence of an active crew
             return null;
         }
-        return Object.values(actionService.actionsById).find(action => {
-            return action.crewId === activeCrew.id &&
-                action.asteroidId === activeCrew.asteroidId &&
-                action.isActionOnLot === true &&
-                action.isActionExclusivePerLot === true &&
-                action.sourceId === lotId &&
+        return this.getActionsForActiveCrewAtLotId(lotId).find(action => {
+            return action.isActionExclusivePerLot === true &&
                 action.state === ACTION_STATE.ONGOING;
         });
     }

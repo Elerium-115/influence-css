@@ -1,4 +1,4 @@
-import {getPseudoUniqueId, msToShortTime} from './abstract.js';
+import {deleteFromArray, deleteFromDOM, getPseudoUniqueId, msToShortTime} from './abstract.js';
 import {Lot, LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
 
 const CREW_INVOLVEMENT = {
@@ -146,6 +146,7 @@ class Crew {
                     <span class="state-text">${LOT_STATE_TEXT_SHORT[lot.state]}</span>
                 </div>
                 <div class="lot-actions"></div>
+                <div class="lot-abandon" data-abandon-lot-id="Abandon Lot #${lot.id}" onclick="onAbandonLotId(${lot.id})"></div>
             </li>
         `;
     }
@@ -216,6 +217,11 @@ class CrewService {
         return actionService.actionsById[crewActionId];
     }
 
+    getLotsForActiveCrewAndAsteroid() {
+        const activeCrew = this.activeCrew;
+        return activeCrew.lotsByAsteroidId[activeCrew.asteroidId];
+    }
+
     toggleManageLots() {
         const elManageLotsButton = document.getElementById('manage-lots-button');
         const elManageLotsPanel = document.getElementById('manage-lots-panel');
@@ -254,6 +260,21 @@ class CrewService {
             elChangeCrewPanel.classList.remove('hidden');
         }
     }
+
+    abandonLotId(lotId) {
+        //// TO DO: implement confirmation service, similar to notifications service
+        //// => REQUIRE confirmation for removing all actions associated with this lot, including [N] ongoing actions [+LIST them?]
+        //// ...
+        // Remove all actions on lot, regardless of state, for the currently active crew+asteroid
+        for (const action of actionService.getActionsForActiveCrewAtLotId(lotId)) {
+            action.removeAction(true);
+        }
+        // Remove the lot, including from the HTML
+        const lots = this.getLotsForActiveCrewAndAsteroid();
+        const matchingLot = lots.find(lot => lot.id === lotId);
+        deleteFromDOM(matchingLot.elLotsListItem);
+        deleteFromArray(lots, matchingLot);
+    }
 }
 
 // Global variables and functions
@@ -288,6 +309,10 @@ globalThis.onToggleActiveCrew = function() {
 
 globalThis.onToggleChangeCrew = function() {
     crewService.toggleChangeCrew();
+}
+
+globalThis.onAbandonLotId = function(lotId) {
+    crewService.abandonLotId(lotId);
 }
 
 export {Crew, CrewService, CREW_INVOLVEMENT};

@@ -67,7 +67,7 @@ button {
         &:hover:not(:disabled) {
             background-color: var(--color-warning-faded-25);
         }
-        
+
         &:active:not(:disabled) {
             background-color: var(--color-warning);
         }
@@ -75,7 +75,7 @@ button {
         &::after {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23df4300'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
         }
-    }    
+    }
 }
 
 .root-section {
@@ -330,96 +330,119 @@ button {
     #manage-lots-panel {
         flex-direction: column;
 
-        #manage-lots-list {
-            font-size: 14px;
+        #manage-lots-list-wrapper {
+            position: relative;
 
-            li {
-                align-items: center;
-                display: grid;
-                gap: 25px;
-                grid-template-columns: 10% 15% 20% 1fr;
-                padding: 5px 10px;
-                position: relative;
+            #toggle-autoconfirm-abandon-lot-label {
+                line-height: 30px;
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
 
-                &.header {
-                    border-bottom: 1px solid var(--color-gray-dark);
-                    border-top: 1px solid var(--color-gray-dark);
-                    color: var(--color-gray-dark);
-                }
+            &:not(:hover) #toggle-autoconfirm-abandon-lot-label {
+                display: none;
+            }
 
-                &:hover:not(.header) {
-                    background-color: rgba(255, 255, 255, 0.1);
-                    color: white;
-                }
+            #manage-lots-list {
+                font-size: 14px;
 
-                > * {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
+                li {
+                    align-items: center;
+                    display: grid;
+                    gap: 25px;
+                    grid-template-columns: 10% 15% 20% 1fr;
+                    margin-top: 0;
+                    opacity: 1;
+                    padding: 5px 10px;
+                    position: relative;
+                    transition: all 300ms ease 0s;
 
-                .lot-state {
-                    &[data-state-class='available'] .state-text { color: var(--color-highlight); }
-                    &[data-state-class='unavailable'] .state-text { color: var(--color-gray-dark); }
-                }
+                    &.abandoning {
+                        margin-top: calc(0px - var(--this-height));
+                        opacity: 0;
+                    }
 
-                .lot-actions {
-                    .lot-action {
-                        display: flex;
-                        gap: 10px;
+                    &.header {
+                        border-bottom: 1px solid var(--color-gray-dark);
+                        color: var(--color-gray-dark);
+                        height: 30px;
+                    }
 
-                        &.ready .progress-done::before {
-                            color: var(--color-ready);
-                            content: 'Ready to finalize';
-                        }
+                    &:hover:not(.header) {
+                        background-color: rgba(255, 255, 255, 0.1);
+                        color: white;
+                    }
 
-                        .action-text {
-                            color: var(--color-highlight);
+                    > * {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
 
-                            &.startup-in-progress {
-                                color: var(--color-warning);
+                    .lot-state {
+                        &[data-state-class='available'] .state-text { color: var(--color-highlight); }
+                        &[data-state-class='unavailable'] .state-text { color: var(--color-gray-dark); }
+                    }
+
+                    .lot-actions {
+                        .lot-action {
+                            display: flex;
+                            gap: 10px;
+
+                            &.ready .progress-done::before {
+                                color: var(--color-ready);
+                                content: 'Ready to finalize';
+                            }
+
+                            .action-text {
+                                color: var(--color-highlight);
+
+                                &.startup-in-progress {
+                                    color: var(--color-warning);
+                                }
+                            }
+
+                            .progress-done:not(:empty) {
+                                &::after { content: '%'; }
+                                &::before { content: 'Done '; }
+                            }
+
+                            .timer-compact:not(:empty) {
+                                opacity: 0.5;
+
+                                &::before { content: 'Remaining '; }
                             }
                         }
+                    }
 
-                        .progress-done:not(:empty) {
-                            &::after { content: '%'; }
-                            &::before { content: 'Done '; }
+                    .lot-abandon {
+                        align-items: center;
+                        background-color: var(--color-warning);
+                        bottom: 0;
+                        color: white;
+                        cursor: var(--cursor-url-active) 5 5, auto;
+                        display: flex;
+                        padding: 0 10px;
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+
+                        &::before {
+                            content: '✕';
+                            max-width: 20px;
+                            transition: all 300ms ease 0s;
+                            white-space: nowrap;
                         }
 
-                        .timer-compact:not(:empty) {
-                            opacity: 0.5;
-
-                            &::before { content: 'Remaining '; }
+                        &:hover::before {
+                            content: attr(data-abandon-lot-id);
+                            max-width: 200px;
                         }
                     }
-                }
 
-                .lot-abandon {
-                    align-items: center;
-                    background-color: var(--color-warning);
-                    bottom: 0;
-                    color: white;
-                    cursor: var(--cursor-url-active) 5 5, auto;
-                    display: flex;
-                    padding: 0 10px;
-                    position: absolute;
-                    right: 0;
-                    top: 0;
-
-                    &::before {
-                        content: '✕';
-                        max-width: 20px;
-                        transition: all 300ms ease 0s;
-                        white-space: nowrap;
+                    &:not(:hover) .lot-abandon {
+                        display: none;
                     }
-
-                    &:hover::before {
-                        content: attr(data-abandon-lot-id);
-                        max-width: 200px;
-                    }
-                }
-
-                &:not(:hover) .lot-abandon {
-                    display: none;
                 }
             }
         }

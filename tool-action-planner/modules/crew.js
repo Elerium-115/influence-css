@@ -262,9 +262,6 @@ class CrewService {
     }
 
     abandonLotId(lotId) {
-        //// TO DO: implement confirmation service, similar to notifications service
-        //// => REQUIRE confirmation for removing all actions associated with this lot, including [N] ongoing actions [+LIST them?]
-        //// ...
         // Remove all actions on lot, regardless of state, for the currently active crew+asteroid
         for (const action of actionService.getActionsForActiveCrewAtLotId(lotId)) {
             action.removeAction(true);
@@ -272,14 +269,20 @@ class CrewService {
         // Remove the lot, including from the HTML
         const lots = this.getLotsForActiveCrewAndAsteroid();
         const matchingLot = lots.find(lot => lot.id === lotId);
-        deleteFromDOM(matchingLot.elLotsListItem);
-        deleteFromArray(lots, matchingLot);
+        const elLotsListItem = matchingLot.elLotsListItem;
+        const elLotsListItemHeight = elLotsListItem.getBoundingClientRect().height;
+        elLotsListItem.style.setProperty('--this-height', `${elLotsListItemHeight}px`);
+        elLotsListItem.classList.add('abandoning');
+        setTimeout(() => {
+            deleteFromDOM(elLotsListItem);
+            deleteFromArray(lots, matchingLot);
+        }, 300);
     }
 
     getConfirmationHtmlForAbandonLotId(lotId) {
         return /*html*/ `
             <h2>Abandon Lot ${lotId}?</h2>
-            <div>Accepting this will delete Lot ${lotId} for the active crew, along with all its actions on this lot:</div>
+            <div>Accepting this will delete Lot ${lotId} for the active crew, along with all their actions on this lot:</div>
             <ul>
                 <li>Queued Actions</li>
                 <li>Ongoing Actions</li>
@@ -324,10 +327,16 @@ globalThis.onToggleChangeCrew = function() {
 }
 
 globalThis.onAbandonLotId = function(lotId) {
-    notificationService.createConfirmation(
-        crewService.getConfirmationHtmlForAbandonLotId(lotId),
-        () => crewService.abandonLotId(lotId),
-    );
+    const elToggleAutoconfirmAbandonLot = document.getElementById('toggle-autoconfirm-abandon-lot');
+    if (elToggleAutoconfirmAbandonLot && elToggleAutoconfirmAbandonLot.checked) {
+        // Auto-confirm abandon lot
+        crewService.abandonLotId(lotId);
+    } else {
+        notificationService.createConfirmation(
+            crewService.getConfirmationHtmlForAbandonLotId(lotId),
+            () => crewService.abandonLotId(lotId),
+        );
+    }
 }
 
 export {Crew, CrewService, CREW_INVOLVEMENT};

@@ -71,20 +71,13 @@ body.embed {
           mask-image: url("./assets/images/icon-x.svg");
 }
 
-@-webkit-keyframes pulse-text {
-  50% {
-    color: var(--color-gray-dark);
-  }
-}
-
 @keyframes pulse-text {
   50% {
     color: var(--color-gray-dark);
   }
 }
 .text-pulse {
-  -webkit-animation: pulse-text 2s infinite;
-          animation: pulse-text 2s infinite;
+  animation: pulse-text 2s infinite;
 }
 
 .text-highlight {
@@ -183,7 +176,6 @@ button.warning::after {
   justify-content: flex-end;
   line-height: var(--sticky-line-height);
   margin-right: 20px;
-  position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 1;
@@ -243,7 +235,6 @@ button.warning::after {
   height: 0;
   justify-content: end;
   margin-right: 5px;
-  position: -webkit-sticky;
   position: sticky;
   top: 65px;
   z-index: 1;
@@ -256,19 +247,9 @@ button.warning::after {
           backdrop-filter: blur(4px);
   padding: 10px 30px 10px 20px;
 }
-@-webkit-keyframes flash-notification {
-  0% {
-    background-color: var(--color-highlight);
-  }
-}
 @keyframes flash-notification {
   0% {
     background-color: var(--color-highlight);
-  }
-}
-@-webkit-keyframes flash-warning {
-  0% {
-    background-color: var(--color-warning);
   }
 }
 @keyframes flash-warning {
@@ -277,19 +258,10 @@ button.warning::after {
   }
 }
 #notifications .notification-wrapper .notification:not(.warning) {
-  -webkit-animation: flash-notification 600ms linear;
-          animation: flash-notification 600ms linear;
+  animation: flash-notification 600ms linear;
 }
 #notifications .notification-wrapper .notification.warning {
-  -webkit-animation: flash-warning 600ms linear;
-          animation: flash-warning 600ms linear;
-}
-@-webkit-keyframes close-notification {
-  100% {
-    height: 0;
-    opacity: 0;
-    padding-bottom: 0;
-  }
+  animation: flash-warning 600ms linear;
 }
 @keyframes close-notification {
   100% {
@@ -299,8 +271,7 @@ button.warning::after {
   }
 }
 #notifications .notification-wrapper.closing {
-  -webkit-animation: close-notification var(--close-duration) linear;
-          animation: close-notification var(--close-duration) linear;
+  animation: close-notification var(--close-duration) linear;
 }
 
 #plan-actions h2 {
@@ -351,63 +322,82 @@ button.warning::after {
 #plan-actions #manage-lots-panel {
   flex-direction: column;
 }
-#plan-actions #manage-lots-panel #manage-lots-list {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper {
+  position: relative;
+}
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #toggle-autoconfirm-abandon-lot-label {
+  line-height: 30px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper:not(:hover) #toggle-autoconfirm-abandon-lot-label {
+  display: none;
+}
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list {
   font-size: 14px;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li {
   align-items: center;
   display: grid;
   gap: 25px;
   grid-template-columns: 10% 15% 20% 1fr;
+  margin-top: 0;
+  opacity: 1;
   padding: 5px 10px;
   position: relative;
+  transition: all 300ms ease 0s;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li.header {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li.abandoning {
+  margin-top: calc(0px - var(--this-height));
+  opacity: 0;
+}
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li.header {
   border-bottom: 1px solid var(--color-gray-dark);
-  border-top: 1px solid var(--color-gray-dark);
   color: var(--color-gray-dark);
+  height: 30px;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li:hover:not(.header) {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li:hover:not(.header) {
   background-color: rgba(255, 255, 255, 0.1);
   color: white;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li > * {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li > * {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state[data-state-class=available] .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-state[data-state-class=available] .state-text {
   color: var(--color-highlight);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-state[data-state-class=unavailable] .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-state[data-state-class=unavailable] .state-text {
   color: var(--color-gray-dark);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action {
   display: flex;
   gap: 10px;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action.ready .progress-done::before {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action.ready .progress-done::before {
   color: var(--color-ready);
   content: "Ready to finalize";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .action-text {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action .action-text {
   color: var(--color-highlight);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .action-text.startup-in-progress {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action .action-text.startup-in-progress {
   color: var(--color-warning);
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .progress-done:not(:empty)::after {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action .progress-done:not(:empty)::after {
   content: "%";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .progress-done:not(:empty)::before {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action .progress-done:not(:empty)::before {
   content: "Done ";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .timer-compact:not(:empty) {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action .timer-compact:not(:empty) {
   opacity: 0.5;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-actions .lot-action .timer-compact:not(:empty)::before {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action .timer-compact:not(:empty)::before {
   content: "Remaining ";
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-abandon {
   align-items: center;
   background-color: var(--color-warning);
   bottom: 0;
@@ -419,17 +409,17 @@ button.warning::after {
   right: 0;
   top: 0;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon::before {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-abandon::before {
   content: "✕";
   max-width: 20px;
   transition: all 300ms ease 0s;
   white-space: nowrap;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li .lot-abandon:hover::before {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-abandon:hover::before {
   content: attr(data-abandon-lot-id);
   max-width: 200px;
 }
-#plan-actions #manage-lots-panel #manage-lots-list li:not(:hover) .lot-abandon {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li:not(:hover) .lot-abandon {
   display: none;
 }
 #plan-actions #active-crew-panel {
@@ -764,12 +754,6 @@ ul.list-expanding-items li.animating {
   position: relative;
   transition-duration: var(--half-slide-duration);
 }
-@-webkit-keyframes fade-background {
-  100% {
-    background-color: transparent;
-    border-color: transparent;
-  }
-}
 @keyframes fade-background {
   100% {
     background-color: transparent;
@@ -777,15 +761,8 @@ ul.list-expanding-items li.animating {
   }
 }
 ul.list-expanding-items li.animating.fade-background {
-  -webkit-animation: fade-background var(--half-slide-duration) linear;
-          animation: fade-background var(--half-slide-duration) linear;
-  -webkit-animation-fill-mode: both;
-          animation-fill-mode: both;
-}
-@-webkit-keyframes fade-out {
-  100% {
-    opacity: 0;
-  }
+  animation: fade-background var(--half-slide-duration) linear;
+  animation-fill-mode: both;
 }
 @keyframes fade-out {
   100% {
@@ -793,10 +770,8 @@ ul.list-expanding-items li.animating.fade-background {
   }
 }
 ul.list-expanding-items li.animating.fade-out {
-  -webkit-animation: fade-out var(--half-slide-duration) linear;
-          animation: fade-out var(--half-slide-duration) linear;
-  -webkit-animation-fill-mode: both;
-          animation-fill-mode: both;
+  animation: fade-out var(--half-slide-duration) linear;
+  animation-fill-mode: both;
 }
 ul.list-expanding-items li.animating.slide-up {
   height: 0 !important;
@@ -807,28 +782,20 @@ ul.list-expanding-items li.animating .slider {
   position: absolute;
   width: var(--this-width);
 }
-@-webkit-keyframes slide-right {
-  100% {
-    left: var(--this-width);
-  }
-}
 @keyframes slide-right {
   100% {
     left: var(--this-width);
   }
 }
 ul.list-expanding-items li.animating .slider.slide-right {
-  -webkit-animation: slide-right var(--half-slide-duration) linear;
-          animation: slide-right var(--half-slide-duration) linear;
-  -webkit-animation-fill-mode: both;
-          animation-fill-mode: both;
+  animation: slide-right var(--half-slide-duration) linear;
+  animation-fill-mode: both;
 }
 ul.list-expanding-items li.transition-flash {
   background-color: rgba(40, 40, 40, 0.5);
   border-top: 1px solid black;
   border-bottom: 1px solid black;
-  -webkit-animation: transition-flash var(--transition-flash-duration) linear;
-          animation: transition-flash var(--transition-flash-duration) linear;
+  animation: transition-flash var(--transition-flash-duration) linear;
 }
 ul.list-expanding-items li.transition-flash .item-title {
   background-image: linear-gradient(90deg, var(--color-highlight), transparent);
@@ -914,20 +881,6 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-title {
 }
 ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .subactions {
   color: var(--color-warning);
-}
-@-webkit-keyframes transition-flash {
-  0% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  75% {
-    opacity: 1;
-  }
 }
 @keyframes transition-flash {
   0% {

@@ -906,6 +906,7 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   justify-content: center;
   left: 0;
   opacity: 0;
+  padding: 0 20%;
   position: fixed;
   right: 0;
   top: 0;
@@ -925,15 +926,26 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   gap: 35px;
   padding: 35px;
 }
-#confirmation-wrapper #confirmation #confirmation-message {
-  line-height: 1.5;
-}
 #confirmation-wrapper #confirmation #confirmation-message h2 {
   color: var(--color-warning);
   margin-bottom: 35px;
 }
-#confirmation-wrapper #confirmation #confirmation-message ul {
-  list-style: inside;
+#confirmation-wrapper #confirmation #confirmation-message .warning {
+  color: var(--color-warning);
+}
+#confirmation-wrapper #confirmation #confirmation-message .list-wrapper {
+  margin-top: 20px;
+}
+#confirmation-wrapper #confirmation #confirmation-message .list-wrapper .list-header {
+  border-bottom: 1px solid var(--color-gray-dark);
+  display: inline-block;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+}
+#confirmation-wrapper #confirmation #confirmation-message .list-wrapper ul {
+  color: var(--color-gray-dark);
+  font-size: 14px;
+  line-height: 1.5;
 }
 #confirmation-wrapper #confirmation #confirmation-buttons {
   display: flex;

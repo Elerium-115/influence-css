@@ -919,6 +919,7 @@ ul.list-expanding-items {
     justify-content: center;
     left: 0;
     opacity: 0;
+    padding: 0 20%;
     position: fixed;
     right: 0;
     top: 0;
@@ -936,15 +937,30 @@ ul.list-expanding-items {
         padding: 35px;
 
         #confirmation-message {
-            line-height: 1.5;
-
             h2 {
                 color: var(--color-warning);
                 margin-bottom: 35px;
             }
 
-            ul {
-                list-style: inside;
+            .warning {
+                color: var(--color-warning);
+            }
+
+            .list-wrapper {
+                margin-top: 20px;
+
+                .list-header {
+                    border-bottom: 1px solid var(--color-gray-dark);
+                    display: inline-block;
+                    margin-bottom: 5px;
+                    padding-bottom: 5px;
+                }
+
+                ul {
+                    color: var(--color-gray-dark);
+                    font-size: 14px;
+                    line-height: 1.5;
+                }
             }
         }
 

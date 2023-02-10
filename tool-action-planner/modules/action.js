@@ -155,9 +155,16 @@ class Action {
         console.log(`%c--- ERROR: action restricted to crew ID #${crewService.activeCrew.id} on asteroid ID #${crewService.activeCrew.asteroidId}`, 'color: orange;');
     }
 
-    getActionText() {
+    getActionText(includeSource = true, includeDestination = false) {
         const sourceType = this.isActionOnLot ? 'Lot' : 'Asteroid';
-        return `${ACTION_TYPE_DATA[this.type].TEXT}: ${this.subject} at ${sourceType} ${this.sourceId} (${this.sourceName})`;
+        let actionText = `${ACTION_TYPE_DATA[this.type].TEXT}: ${this.subject}`;
+        if (includeSource) {
+            actionText += ` at ${sourceType} ${this.sourceId} (${this.sourceName})`;
+        }
+        if (includeDestination && this.destinationId) {
+            actionText += `, to ${sourceType} ${this.destinationId} (${this.destinationName})`;
+        }
+        return actionText;
     }
 
     getCrewInvolvement() {
@@ -337,7 +344,7 @@ class Action {
                         <div class="icon-button icon-move-vertical icon-tooltip icon-tooltip--drag-in-queue icon-draggable"></div>
                         <div class="icon-button icon-arrow-up-end icon-tooltip icon-tooltip--move-to-top hidden-if-first-list-item" onclick="onMoveToTopOfQueue('${this.id}')"></div>
                     </div>
-                    <div class="subactions-cell subactions-cell-remove subactions-cell-hidden-if-ready">
+                    <div class="subactions-cell subactions-cell-remove">
                         <div>Remove</div>
                         <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}')"></div>
                     </div>
@@ -993,17 +1000,21 @@ class ActionService {
         }
     }
 
-    getActionsForActiveCrewAtLotId(lotId) {
+    getActionsForActiveCrewAtLotId(lotId, alsoMatchDestinationId = false) {
         const activeCrew = crewService.activeCrew;
         if (!activeCrew) {
             // Lots being initialized before the existence of an active crew
             return [];
         }
         return Object.values(actionService.actionsById).filter(action => {
+            let isMatchingLotId = action.sourceId === lotId;
+            if (alsoMatchDestinationId) {
+                isMatchingLotId = isMatchingLotId || action.destinationId === lotId;
+            }
             return action.crewId === activeCrew.id &&
                 action.asteroidId === activeCrew.asteroidId &&
                 action.isActionOnLot === true &&
-                action.sourceId === lotId;
+                isMatchingLotId;
         });
     }
 

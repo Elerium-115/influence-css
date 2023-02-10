@@ -1,4 +1,5 @@
 import {deleteFromArray, deleteFromDOM, getPseudoUniqueId, msToShortTime} from './abstract.js';
+import {ACTION_STATE} from './action.js';
 import {Lot, LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
 
 const CREW_INVOLVEMENT = {
@@ -262,8 +263,11 @@ class CrewService {
     }
 
     abandonLotId(lotId) {
-        // Remove all actions on lot, regardless of state, for the currently active crew+asteroid
-        for (const action of actionService.getActionsForActiveCrewAtLotId(lotId)) {
+        /**
+         * Remove all actions related to this lot (based on "sourceId" OR "destinationId"),
+         * regardless of state, for the currently active crew + asteroid.
+         */
+        for (const action of actionService.getActionsForActiveCrewAtLotId(lotId, true)) {
             action.removeAction(true);
         }
         // Remove the lot, including from the HTML
@@ -280,15 +284,56 @@ class CrewService {
     }
 
     getConfirmationHtmlForAbandonLotId(lotId) {
-        return /*html*/ `
+        /**
+         * List all actions related to this lot (based on "sourceId" OR "destinationId"),
+         * regardless of state, for the currently active crew + asteroid.
+         */
+        let queuedActionsHtml = '';
+        let ongoingActionsHtml = '';
+        let doneActionsHtml = '';
+        for (const action of actionService.getActionsForActiveCrewAtLotId(lotId, true)) {
+            const listItemHtml = /*html*/ `<li>${action.getActionText(true, true)}</li>`;
+            switch (action.state) {
+                case ACTION_STATE.QUEUED:
+                    queuedActionsHtml += listItemHtml;
+                    break;
+                case ACTION_STATE.ONGOING:
+                    ongoingActionsHtml += listItemHtml;
+                    break;
+                case ACTION_STATE.DONE:
+                    doneActionsHtml += listItemHtml;
+                    break;
+            }
+        }
+        let messageHtml = /*html*/ `
             <h2>Abandon Lot ${lotId}?</h2>
-            <div>Accepting this will delete Lot ${lotId} for the active crew, along with all their actions on this lot:</div>
-            <ul>
-                <li>Queued Actions</li>
-                <li>Ongoing Actions</li>
-                <li>Done Actions</li>
-            </ul>
+            <div>Accepting this will <span class="warning">delete Lot ${lotId}</span> for the active crew, and all their <span class="warning">actions related to this lot</span>:</div>
         `;
+        if (queuedActionsHtml) {
+            messageHtml += /*html*/ `
+                <div class="list-wrapper">
+                    <div class="list-header">Queued Actions</div>
+                    <ul>${queuedActionsHtml}</ul>
+                </div>
+            `;
+        }
+        if (ongoingActionsHtml) {
+            messageHtml += /*html*/ `
+                <div class="list-wrapper">
+                    <div class="list-header">Ongoing Actions</div>
+                    <ul>${ongoingActionsHtml}</ul>
+                </div>
+            `;
+        }
+        if (doneActionsHtml) {
+            messageHtml += /*html*/ `
+                <div class="list-wrapper">
+                    <div class="list-header">Done Actions</div>
+                    <ul>${doneActionsHtml}</ul>
+                </div>
+            `;
+        }
+        return messageHtml;
     }
 }
 

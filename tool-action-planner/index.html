@@ -145,6 +145,16 @@
                     </div>
                 </div>
             </section>
+            <section id="confirmation-wrapper" class="hidden">
+                <div id="confirmation">
+                    <div id="confirmation-message"></div>
+                    <div id="confirmation-buttons">
+                        <button id="confirmation-decline" onclick="onDeclineConfirmation()">Decline</button>
+                        <button id="confirmation-accept" class="warning" onclick="onAcceptConfirmation()">Accept</button>
+                    </div>
+                </div>
+                <div id="confirmation-close" onclick="onDeclineConfirmation()">✕</div>
+            </section>
             <!-- TOOL TEMPLATE -- END -->
         </div>
     </div>

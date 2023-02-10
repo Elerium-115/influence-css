@@ -275,6 +275,18 @@ class CrewService {
         deleteFromDOM(matchingLot.elLotsListItem);
         deleteFromArray(lots, matchingLot);
     }
+
+    getConfirmationHtmlForAbandonLotId(lotId) {
+        return /*html*/ `
+            <h2>Abandon Lot ${lotId}?</h2>
+            <div>Accepting this will delete Lot ${lotId} for the active crew, along with all its actions on this lot:</div>
+            <ul>
+                <li>Queued Actions</li>
+                <li>Ongoing Actions</li>
+                <li>Done Actions</li>
+            </ul>
+        `;
+    }
 }
 
 // Global variables and functions
@@ -312,7 +324,10 @@ globalThis.onToggleChangeCrew = function() {
 }
 
 globalThis.onAbandonLotId = function(lotId) {
-    crewService.abandonLotId(lotId);
+    notificationService.createConfirmation(
+        crewService.getConfirmationHtmlForAbandonLotId(lotId),
+        () => crewService.abandonLotId(lotId),
+    );
 }
 
 export {Crew, CrewService, CREW_INVOLVEMENT};

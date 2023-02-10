@@ -106,6 +106,19 @@ body.embed {
 button .icon-round {
   margin-left: -5px;
 }
+button.warning {
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+button.warning:hover:not(:disabled) {
+  background-color: var(--color-warning-faded-25);
+}
+button.warning:active:not(:disabled) {
+  background-color: var(--color-warning);
+}
+button.warning::after {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23df4300'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
+}
 
 .root-section {
   margin-right: 20px;
@@ -929,4 +942,67 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   75% {
     opacity: 1;
   }
+}
+
+#confirmation-wrapper {
+  align-items: center;
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
+  bottom: 0;
+  display: grid;
+  justify-content: center;
+  left: 0;
+  opacity: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  transition: all 300ms ease 0s;
+  z-index: 1;
+}
+#confirmation-wrapper.opened {
+  opacity: 1;
+}
+#confirmation-wrapper.closing {
+  opacity: 0;
+}
+#confirmation-wrapper #confirmation {
+  background: var(--color-black-faded-50);
+  display: inline-flex;
+  flex-direction: column;
+  gap: 35px;
+  padding: 35px;
+}
+#confirmation-wrapper #confirmation #confirmation-message {
+  line-height: 1.5;
+}
+#confirmation-wrapper #confirmation #confirmation-message h2 {
+  color: var(--color-warning);
+  margin-bottom: 35px;
+}
+#confirmation-wrapper #confirmation #confirmation-message ul {
+  list-style: inside;
+}
+#confirmation-wrapper #confirmation #confirmation-buttons {
+  display: flex;
+  gap: 35px;
+  justify-content: space-between;
+}
+#confirmation-wrapper #confirmation-close {
+  align-items: center;
+  background: var(--color-highlight-faded-10);
+  color: var(--color-highlight);
+  cursor: var(--cursor-url-active) 5 5, auto;
+  display: flex;
+  font-size: 18px;
+  height: 35px;
+  justify-content: center;
+  position: fixed;
+  right: 25px;
+  top: 25px;
+  transition: all 300ms ease 0s;
+  width: 35px;
+}
+#confirmation-wrapper #confirmation-close:hover {
+  background: var(--color-highlight-faded-25);
+  color: white;
 }/*# sourceMappingURL=style.css.map */

@@ -82,4 +82,15 @@ function deleteFromArray(arr, value) {
     return arr;
 }
 
+globalThis.onKeyEscape = null;
+
+window.addEventListener('keydown', event => {
+    // Pressing "Escape" executes the "onKeyEscape" handler, if set
+    if (event.key === 'Escape') {
+        if (typeof onKeyEscape === 'function') {
+            onKeyEscape();
+        }
+    }
+});
+
 export {HOUR, deleteFromArray, deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime};

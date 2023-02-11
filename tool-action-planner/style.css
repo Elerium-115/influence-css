@@ -365,10 +365,10 @@ button.warning::after {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-state[data-state-class=available] .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-state[data-state-class=available] {
   color: var(--color-highlight);
 }
-#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-state[data-state-class=unavailable] .state-text {
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-state[data-state-class=unavailable] {
   color: var(--color-gray-dark);
 }
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-actions .lot-action {

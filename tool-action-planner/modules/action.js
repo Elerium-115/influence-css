@@ -606,6 +606,7 @@ class Action {
                 //// DISABLED -- END
             }
         }
+        this.cleanupLotsForActionBeingDeleted();
         this.prepareListItemForAnimating();
         // Fade out the list item, then slide it up
         this.elListItem.classList.add('fade-out');
@@ -843,16 +844,15 @@ class Action {
             return;
         }
         const lotId = this.sourceId;
-        const lots = crewService.getLotsForActiveCrewAndAsteroid();
-        const actionLot = lots.find(lot => lot.id === lotId);
+        const actionLot = crewService.getLotByIdForActiveCrewAndAsteroid(lotId);
         if (!actionLot) {
             console.log(`%c--- ERROR: lot not found for action #${this.id} => can NOT update lots list`, 'color: orange;');
             return;
         }
         const elLotsListItem = actionLot.elLotsListItem;
-        let newLotAssetData = this.getNewLotAssetData();
-        let newLotStateData = this.getNewLotStateData();
-        let newLotActionData = this.getNewLotActionData();
+        const newLotAssetData = this.getNewLotAssetData();
+        const newLotStateData = this.getNewLotStateData();
+        const newLotActionData = this.getNewLotActionData();
         if (newLotAssetData && newLotAssetData.shouldUpdateAssetName) {
             // This lot property needs to be set BEFORE calling "getLotStateClass"
             actionLot.assetName = newLotAssetData.assetName;
@@ -864,10 +864,10 @@ class Action {
             }
             const elLotState = elLotsListItem.querySelector('.lot-state');
             elLotState.dataset.stateClass = actionLot.getLotStateClass();
-            elLotState.querySelector('.state-text').textContent = LOT_STATE_TEXT_SHORT[newLotStateData.state];
+            elLotState.textContent = LOT_STATE_TEXT_SHORT[newLotStateData.state];
         }
         // Update cell for this specific action, from within ".lot-actions"
-        let elLotActions = elLotsListItem.querySelector('.lot-actions');
+        const elLotActions = elLotsListItem.querySelector('.lot-actions');
         let elLotAction = elLotActions.querySelector(`.lot-action[data-action-id="${this.id}"]`);
         if (this.state === ACTION_STATE.DONE) {
             if (elLotAction) {
@@ -891,6 +891,36 @@ class Action {
             `;
             if (this.isReady) {
                 elLotAction.classList.add('ready');
+            }
+        }
+    }
+
+    cleanupLotsForActionBeingDeleted() {
+        if (this.state === ACTION_STATE.ONGOING && this.isActionOnLot && this.destinationId) {
+            const destinationLot = crewService.getLotByIdForActiveCrewAndAsteroid(this.destinationId);
+            if (destinationLot.isBeingAbandoned) {
+                /**
+                 * Ongoing action-on-lot being deleted, due to its DESTINATION lot being abandoned.
+                 * Update the SOURCE lot, to no longer display this ongoing action.
+                 * Also update the asset and/or state of the SOURCE lot, if needed.
+                 */
+                const actionLot = crewService.getLotByIdForActiveCrewAndAsteroid(this.sourceId);
+                const elLotsListItem = actionLot.elLotsListItem;
+                const elLotActions = elLotsListItem.querySelector('.lot-actions');
+                const elLotAction = elLotActions.querySelector(`.lot-action[data-action-id="${this.id}"]`);
+                deleteFromDOM(elLotAction);
+                if (this.refreshOngoingInterval) {
+                    this.clearRefreshOngoingInterval();
+                }
+                switch(this.type) {
+                    case ACTION_TYPE.DECONSTRUCT:
+                        // "Deconstruct" action being deleted => revert SOURCE lot state to "BUILDING_COMPLETED"
+                        actionLot.state = LOT_STATE.BUILDING_COMPLETED;
+                        const elLotState = elLotsListItem.querySelector('.lot-state');
+                        elLotState.dataset.stateClass = actionLot.getLotStateClass();
+                        elLotState.textContent = LOT_STATE_TEXT_SHORT[actionLot.state];
+                        break;
+                }
             }
         }
     }

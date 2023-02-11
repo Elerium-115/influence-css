@@ -143,9 +143,7 @@ class Crew {
             <li id="lot_${lot.id}">
                 <div class="lot-id">${lot.id}</div>
                 <div class="lot-asset">${lot.assetName || ''}</div>
-                <div class="lot-state" data-state-class="${lot.getLotStateClass()}">
-                    <span class="state-text">${LOT_STATE_TEXT_SHORT[lot.state]}</span>
-                </div>
+                <div class="lot-state" data-state-class="${lot.getLotStateClass()}">${LOT_STATE_TEXT_SHORT[lot.state]}</div>
                 <div class="lot-actions"></div>
                 <div class="lot-abandon" data-abandon-lot-id="Abandon Lot #${lot.id}" onclick="onAbandonLotId(${lot.id})"></div>
             </li>
@@ -223,6 +221,11 @@ class CrewService {
         return activeCrew.lotsByAsteroidId[activeCrew.asteroidId];
     }
 
+    getLotByIdForActiveCrewAndAsteroid(lotId) {
+        const lots = crewService.getLotsForActiveCrewAndAsteroid();
+        return lots.find(lot => lot.id === lotId);
+    }
+
     toggleManageLots() {
         const elManageLotsButton = document.getElementById('manage-lots-button');
         const elManageLotsPanel = document.getElementById('manage-lots-panel');
@@ -263,6 +266,10 @@ class CrewService {
     }
 
     abandonLotId(lotId) {
+        const lots = this.getLotsForActiveCrewAndAsteroid();
+        const matchingLot = lots.find(lot => lot.id === lotId);
+        // Mark the lot as being abandoned, BEFORE starting to remove related actions
+        matchingLot.isBeingAbandoned = true;
         /**
          * Remove all actions related to this lot (based on "sourceId" OR "destinationId"),
          * regardless of state, for the currently active crew + asteroid.
@@ -271,8 +278,6 @@ class CrewService {
             action.removeAction(true);
         }
         // Remove the lot, including from the HTML
-        const lots = this.getLotsForActiveCrewAndAsteroid();
-        const matchingLot = lots.find(lot => lot.id === lotId);
         const elLotsListItem = matchingLot.elLotsListItem;
         const elLotsListItemHeight = elLotsListItem.getBoundingClientRect().height;
         elLotsListItem.style.setProperty('--this-height', `${elLotsListItemHeight}px`);

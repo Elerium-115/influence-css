@@ -72,6 +72,21 @@ on('change', '#toggle-action-types', el => {
     }
 });
 
+// Highlight related actions while hovering over lots-list item
+const selectorLotsListItem = '#manage-lots-list li';
+on('mouseenter', selectorLotsListItem, el => {
+    const actions = actionService.getActionsForActiveCrewAtLotId(Number(el.dataset.id), true);
+    for (const action of actions) {
+        action.elListItem.classList.add('highlight');
+    }
+});
+on('mouseleave', selectorLotsListItem, el => {
+    const actions = actionService.getActionsForActiveCrewAtLotId(Number(el.dataset.id), true);
+    for (const action of actions) {
+        action.elListItem.classList.remove('highlight');
+    }
+});
+
 // Initialize example actions
 initializeExampleActionsById();
 actionService.updateQueuedDraggables();

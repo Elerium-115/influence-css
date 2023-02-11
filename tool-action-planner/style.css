@@ -715,6 +715,9 @@ ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:act
 ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
 }
+ul.list-expanding-items li.ready:not(:hover) .subactions-cell-hidden-if-ready-and-not-hover {
+  display: none;
+}
 ul.list-expanding-items li:not(.ready) .subactions-cell-hidden-if-not-ready {
   display: none !important;
 }
@@ -924,6 +927,8 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   display: inline-flex;
   flex-direction: column;
   gap: 35px;
+  max-height: 100%;
+  overflow: auto;
   padding: 35px;
 }
 #confirmation-wrapper #confirmation #confirmation-message h2 {

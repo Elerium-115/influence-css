@@ -344,7 +344,7 @@ class Action {
                         <div class="icon-button icon-move-vertical icon-tooltip icon-tooltip--drag-in-queue icon-draggable"></div>
                         <div class="icon-button icon-arrow-up-end icon-tooltip icon-tooltip--move-to-top hidden-if-first-list-item" onclick="onMoveToTopOfQueue('${this.id}')"></div>
                     </div>
-                    <div class="subactions-cell subactions-cell-remove">
+                    <div class="subactions-cell subactions-cell-remove subactions-cell-hidden-if-ready-and-not-hover">
                         <div>Remove</div>
                         <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}')"></div>
                     </div>

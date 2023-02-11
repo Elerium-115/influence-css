@@ -820,6 +820,12 @@ ul.list-expanding-items {
             &:hover {
                 @include listItemActiveAndReady();
             }
+
+            &:not(:hover) {
+                .subactions-cell-hidden-if-ready-and-not-hover {
+                    display: none;
+                }
+            }
         }
 
         // Action not ready
@@ -934,6 +940,8 @@ ul.list-expanding-items {
         display: inline-flex;
         flex-direction: column;
         gap: 35px;
+        max-height: 100%;
+        overflow: auto;
         padding: 35px;
 
         #confirmation-message {

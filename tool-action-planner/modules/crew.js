@@ -1,6 +1,6 @@
 import {deleteFromArray, deleteFromDOM, getPseudoUniqueId, msToShortTime} from './abstract.js';
 import {ACTION_STATE} from './action.js';
-import {Lot, LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
+import {Lot, LOT_ASSET, LOT_STATE, LOT_STATE_DATA} from './lot.js';
 
 const CREW_INVOLVEMENT = {
     FINALIZING: 'Finalizing',
@@ -119,7 +119,14 @@ class Crew {
         this.refreshCooldownInterval = setInterval(() => this.updateCrewReadiness(), 1000); // refresh every 1 second
     }
 
-    initializeLot(lotId, asteroidId, lotState = LOT_STATE.EMPTY, lotAssetName = null) {
+    /**
+     * @param {number} asteroidId
+     * @param {number} lotId
+     * @param {LOT_ASSET} lotAsset
+     * @param {LOT_STATE} lotState 
+     * @returns 
+     */
+    initializeLot(asteroidId, lotId, lotAsset = null, lotState = LOT_STATE.EMPTY) {
         if (!this.lotsByAsteroidId[asteroidId]) {
             this.lotsByAsteroidId[asteroidId] = [];
         }
@@ -128,7 +135,7 @@ class Crew {
             console.log(`%c--- ERROR: lotId already initialized on asteroidId for this crew => can NOT initialize lot`, 'color: orange;');
             return;
         }
-        const lot = new Lot(lotId, lotState, lotAssetName);
+        const lot = new Lot(lotId, lotAsset, lotState);
         asteroidLots.push(lot);
         asteroidLots.sort((a, b) => a.id > b.id);
         this.injectLotsListItem(lot);
@@ -142,8 +149,8 @@ class Crew {
         return /*html*/ `
             <li id="lot_${lot.id}" data-id="${lot.id}">
                 <div class="lot-id">${lot.id}</div>
-                <div class="lot-asset">${lot.assetName || ''}</div>
-                <div class="lot-state" data-state-class="${lot.getLotStateClass()}">${LOT_STATE_TEXT_SHORT[lot.state]}</div>
+                <div class="lot-asset">${lot.assetName}</div>
+                <div class="lot-state" data-state-class="${lot.getLotStateClass()}">${LOT_STATE_DATA[lot.state].TEXT_SHORT}</div>
                 <div class="lot-actions"></div>
                 <div class="lot-abandon" data-abandon-lot-id="Abandon Lot #${lot.id}" onclick="onAbandonLotId(${lot.id})"></div>
             </li>
@@ -310,9 +317,16 @@ class CrewService {
                     break;
             }
         }
+        let messageHtmlIntro = /*html*/ `Accepting this will <span class="warning">delete Lot ${lotId}</span> for the active crew`;
+        if (queuedActionsHtml || ongoingActionsHtml || doneActionsHtml) {
+            messageHtmlIntro += /*html*/ `, and all their <span class="warning">actions related to this lot</span>:`;
+        } else {
+            // NO actions related to this lot
+            messageHtmlIntro += /*html*/ `.`;
+        }
         let messageHtml = /*html*/ `
             <h2>Abandon Lot ${lotId}?</h2>
-            <div>Accepting this will <span class="warning">delete Lot ${lotId}</span> for the active crew, and all their <span class="warning">actions related to this lot</span>:</div>
+            <div>${messageHtmlIntro}</div>
         `;
         if (queuedActionsHtml) {
             messageHtml += /*html*/ `

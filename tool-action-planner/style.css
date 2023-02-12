@@ -112,6 +112,31 @@ button.warning:active:not(:disabled) {
 button.warning::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23df4300'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
 }
+button.submit {
+  border-color: var(--color-ready);
+  color: var(--color-ready);
+}
+button.submit:hover:not(:disabled) {
+  background-color: var(--color-ready-faded-25);
+}
+button.submit:active:not(:disabled) {
+  background-color: var(--color-ready);
+}
+button.submit::after {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%2336cd36'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
+}
+
+input[type=text] {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-highlight);
+  border-radius: 5px;
+  color: white;
+  padding: 0 10px;
+}
+input[type=text]:focus {
+  border-color: white;
+  outline: none;
+}
 
 .root-section {
   margin-right: 20px;
@@ -322,6 +347,36 @@ button.warning::after {
 #plan-actions #manage-lots-panel {
   flex-direction: column;
 }
+#plan-actions #manage-lots-panel #add-lot-wrapper {
+  display: flex;
+  white-space: nowrap;
+}
+#plan-actions #manage-lots-panel #add-lot-wrapper.active #add-lot-form {
+  padding: 0 25px;
+  width: auto;
+}
+#plan-actions #manage-lots-panel #add-lot-wrapper.active #add-lot-button::before {
+  content: "Submit Lot";
+}
+#plan-actions #manage-lots-panel #add-lot-wrapper #add-lot-form {
+  transition: all 300ms ease 0s;
+  display: flex;
+  gap: 25px;
+  overflow: hidden;
+  padding: 0;
+  width: 0;
+}
+#plan-actions #manage-lots-panel #add-lot-wrapper #add-lot-form > * {
+  display: flex;
+  gap: 10px;
+  line-height: 35px;
+}
+#plan-actions #manage-lots-panel #add-lot-wrapper #add-lot-form input[type=text] {
+  width: 80px;
+}
+#plan-actions #manage-lots-panel #add-lot-wrapper #add-lot-button::before {
+  content: "Add Lot";
+}
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper {
   position: relative;
 }
@@ -338,6 +393,7 @@ button.warning::after {
   font-size: 14px;
 }
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li {
+  transition: all 300ms ease 0s;
   align-items: center;
   display: grid;
   gap: 25px;
@@ -346,7 +402,6 @@ button.warning::after {
   opacity: 1;
   padding: 5px 10px;
   position: relative;
-  transition: all 300ms ease 0s;
 }
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li.abandoning {
   margin-top: calc(0px - var(--this-height));
@@ -410,9 +465,9 @@ button.warning::after {
   top: 0;
 }
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-abandon::before {
+  transition: all 300ms ease 0s;
   content: "✕";
   max-width: 20px;
-  transition: all 300ms ease 0s;
   white-space: nowrap;
 }
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li .lot-abandon:hover::before {
@@ -901,6 +956,7 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
 }
 
 #confirmation-wrapper {
+  transition: all 300ms ease 0s;
   align-items: center;
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
@@ -913,7 +969,6 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   position: fixed;
   right: 0;
   top: 0;
-  transition: all 300ms ease 0s;
   z-index: 1;
 }
 #confirmation-wrapper.opened {
@@ -958,6 +1013,7 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   justify-content: space-between;
 }
 #confirmation-wrapper #confirmation-close {
+  transition: all 300ms ease 0s;
   align-items: center;
   background: var(--color-highlight-faded-10);
   color: var(--color-highlight);
@@ -969,7 +1025,6 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   position: fixed;
   right: 25px;
   top: 25px;
-  transition: all 300ms ease 0s;
   width: 35px;
 }
 #confirmation-wrapper #confirmation-close:hover {

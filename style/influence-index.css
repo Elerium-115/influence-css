@@ -5,8 +5,8 @@
     --color-highlight: rgb(var(--color-highlight-red), var(--color-highlight-green), var(--color-highlight-blue));
     --color-highlight-faded-10: rgba(var(--color-highlight-red), var(--color-highlight-green), var(--color-highlight-blue), 0.10);
     --color-highlight-faded-25: rgba(var(--color-highlight-red), var(--color-highlight-green), var(--color-highlight-blue), 0.25);
-    /* IMPORTANT: any change of this highlight color should also be applied in background-images */
-    --color-warning: rgb(223, 67, 0);
+    /* IMPORTANT: any change of this highlight color should also be applied in background-images - search "36a7cd" */
+    --color-warning: rgb(223, 67, 0); /* if changing this => also change all occurrences of "df4300" */
     --color-warning-faded-25: rgb(223, 67, 0, 0.25);
     --color-gray-light: rgb(204, 204, 204);
     --color-gray-medium: rgb(153, 153, 153);

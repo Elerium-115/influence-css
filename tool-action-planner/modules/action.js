@@ -1,7 +1,7 @@
 import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js';
 import {leaderLineConnectElements} from './leader-line-utils.js';
 import {CREW_INVOLVEMENT} from './crew.js';
-import {LOT_STATE, LOT_STATE_TEXT_SHORT} from './lot.js';
+import {LOT_STATE, LOT_STATE_DATA} from './lot.js';
 import {NotificationService} from './notification.js';
 
 const ACTION_STATE = {
@@ -106,9 +106,9 @@ class Action {
         asteroidId,
         type,
         subject,
-        sourceName,
+        source,
         sourceId,
-        destinationName,
+        destination,
         destinationId,
         durationRuntime = null
     ) {
@@ -119,10 +119,13 @@ class Action {
         this.crewId = crewId;
         this.asteroidId = asteroidId;
         this.type = type; // expecting "ACTION_TYPE" value
-        this.subject = subject; // string - e.g. "Hydrogen" for "ACTION_TYPE.EXTRACT"
-        this.sourceName = sourceName; // string - e.g. "Extractor" for "ACTION_TYPE.EXTRACT"
+        this.subject = subject; // string (e.g. "Hydrogen" for "ACTION_TYPE.EXTRACT") or "LOT_ASSET" (e.g. for "ACTION_TYPE.CONSTRUCT")
+        this.subjectName = lotService.getNameIfLotAsset(subject); // if "subject" is a "LOT_ASSET" value => convert it to lot-asset name
+        this.source = source; // string (e.g. "LOT_ASSET.EXTRACTOR" for "ACTION_TYPE.EXTRACT") or "Empty Lot" (e.g. for  "ACTION_TYPE.CONSTRUCT")
+        this.sourceName = lotService.getNameIfLotAsset(source); // if "source" is a "LOT_ASSET" value => convert it to lot-asset name
         this.sourceId = sourceId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
-        this.destinationName = destinationName; // string - e.g. "Warehouse" for "ACTION_TYPE.EXTRACT"
+        this.destination = destination; // string (e.g. "LOT_ASSET.WAREHOUSE" for "ACTION_TYPE.EXTRACT") or NULL (e.g. for "ACTION_TYPE.CORE_SAMPLE")
+        this.destinationName = lotService.getNameIfLotAsset(destination); // if "destination" is a "LOT_ASSET" value => convert it to lot-asset name
         this.destinationId = destinationId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
         this.durationStartup = ACTION_TYPE_DATA[type].STARTUP_DURATION;
         this.durationRuntime = durationRuntime ? durationRuntime : 0; // number as milliseconds
@@ -157,7 +160,7 @@ class Action {
 
     getActionText(includeSource = true, includeDestination = false) {
         const sourceType = this.isActionOnLot ? 'Lot' : 'Asteroid';
-        let actionText = `${ACTION_TYPE_DATA[this.type].TEXT}: ${this.subject}`;
+        let actionText = `${ACTION_TYPE_DATA[this.type].TEXT}: ${this.subjectName}`;
         if (includeSource) {
             actionText += ` at ${sourceType} ${this.sourceId} (${this.sourceName})`;
         }
@@ -399,7 +402,7 @@ class Action {
                     <div class="icon-round ${ACTION_TYPE_DATA[this.type].ICON_CLASS}"></div>
                     <div class="item-title-text">
                         <span class="action-type-text">${ACTION_TYPE_DATA[this.type].TEXT}:</span>
-                        ${this.subject}
+                        ${this.subjectName}
                     </div>
                     ${timerCompactHtml}
                 </div>
@@ -721,19 +724,19 @@ class Action {
             return;
         }
         let newLotAssetData = {
-            assetName: null,
-            shouldUpdateAssetName: false,
+            asset: null,
+            shouldUpdateAsset: false,
         };
         switch (this.type) {
             case ACTION_TYPE.CONSTRUCT:
             case ACTION_TYPE.LAND:
                 /**
-                 * For these types of actions, a lot's asset is the action's
-                 * subject, regardless if the action is ongoing or done:
-                 * e.g. Construct "Warehouse", Land "Light Transport"
+                 * For these types of actions, a lot's asset is the action's subject
+                 * (value of type "LOT_ASSET"), regardless if the action is ongoing or done:
+                 * e.g. Construct "WAREHOUSE", Land "LIGHT_TRANSPORT"
                  */
-                newLotAssetData.assetName = this.subject;
-                newLotAssetData.shouldUpdateAssetName = true;
+                newLotAssetData.asset = this.subject; // NOT "this.subjectName"
+                newLotAssetData.shouldUpdateAsset = true;
                 break;
             case ACTION_TYPE.DECONSTRUCT:
             case ACTION_TYPE.LAUNCH:
@@ -742,8 +745,8 @@ class Action {
                  * the action is ongoing, but is reset after the action is done.
                  */
                 if (this.state === ACTION_STATE.DONE) {
-                    newLotAssetData.assetName = null;
-                    newLotAssetData.shouldUpdateAssetName = true;
+                    newLotAssetData.asset = null;
+                    newLotAssetData.shouldUpdateAsset = true;
                 }
                 break;
             default:
@@ -828,7 +831,7 @@ class Action {
         if (this.isActionOnLot) {
             if (this.state === ACTION_STATE.ONGOING) {
                 // Action ongoing => show an action text
-                newLotActionData.actionText = `${ACTION_TYPE_DATA[this.type].TEXT_ING}: ${this.subject}`; // e.g. "Extracting: Water"
+                newLotActionData.actionText = `${ACTION_TYPE_DATA[this.type].TEXT_ING}: ${this.subjectName}`; // e.g. "Extracting: Water"
             } else {
                 // Action done => reset the action text
                 newLotActionData.actionText = null;
@@ -853,10 +856,10 @@ class Action {
         const newLotAssetData = this.getNewLotAssetData();
         const newLotStateData = this.getNewLotStateData();
         const newLotActionData = this.getNewLotActionData();
-        if (newLotAssetData && newLotAssetData.shouldUpdateAssetName) {
+        if (newLotAssetData && newLotAssetData.shouldUpdateAsset) {
             // This lot property needs to be set BEFORE calling "getLotStateClass"
-            actionLot.assetName = newLotAssetData.assetName;
-            elLotsListItem.querySelector('.lot-asset').textContent = newLotAssetData.assetName || '';
+            actionLot.setAsset(newLotAssetData.asset);
+            elLotsListItem.querySelector('.lot-asset').textContent = actionLot.assetName;
         }
         if (newLotStateData && newLotStateData.shouldUpdateState) {
             if (newLotStateData.shouldUpdateState) {
@@ -864,7 +867,7 @@ class Action {
             }
             const elLotState = elLotsListItem.querySelector('.lot-state');
             elLotState.dataset.stateClass = actionLot.getLotStateClass();
-            elLotState.textContent = LOT_STATE_TEXT_SHORT[newLotStateData.state];
+            elLotState.textContent = LOT_STATE_DATA[newLotStateData.state].TEXT_SHORT;
         }
         // Update cell for this specific action, from within ".lot-actions"
         const elLotActions = elLotsListItem.querySelector('.lot-actions');
@@ -918,7 +921,7 @@ class Action {
                         actionLot.state = LOT_STATE.BUILDING_COMPLETED;
                         const elLotState = elLotsListItem.querySelector('.lot-state');
                         elLotState.dataset.stateClass = actionLot.getLotStateClass();
-                        elLotState.textContent = LOT_STATE_TEXT_SHORT[actionLot.state];
+                        elLotState.textContent = LOT_STATE_DATA[actionLot.state].TEXT_SHORT;
                         break;
                 }
             }

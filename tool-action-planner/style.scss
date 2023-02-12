@@ -1,5 +1,5 @@
 :root {
-    --color-ready: rgb(54, 205, 54);
+    --color-ready: rgb(54, 205, 54); // if changing this => also change all occurrences of "36cd36"
     --color-ready-faded-10: rgba(54, 205, 54, 0.1);
     --color-ready-faded-25: rgba(54, 205, 54, 0.25);
 }
@@ -30,6 +30,10 @@ body {
 .icon-ship-down::after { @include customIcon('icon-ship.svg'); transform: rotate(90deg); }
 .icon-ship-up::after { @include customIcon('icon-ship.svg'); transform: rotate(-90deg); }
 .icon-x::after { @include customIcon('icon-x.svg'); }
+
+@mixin transition-default {
+    transition: all 300ms ease 0s;
+}
 
 @keyframes pulse-text {
 	50% { color: var(--color-gray-dark); };
@@ -75,6 +79,36 @@ button {
         &::after {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23df4300'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
         }
+    }
+
+    &.submit {
+        border-color: var(--color-ready);
+        color: var(--color-ready);
+
+        &:hover:not(:disabled) {
+            background-color: var(--color-ready-faded-25);
+        }
+
+        &:active:not(:disabled) {
+            background-color: var(--color-ready);
+        }
+
+        &::after {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%2336cd36'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
+        }
+    }
+}
+
+input[type='text'] {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-highlight);
+    border-radius: 5px;
+    color: white;
+    padding: 0 10px;
+
+    &:focus {
+        border-color: white;
+        outline: none;
     }
 }
 
@@ -330,6 +364,45 @@ button {
     #manage-lots-panel {
         flex-direction: column;
 
+        #add-lot-wrapper {
+            display: flex;
+            white-space: nowrap;
+
+            &.active {
+                #add-lot-form {
+                    padding: 0 25px;
+                    width: auto;
+                }
+
+                #add-lot-button::before {
+                    content: 'Submit Lot';
+                }
+            }
+
+            #add-lot-form {
+                @include transition-default;
+                display: flex;
+                gap: 25px;
+                overflow: hidden;
+                padding: 0;
+                width: 0;
+
+                > * {
+                    display: flex;
+                    gap: 10px;
+                    line-height: 35px;
+                }
+
+                input[type='text'] {
+                    width: 80px;
+                }
+            }
+
+            #add-lot-button::before {
+                content: 'Add Lot';
+            }
+        }
+
         #manage-lots-list-wrapper {
             position: relative;
 
@@ -348,6 +421,7 @@ button {
                 font-size: 14px;
 
                 li {
+                    @include transition-default;
                     align-items: center;
                     display: grid;
                     gap: 25px;
@@ -356,7 +430,6 @@ button {
                     opacity: 1;
                     padding: 5px 10px;
                     position: relative;
-                    transition: all 300ms ease 0s;
 
                     &.abandoning {
                         margin-top: calc(0px - var(--this-height));
@@ -428,9 +501,9 @@ button {
                         top: 0;
 
                         &::before {
+                            @include transition-default;
                             content: '✕';
                             max-width: 20px;
-                            transition: all 300ms ease 0s;
                             white-space: nowrap;
                         }
 
@@ -918,6 +991,7 @@ ul.list-expanding-items {
 }
 
 #confirmation-wrapper {
+    @include transition-default;
     align-items: center;
     backdrop-filter: blur(8px);
     bottom: 0;
@@ -929,7 +1003,6 @@ ul.list-expanding-items {
     position: fixed;
     right: 0;
     top: 0;
-    transition: all 300ms ease 0s;
     z-index: 1;
 
     &.opened { opacity: 1; }
@@ -980,6 +1053,7 @@ ul.list-expanding-items {
     }
 
     #confirmation-close {
+        @include transition-default;
         align-items: center;
         background: var(--color-highlight-faded-10);
         color: var(--color-highlight);
@@ -991,7 +1065,6 @@ ul.list-expanding-items {
         position: fixed;
         right: 25px;
         top: 25px;
-        transition: all 300ms ease 0s;
         width: 35px;
 
         &:hover {

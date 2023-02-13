@@ -86,6 +86,7 @@ class LotService {
         this.elAddLotInputId = document.getElementById('add-lot-input-id');
         this.elAddLotSelectAsset = document.getElementById('add-lot-select-asset');
         this.elAddLotSelectState = document.getElementById('add-lot-select-state');
+        this.elAddLotError = document.getElementById('add-lot-error');
     }
 
     getNameIfLotAsset(potentialLotAsset) {
@@ -172,36 +173,43 @@ class LotService {
         this.elAddLotButton.classList.add('submit');
     }
 
-    reseAttLotForm() {
+    resetAddLotForm() {
         this.elAddLotInputId.value = '';
         this.elAddLotSelectAsset.value = '';
         // Select lot-state based on newly-selected lot-asset
         this.updateAddLotSelectStateForLotAsset();
+        this.elAddLotError.classList.add('hidden');
     }
 
     hideAddLotForm() {
-        this.reseAttLotForm();
+        this.resetAddLotForm();
         this.elAddLotWrapper.classList.remove('active');
         this.elAddLotButton.classList.remove('submit');
     }
 
+    getErrorForLotId(lotId) {
+        if (!lotId) {
+            return 'Lot ID is required.';
+        }
+        if (crewService.getLotByIdForActiveCrewAndAsteroid(lotId)) {
+            return 'Lot ID already exists for this crew and asteroid.';
+        }
+        //// TO DO low-prio: MAX value = area of active asteroid
+        return null;
+    }
+
     submitAddLotForm() {
         const lotId = Number(this.elAddLotInputId.value);
+        const errorForLotId = this.getErrorForLotId(lotId);
+        if (errorForLotId) {
+            this.elAddLotError.textContent = errorForLotId;
+            this.elAddLotError.classList.remove('hidden');
+            return;
+        }
         const lotAsset = this.elAddLotSelectAsset.value;
         const lotState = this.elAddLotSelectState.value;
-        //// TO DO: submit add-lot-form
-        //// -- validate lot ID:
-        //// ---- format: integer >= 13 (similar to "input-mock-area" from asteroids-planner)
-        //// ---- value: NOT already setup for active crew+asteroid
-        //// ---- [low-prio] value: MAX [km2 area] of active asteroid
-        //// -- if NOT ok => show error
-        //// -- if OK => initialize lot with submitted values: id, asset, state
-        //// ...
-
-        //// TEST: assuming all ok
         const activeCrew = crewService.activeCrew;
         activeCrew.initializeLot(activeCrew.asteroidId, lotId, lotAsset, lotState);
-
         this.hideAddLotForm();
     }
 }
@@ -220,6 +228,15 @@ globalThis.onClickAddLotButton = function() {
 
 globalThis.onClickAddLotButtonCancel = function() {
     lotService.hideAddLotForm();
+}
+
+globalThis.validateAddLotInputId = function(el) {
+    if (!el.value.length) {
+        return;
+    }
+    const intValue = parseInt(el.value);
+    // Min. 1, max. 1768484 (Adalia Prime)
+    el.value = isNaN(intValue) || intValue < 1 ? 1 : Math.min(intValue, 1768484);
 }
 
 globalThis.onChangeAddLotSelectAsset = function(lotAsset) {

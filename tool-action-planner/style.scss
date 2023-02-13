@@ -370,7 +370,7 @@ input[type='text'] {
 
             &.active {
                 #add-lot-form {
-                    padding: 0 25px;
+                    padding-right: 25px;
                     width: auto;
                 }
 
@@ -890,7 +890,8 @@ ul.list-expanding-items {
                 display: none !important;
             }
 
-            &:hover {
+            &:hover,
+            &.highlight {
                 @include listItemActiveAndReady();
             }
 

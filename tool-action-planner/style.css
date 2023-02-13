@@ -352,7 +352,7 @@ input[type=text]:focus {
   white-space: nowrap;
 }
 #plan-actions #manage-lots-panel #add-lot-wrapper.active #add-lot-form {
-  padding: 0 25px;
+  padding-right: 25px;
   width: auto;
 }
 #plan-actions #manage-lots-panel #add-lot-wrapper.active #add-lot-button::before {
@@ -751,23 +751,23 @@ ul.list-expanding-items li.ready .item-title .icon-round::after {
 ul.list-expanding-items li.ready .subactions-cell-hidden-if-ready {
   display: none !important;
 }
-ul.list-expanding-items li.ready:hover .item-title {
+ul.list-expanding-items li.ready:hover .item-title, ul.list-expanding-items li.ready.highlight .item-title {
   background-image: linear-gradient(90deg, var(--color-ready), transparent);
 }
-ul.list-expanding-items li.ready:hover .item-expand .action-details {
+ul.list-expanding-items li.ready:hover .item-expand .action-details, ul.list-expanding-items li.ready.highlight .item-expand .action-details {
   --color-leaderline-start: var(--color-warning);
   --color-leaderline-end: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .subactions {
+ul.list-expanding-items li.ready:hover .item-expand .subactions, ul.list-expanding-items li.ready.highlight .item-expand .subactions {
   color: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button {
+ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button, ul.list-expanding-items li.ready.highlight .item-expand .subactions .icon-button {
   border-color: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button::after {
+ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:active, ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button::after, ul.list-expanding-items li.ready.highlight .item-expand .subactions .icon-button:active, ul.list-expanding-items li.ready.highlight .item-expand .subactions .icon-button::after {
   background-color: var(--color-ready);
 }
-ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:hover {
+ul.list-expanding-items li.ready:hover .item-expand .subactions .icon-button:hover, ul.list-expanding-items li.ready.highlight .item-expand .subactions .icon-button:hover {
   background-image: linear-gradient(120deg, var(--color-ready-faded-10), var(--color-ready-faded-25));
 }
 ul.list-expanding-items li.ready:not(:hover) .subactions-cell-hidden-if-ready-and-not-hover {

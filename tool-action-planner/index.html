@@ -86,7 +86,7 @@
                             <div id="add-lot-form">
                                 <div>
                                     <span>Lot ID</span>
-                                    <input type="text" id="add-lot-input-id">
+                                    <input type="text" id="add-lot-input-id" onchange="validateAddLotInputId(this)">
                                 </div>
                                 <div>
                                     <span>Asset</span>
@@ -100,6 +100,7 @@
                             </div>
                             <button id="add-lot-button" class="no-margin" onclick="onClickAddLotButton()"></button>
                         </div>
+                        <div id="add-lot-error" class="text-warning hidden"></div>
                         <div id="manage-lots-list-wrapper">
                             <ul id="manage-lots-list"></ul>
                             <label id="toggle-autoconfirm-abandon-lot-label" class="label-for-input"><input type="checkbox" id="toggle-autoconfirm-abandon-lot" class="checkbox-warning"> Auto-confirm</label>

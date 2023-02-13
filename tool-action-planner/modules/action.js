@@ -145,6 +145,7 @@ class Action {
         this.isActionExclusivePerLot = ACTION_TYPE_DATA[this.type].IS_EXCLUSIVE_PER_LOT;
         this.elListItem = null;
         this.refreshOngoingInterval = null;
+        this.refreshDoneInterval = null;
         this.updateLotsList();
         actionService.actionsById[this.id] = this;
     }
@@ -195,6 +196,10 @@ class Action {
          *      (Starting) Core Sample: Methane at Lot #4567
          */
         const crewAction = crewService.getActiveCrewAction();
+        if (!crewAction) {
+            // Action must have been removed while the crew was still on cooldown from it
+            return;
+        }
         const messageHtml = /*html*/ `
             Crew not ready due to action:<br>
             <span class="text-highlight">${crewAction.getActionText()} - ${crewAction.getCrewInvolvement()}</span>
@@ -299,6 +304,13 @@ class Action {
         this.refreshOngoingInterval = null;
     }
 
+    clearRefreshDoneInterval() {
+        if (this.refreshDoneInterval) {
+            clearInterval(this.refreshDoneInterval);
+        }
+        this.refreshDoneInterval = null;
+    }
+
     getOngoingTimeRemainingMs() {
         if (this.state !== ACTION_STATE.ONGOING || this.isReady || !this.startedDate) {
             return null;
@@ -390,7 +402,7 @@ class Action {
                 subactionsHtml = /*html*/ `
                     <div class="subactions-cell"></div>
                     <div class="subactions-cell subactions-cell-remove">
-                        <div>Done ${fromNow(this.finalizedDate)}</div>
+                        <div>Done <span class="timer-ago">${fromNow(this.finalizedDate)}</span></div>
                         <div class="icon-button icon-x" onclick="onRemoveActionById('${this.id}')"></div>
                     </div>
                 `;
@@ -472,6 +484,17 @@ class Action {
         }
     }
 
+    refreshDoneTime() {
+        if (this.state !== ACTION_STATE.DONE) {
+            console.log(`%c--- ERROR: action not done => can NOT refresh time`, 'color: orange;');
+            this.clearRefreshDoneInterval();
+            return;
+        }
+        const timeAgo = fromNow(this.finalizedDate);
+        const elTimerAgo = this.elListItem.querySelector('.timer-ago');
+        elTimerAgo.textContent = timeAgo;
+    }
+
     injectListItem() {
         if (!this.isActiveCrewAndAsteroid()) {
             this.handleInvalidCrewOrAsteroid();
@@ -517,6 +540,9 @@ class Action {
              * Source: https://developer.mozilla.org/en-US/docs/Web/API/setInterval#a_possible_solution
              */
             this.refreshOngoingInterval = setInterval(() => this.refreshOngoingTime(), 1000); // refresh every 1 second
+        }
+        if (this.state === ACTION_STATE.DONE) {
+            this.refreshDoneInterval = setInterval(() => this.refreshDoneTime(), 1000); // refresh every 1 second
         }
     }
 
@@ -577,6 +603,9 @@ class Action {
         if (this.refreshOngoingInterval) {
             this.clearRefreshOngoingInterval();
         }
+        if (this.refreshDoneInterval) {
+            this.clearRefreshDoneInterval();
+        }
     }
 
     removeAction(forceRemove = false) {
@@ -620,6 +649,7 @@ class Action {
                 // Done sliding up => remove the list item
                 this.removeListItem();
                 this.clearRefreshOngoingInterval();
+                this.clearRefreshDoneInterval();
                 // Remove global reference
                 delete actionService.actionsById[this.id];
                 // Ensure the top queued action is ready, in case the previously-ready action has just been removed
@@ -914,6 +944,9 @@ class Action {
                 deleteFromDOM(elLotAction);
                 if (this.refreshOngoingInterval) {
                     this.clearRefreshOngoingInterval();
+                }
+                if (this.refreshDoneInterval) {
+                    this.clearRefreshDoneInterval();
                 }
                 switch(this.type) {
                     case ACTION_TYPE.DECONSTRUCT:

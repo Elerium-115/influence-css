@@ -74,6 +74,10 @@ class Crew {
             elSelectedCrew.classList.add('text-warning');
             elCrewReadiness.classList.add('text-pulse');
             const crewAction = crewService.getActiveCrewAction();
+            if (!crewAction) {
+                // Action must have been removed while the crew was still on cooldown from it
+                return;
+            }
             /**
              * Set tooltip text for crew-action via data-attribute, instead of CSS var,
              * due to issues w/ assigning a string type to the CSS property "content".

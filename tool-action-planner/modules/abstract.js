@@ -7,7 +7,7 @@ const MONTH = 30 * DAY;
 const YEAR = 365 * DAY;
 
 /**
- * Human readable elapsed or remaining time (example: 3 minutes ago)
+ * Human readable elapsed or remaining time (example: 3 min. ago)
  * @param  {Date|Number|String} date A Date object, timestamp or string parsable with Date.parse()
  * @param  {Date|Number|String} [nowDate] A Date object, timestamp or string parsable with Date.parse()
  * @param  {Intl.RelativeTimeFormat} [trf] A Intl formater
@@ -19,7 +19,7 @@ function fromNow(
     date,
     nowDate = Date.now(),
     rft = new Intl.RelativeTimeFormat(undefined, {
-        style: 'long',
+        style: 'short',
         numeric: 'always',
     })
 ) {
@@ -30,7 +30,7 @@ function fromNow(
         { ge: DAY, divisor: DAY, unit: 'day' },
         { ge: HOUR, divisor: HOUR, unit: 'hour' },
         { ge: MINUTE, divisor: MINUTE, unit: 'minute' },
-        { ge: 30 * SECOND, divisor: SECOND, unit: 'seconds' },
+        { ge: SECOND, divisor: SECOND, unit: 'seconds' },
         { ge: 0, divisor: 1, text: 'just now' },
     ];
     const now = typeof nowDate === 'object' ? nowDate.getTime() : new Date(nowDate).getTime();

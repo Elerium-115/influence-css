@@ -96,4 +96,4 @@ actionService.updateQueuedActionsReadiness();
 // document.getElementById('plan-actions').classList.add('hidden'); // hide "Plan Actions"
 // document.getElementById('toggle-action-types-label').click(); // hide action types
 // document.getElementById('toggle-compact-lists-label').click(); // show expanded lists
-document.getElementById('manage-lots-button').click(); // show "Manage Lots" panel
+// document.getElementById('manage-lots-button').click(); // show "Manage Lots" panel

@@ -417,6 +417,7 @@ class Action {
                         ${this.subjectName}
                     </div>
                     ${timerCompactHtml}
+                    <div class="lot-id">${this.isActionOnLot ? this.sourceId : ''}</div>
                 </div>
                 <div class="item-expand">
                     <div class="action-details">

@@ -49,6 +49,11 @@ body.embed {
   transform: rotate(45deg);
 }
 
+.icon-ready::after {
+  -webkit-mask-image: url("./assets/images/icon-ready.png");
+          mask-image: url("./assets/images/icon-ready.png");
+}
+
 .icon-ship-right::after {
   -webkit-mask-image: url("./assets/images/icon-ship.svg");
           mask-image: url("./assets/images/icon-ship.svg");
@@ -203,7 +208,7 @@ input[type=text]:focus {
   margin-right: 20px;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 2;
 }
 #active-crew-sticky::before {
   background-image: linear-gradient(90deg, transparent, var(--color-black-faded-50));
@@ -232,7 +237,7 @@ input[type=text]:focus {
   padding: 0 10px;
   right: 0;
   white-space: nowrap;
-  z-index: 1;
+  z-index: 2;
 }
 #active-crew-sticky #active-crew .active-crew-name::before,
 #active-crew-sticky #active-crew .active-crew-name::after {
@@ -262,7 +267,7 @@ input[type=text]:focus {
   margin-right: 5px;
   position: sticky;
   top: 65px;
-  z-index: 1;
+  z-index: 2;
 }
 #notifications .notification-wrapper {
   padding-bottom: 15px;
@@ -303,29 +308,35 @@ input[type=text]:focus {
   border-bottom: none;
   display: inline-block;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 #plan-actions #action-setup-panel {
-  background-color: var(--color-black-faded-50);
   font-size: 14px;
   gap: 50px;
-  margin-top: 20px;
-  padding: 20px;
+}
+#plan-actions #action-setup-panel #action-setup-type {
+  --item-unit: 35px;
+  --min-width: calc(var(--action-types-max-width) + var(--item-unit));
+  min-height: var(--item-unit);
+  min-width: var(--min-width);
+}
+#plan-actions #action-setup-panel #action-setup-type ul {
+  -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+  border: 1px solid var(--color-highlight);
+  border-radius: 5px;
+  position: absolute;
+  width: var(--min-width);
+  z-index: 1;
 }
 #plan-actions #action-setup-panel #action-setup-type ul li {
-  --item-height: 30px;
   align-items: center;
-  -webkit-clip-path: polygon(0 0, calc(100% - var(--item-height) / 2) 0, 100% 50%, calc(100% - var(--item-height) / 2) 100%, 0 100%);
-          clip-path: polygon(0 0, calc(100% - var(--item-height) / 2) 0, 100% 50%, calc(100% - var(--item-height) / 2) 100%, 0 100%);
   cursor: var(--cursor-url-active) 5 5, auto;
   display: flex;
   gap: 5px;
-  height: var(--item-height);
+  height: var(--item-unit);
   padding: 0 20px 0 10px;
   white-space: nowrap;
-}
-#plan-actions #action-setup-panel #action-setup-type ul li:not(:first-child) {
-  margin-top: 5px;
 }
 #plan-actions #action-setup-panel #action-setup-type ul li:hover {
   background-color: rgba(255, 255, 255, 0.1);
@@ -337,12 +348,32 @@ input[type=text]:focus {
 #plan-actions #action-setup-panel #action-setup-type ul li:hover .icon-round::after {
   background-color: white;
 }
-#plan-actions #action-setup-panel #action-setup-type ul li.active {
+#plan-actions #action-setup-panel #action-setup-type ul li.active .icon-round::after {
+  background-color: white;
+}
+#plan-actions #action-setup-panel #action-setup-type ul:hover {
+  background-color: var(--color-black-faded-75);
+  filter: drop-shadow(0 0 20px black);
+}
+#plan-actions #action-setup-panel #action-setup-type ul:hover li.active {
   background-color: var(--color-highlight);
   color: white;
 }
-#plan-actions #action-setup-panel #action-setup-type ul li.active .icon-round::after {
-  background-color: white;
+#plan-actions #action-setup-panel #action-setup-type ul:not(:hover)::after {
+  align-items: center;
+  background-color: var(--color-highlight);
+  bottom: 0;
+  content: "▼";
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: var(--item-unit);
+}
+#plan-actions #action-setup-panel #action-setup-type ul:not(:hover) li:not(.active) {
+  position: absolute;
+  left: -1000px;
 }
 #plan-actions #manage-lots-panel {
   flex-direction: column;
@@ -488,7 +519,7 @@ input[type=text]:focus {
 
 #manage-actions #action-groups {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 25px;
 }
 #manage-actions #action-groups .action-group .action-group-title {
@@ -984,7 +1015,7 @@ ul.list-expanding-items li.transition-flash.startup-in-progress .item-expand .su
   position: fixed;
   right: 0;
   top: 0;
-  z-index: 1;
+  z-index: 2;
 }
 #confirmation-wrapper.opened {
   opacity: 1;

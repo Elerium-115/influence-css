@@ -73,7 +73,7 @@ const ACTION_TYPE_DATA = {
         TEXT_ING: 'Launching', // Launching to orbit
     },
     REFINE: {
-        ICON_CLASS: 'icon-refine',
+        ICON_CLASS: 'icon-ready',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
         STARTUP_DURATION: 5 * 1000,
@@ -985,6 +985,7 @@ class Action {
 class ActionService {
     constructor() {
         this.actionsById = {};
+        this.elActionSetupType = document.getElementById('action-setup-type');
     }
 
     getActionForListItem(elListItem) {
@@ -1063,7 +1064,15 @@ class ActionService {
         } else {
             closeConfigPanels();
             elAddActionButton.classList.add('active');
+            // FIRST remove any previously-injected max-width from the CSS, and make the action-setup panel visible
+            this.elActionSetupType.style.removeProperty('--action-types-max-width');
             elActionSetupPanel.classList.remove('hidden');
+            // THEN inject the max-width of the widest action-type list-item into CSS
+            let actionTypesMaxWidth = 0;
+            for (const elListItem of this.elActionSetupType.querySelectorAll('ul li')) {
+                actionTypesMaxWidth = Math.max(actionTypesMaxWidth, elListItem.getBoundingClientRect().width);
+            }
+            this.elActionSetupType.style.setProperty('--action-types-max-width', `${actionTypesMaxWidth}px`);
         }
     }
 
@@ -1124,6 +1133,16 @@ globalThis.onTransitionActionById = function(actionId) {
 
 globalThis.onToggleAddAction = function() {
     actionService.toggleAddAction();
+}
+
+// Inject action-types into list from "#action-setup-type"
+let actionTypesListHtml = '';
+for (const actionTypeData of Object.values(ACTION_TYPE_DATA)) {
+    const activeClass = Object.values(ACTION_TYPE_DATA).indexOf(actionTypeData) === 0 ? 'active' : '';
+    actionTypesListHtml += /*html*/ `
+        <li class="${activeClass}"><span class="icon-round ${actionTypeData.ICON_CLASS}"></span>${actionTypeData.TEXT}</li>
+    `;
+    actionService.elActionSetupType.querySelector('ul').innerHTML = actionTypesListHtml;
 }
 
 export {Action, ACTION_STATE, ACTION_TYPE};

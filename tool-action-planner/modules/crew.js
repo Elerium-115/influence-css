@@ -152,11 +152,11 @@ class Crew {
     getLotsListItemHtml(lot) {
         return /*html*/ `
             <li id="lot_${lot.id}" data-id="${lot.id}">
-                <div class="lot-id">${lot.id}</div>
+                <div class="lot-id">${lot.id.toLocaleString()}</div>
                 <div class="lot-asset">${lot.assetName}</div>
                 <div class="lot-state" data-state-class="${lot.getLotStateClass()}">${LOT_STATE_DATA[lot.state].TEXT_SHORT}</div>
                 <div class="lot-actions"></div>
-                <div class="lot-abandon" data-abandon-lot-id="Abandon Lot #${lot.id}" onclick="onAbandonLotId(${lot.id})"></div>
+                <div class="lot-abandon" data-abandon-lot-id="Abandon Lot #${lot.id.toLocaleString()}" onclick="onAbandonLotId(${lot.id})"></div>
             </li>
         `;
     }
@@ -321,7 +321,7 @@ class CrewService {
                     break;
             }
         }
-        let messageHtmlIntro = /*html*/ `Accepting this will <span class="warning">delete Lot ${lotId}</span> for the active crew`;
+        let messageHtmlIntro = /*html*/ `Accepting this will <span class="warning">delete Lot ${lotId.toLocaleString()}</span> for the active crew`;
         if (queuedActionsHtml || ongoingActionsHtml || doneActionsHtml) {
             messageHtmlIntro += /*html*/ `, and all their <span class="warning">actions related to this lot</span>:`;
         } else {
@@ -329,7 +329,7 @@ class CrewService {
             messageHtmlIntro += /*html*/ `.`;
         }
         let messageHtml = /*html*/ `
-            <h2>Abandon Lot ${lotId}?</h2>
+            <h2>Abandon Lot ${lotId.toLocaleString()}?</h2>
             <div>${messageHtmlIntro}</div>
         `;
         if (queuedActionsHtml) {

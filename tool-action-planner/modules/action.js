@@ -8,7 +8,6 @@ const ACTION_STATE = {
     DONE: 'DONE',
     ONGOING: 'ONGOING',
     QUEUED: 'QUEUED',
-    TRANSITIONING: 'TRANSITIONING',
 };
 
 const ACTION_TYPE = {
@@ -163,10 +162,10 @@ class Action {
         const sourceType = this.isActionOnLot ? 'Lot' : 'Asteroid';
         let actionText = `${ACTION_TYPE_DATA[this.type].TEXT}: ${this.subjectName}`;
         if (includeSource) {
-            actionText += ` at ${sourceType} ${this.sourceId} (${this.sourceName})`;
+            actionText += ` at ${sourceType} ${this.sourceId.toLocaleString()} (${this.sourceName})`;
         }
         if (includeDestination && this.destinationId) {
-            actionText += `, to ${sourceType} ${this.destinationId} (${this.destinationName})`;
+            actionText += `, to ${sourceType} ${this.destinationId.toLocaleString()} (${this.destinationName})`;
         }
         return actionText;
     }
@@ -347,7 +346,7 @@ class Action {
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
-                <div class="value value-destination">Lot ${this.destinationId} (${this.destinationName})</div>
+                <div class="value value-destination">Lot ${this.destinationId.toLocaleString()} (${this.destinationName})</div>
             `;
         }
         let timerCompactHtml = '';
@@ -417,11 +416,11 @@ class Action {
                         ${this.subjectName}
                     </div>
                     ${timerCompactHtml}
-                    <div class="lot-id">${this.isActionOnLot ? this.sourceId : ''}</div>
+                    <div class="lot-id">${this.isActionOnLot ? this.sourceId.toLocaleString() : ''}</div>
                 </div>
                 <div class="item-expand">
                     <div class="action-details">
-                        <div class="value value-source">Lot ${this.sourceId} (${this.sourceName})</div>
+                        <div class="value value-source">Lot ${this.sourceId.toLocaleString()} (${this.sourceName})</div>
                         ${destinationHtml}
                     </div>
                     <div class="subactions">

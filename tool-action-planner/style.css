@@ -353,7 +353,7 @@ input[type=text]:focus {
 }
 #plan-actions #action-setup-panel #action-setup-type ul:hover {
   background-color: var(--color-black-faded-75);
-  filter: drop-shadow(0 0 20px black);
+  box-shadow: 0 10px 20px black;
 }
 #plan-actions #action-setup-panel #action-setup-type ul:hover li.active {
   background-color: var(--color-highlight);

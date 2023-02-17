@@ -6,7 +6,7 @@
 }
 
 body {
-  background-color: rgba(0, 0, 0, 0.95);
+  background-color: var(--color-black-faded-95);
 }
 body.embed {
   background-color: unset;
@@ -132,7 +132,7 @@ button.submit::after {
 }
 
 input[type=text] {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-white-faded-10);
   border: 1px solid var(--color-highlight);
   border-radius: 5px;
   color: white;
@@ -304,23 +304,13 @@ input[type=text]:focus {
   animation: close-notification var(--close-duration) linear;
 }
 
-#plan-actions h2 {
-  border-bottom: none;
-  display: inline-block;
-  position: relative;
-  z-index: 2;
-}
-#plan-actions #action-setup-panel {
-  font-size: 14px;
-  gap: 50px;
-}
-#plan-actions #action-setup-panel #action-setup-type {
+.dropdown-wrapper {
   --item-unit: 35px;
   --min-width: calc(var(--action-types-max-width) + var(--item-unit));
   min-height: var(--item-unit);
   min-width: var(--min-width);
 }
-#plan-actions #action-setup-panel #action-setup-type ul {
+.dropdown-wrapper ul {
   -webkit-backdrop-filter: blur(4px);
           backdrop-filter: blur(4px);
   border: 1px solid var(--color-highlight);
@@ -329,7 +319,7 @@ input[type=text]:focus {
   width: var(--min-width);
   z-index: 1;
 }
-#plan-actions #action-setup-panel #action-setup-type ul li {
+.dropdown-wrapper ul li {
   align-items: center;
   cursor: var(--cursor-url-active) 5 5, auto;
   display: flex;
@@ -338,28 +328,32 @@ input[type=text]:focus {
   padding: 0 20px 0 10px;
   white-space: nowrap;
 }
-#plan-actions #action-setup-panel #action-setup-type ul li:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.dropdown-wrapper ul li:hover {
+  background-color: var(--color-white-faded-10);
   color: white;
 }
-#plan-actions #action-setup-panel #action-setup-type ul li:hover .icon-round {
+.dropdown-wrapper ul li:hover .icon-round {
   background-color: unset;
 }
-#plan-actions #action-setup-panel #action-setup-type ul li:hover .icon-round::after {
+.dropdown-wrapper ul li:hover .icon-round::after {
   background-color: white;
 }
-#plan-actions #action-setup-panel #action-setup-type ul li.active .icon-round::after {
+.dropdown-wrapper ul li.active {
+  background-color: var(--color-white-faded-10);
+}
+.dropdown-wrapper ul li.active .icon-round::after {
   background-color: white;
 }
-#plan-actions #action-setup-panel #action-setup-type ul:hover {
+.dropdown-wrapper ul.hover {
   background-color: var(--color-black-faded-75);
   box-shadow: 0 10px 20px black;
 }
-#plan-actions #action-setup-panel #action-setup-type ul:hover li.active {
+.dropdown-wrapper ul.hover li.active {
   background-color: var(--color-highlight);
   color: white;
+  cursor: unset;
 }
-#plan-actions #action-setup-panel #action-setup-type ul:not(:hover)::after {
+.dropdown-wrapper ul:not(.hover)::after {
   align-items: center;
   background-color: var(--color-highlight);
   bottom: 0;
@@ -371,9 +365,24 @@ input[type=text]:focus {
   top: 0;
   width: var(--item-unit);
 }
-#plan-actions #action-setup-panel #action-setup-type ul:not(:hover) li:not(.active) {
+.dropdown-wrapper ul:not(.hover) li:not(.active) {
   position: absolute;
   left: -1000px;
+}
+.dropdown-wrapper ul.shrink {
+  height: calc(var(--item-unit) + 2px);
+  overflow: hidden;
+}
+
+#plan-actions h2 {
+  border-bottom: none;
+  display: inline-block;
+  position: relative;
+  z-index: 2;
+}
+#plan-actions #action-setup-panel {
+  font-size: 14px;
+  gap: 50px;
 }
 #plan-actions #manage-lots-panel {
   flex-direction: column;
@@ -446,7 +455,7 @@ input[type=text]:focus {
   height: 30px;
 }
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li:hover:not(.header) {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-white-faded-10);
   color: white;
 }
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li > * {
@@ -543,7 +552,7 @@ ul.list-expanding-items.hide-action-types .action-type-text {
   display: none;
 }
 ul.list-expanding-items.dragging-wrapper {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-white-faded-05);
   padding-bottom: 10px;
 }
 ul.list-expanding-items li {

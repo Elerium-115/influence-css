@@ -1,6 +1,17 @@
-import {deleteFromArray, deleteFromDOM, getPseudoUniqueId, msToShortTime} from './abstract.js';
+import {
+    createElementFromHtml,
+    deleteFromArray,
+    deleteFromDOM,
+    getPseudoUniqueId,
+    msToShortTime,
+} from './abstract.js';
 import {ACTION_STATE} from './action.js';
-import {Lot, LOT_ASSET, LOT_STATE, LOT_STATE_DATA} from './lot.js';
+import {
+    Lot,
+    LOT_ASSET,
+    LOT_STATE,
+    LOT_STATE_DATA,
+} from './lot.js';
 
 const CREW_INVOLVEMENT = {
     FINALIZING: 'Finalizing',
@@ -173,9 +184,7 @@ class Crew {
                 </li>
             `;
         }
-        const elTemp = document.createElement('div');
-        elTemp.innerHTML = this.getLotsListItemHtml(lot);
-        lot.elLotsListItem = elTemp.firstElementChild;
+        lot.elLotsListItem = createElementFromHtml(this.getLotsListItemHtml(lot));
         // Inject before the next-highest lot ID
         const asteroidLots = this.lotsByAsteroidId[this.asteroidId];
         const nextHighestIdLot = asteroidLots[asteroidLots.indexOf(lot) + 1];
@@ -407,4 +416,8 @@ globalThis.onAbandonLotId = function(lotId) {
     }
 }
 
-export {Crew, CrewService, CREW_INVOLVEMENT};
+export {
+    Crew,
+    CrewService,
+    CREW_INVOLVEMENT,
+};

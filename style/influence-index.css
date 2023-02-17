@@ -13,6 +13,9 @@
     --color-gray-dark: rgb(102, 102, 102);
     --color-black-faded-50: rgba(0, 0, 0, 0.5);
     --color-black-faded-75: rgba(0, 0, 0, 0.75);
+    --color-black-faded-95: rgba(0, 0, 0, 0.95);
+    --color-white-faded-05: rgba(255, 255, 255, 0.05);
+    --color-white-faded-10: rgba(255, 255, 255, 0.1);
     --cursor-url-default: url('../assets/images/cursor.png');
     --cursor-url-active: url('../assets/images/cursor-active.png');
 }

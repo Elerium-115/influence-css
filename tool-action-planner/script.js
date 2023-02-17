@@ -92,6 +92,9 @@ initializeExampleActionsById();
 actionService.updateQueuedDraggables();
 actionService.updateQueuedActionsReadiness();
 
+// Initialize action-type options in "#action-setup-type" dropdown
+actionService.setActionSetupTypeOptions();
+
 //// TEST
 // document.getElementById('plan-actions').classList.add('hidden'); // hide "Plan Actions"
 // document.getElementById('toggle-action-types-label').click(); // hide action types

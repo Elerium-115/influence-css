@@ -249,4 +249,10 @@ lotService.populateAddLotSelectAsset();
 // THEN populate add-lot form > select state
 lotService.populateAddLotSelectState();
 
-export {Lot, LOT_ASSET, LOT_ASSET_DATA, LOT_STATE, LOT_STATE_DATA};
+export {
+    Lot,
+    LOT_ASSET,
+    LOT_ASSET_DATA,
+    LOT_STATE,
+    LOT_STATE_DATA,
+};

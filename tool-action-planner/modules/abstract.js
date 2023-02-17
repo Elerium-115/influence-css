@@ -82,6 +82,12 @@ function deleteFromArray(arr, value) {
     return arr;
 }
 
+function createElementFromHtml(html) {
+    const elTemp = document.createElement('div');
+    elTemp.innerHTML = html;
+    return elTemp.firstElementChild;
+}
+
 globalThis.onKeyEscape = null;
 
 window.addEventListener('keydown', event => {
@@ -93,4 +99,12 @@ window.addEventListener('keydown', event => {
     }
 });
 
-export {HOUR, deleteFromArray, deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime};
+export {
+    HOUR,
+    createElementFromHtml,
+    deleteFromArray,
+    deleteFromDOM,
+    fromNow,
+    getPseudoUniqueId,
+    msToShortTime,
+};

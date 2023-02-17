@@ -1,8 +1,18 @@
-import {deleteFromDOM, fromNow, getPseudoUniqueId, msToShortTime} from './abstract.js';
+import {
+    createElementFromHtml,
+    deleteFromDOM,
+    fromNow,
+    getPseudoUniqueId,
+    msToShortTime,
+} from './abstract.js';
 import {leaderLineConnectElements} from './leader-line-utils.js';
 import {CREW_INVOLVEMENT} from './crew.js';
-import {LOT_STATE, LOT_STATE_DATA} from './lot.js';
+import {
+    LOT_STATE,
+    LOT_STATE_DATA,
+} from './lot.js';
 import {NotificationService} from './notification.js';
+import {Dropdown} from './dropdown.js';
 
 const ACTION_STATE = {
     DONE: 'DONE',
@@ -234,10 +244,9 @@ class Action {
                  * - remove timer for ongoing action which has become ready
                  * - replace progress bars with "Finalize" button
                  */
-                const elTemp = document.createElement('div');
-                elTemp.innerHTML = this.getListItemHtml();
+                const elListItemTemp = createElementFromHtml(this.getListItemHtml());
                 // Updating the HTML in this way is required, otherwise there may be issues e.g. with the transition to "Done"
-                this.elListItem.innerHTML = elTemp.firstElementChild.innerHTML;
+                this.elListItem.innerHTML = elListItemTemp.innerHTML;
                 this.injectLeaderLineIfNeeded();
                 // Update lot action and progress in lots-list
                 if (this.isActionOnLot) {
@@ -512,9 +521,7 @@ class Action {
                 actionGroupList = document.querySelector('#actions-done ul');
                 break;
         }
-        const elTemp = document.createElement('div');
-        elTemp.innerHTML = this.getListItemHtml();
-        this.elListItem = elTemp.firstElementChild;
+        this.elListItem = createElementFromHtml(this.getListItemHtml());
         switch (this.state) {
             case ACTION_STATE.QUEUED:
                 actionGroupList.append(this.elListItem);
@@ -985,6 +992,7 @@ class ActionService {
     constructor() {
         this.actionsById = {};
         this.elActionSetupType = document.getElementById('action-setup-type');
+        this.actionSetupTypeDropdown = null;
     }
 
     getActionForListItem(elListItem) {
@@ -1104,6 +1112,25 @@ class ActionService {
                 action.state === ACTION_STATE.ONGOING;
         });
     }
+
+    onSelectActionSetupTypeOption(actionType) {
+        //// TO BE IMPLEMENTED
+    }
+
+    setActionSetupTypeOptions() {
+        this.actionSetupTypeDropdown = new Dropdown(
+            this.elActionSetupType,
+            this.onSelectActionSetupTypeOption,
+        );
+        const actionSetupTypeOptions = Object.keys(ACTION_TYPE).map(actionType => {
+            return {
+                iconClass: ACTION_TYPE_DATA[actionType].ICON_CLASS,
+                text: ACTION_TYPE_DATA[actionType].TEXT,
+                value: actionType,
+            };
+        });
+        this.actionSetupTypeDropdown.setOptions(actionSetupTypeOptions);
+    }
 }
 
 // Global variables and functions
@@ -1134,14 +1161,8 @@ globalThis.onToggleAddAction = function() {
     actionService.toggleAddAction();
 }
 
-// Inject action-types into list from "#action-setup-type"
-let actionTypesListHtml = '';
-for (const actionTypeData of Object.values(ACTION_TYPE_DATA)) {
-    const activeClass = Object.values(ACTION_TYPE_DATA).indexOf(actionTypeData) === 0 ? 'active' : '';
-    actionTypesListHtml += /*html*/ `
-        <li class="${activeClass}"><span class="icon-round ${actionTypeData.ICON_CLASS}"></span>${actionTypeData.TEXT}</li>
-    `;
-    actionService.elActionSetupType.querySelector('ul').innerHTML = actionTypesListHtml;
-}
-
-export {Action, ACTION_STATE, ACTION_TYPE};
+export {
+    Action,
+    ACTION_STATE,
+    ACTION_TYPE,
+};

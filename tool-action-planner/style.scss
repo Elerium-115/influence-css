@@ -178,6 +178,7 @@ input[type='text'] {
         .config-panel {
             background-color: var(--color-black-faded-50);
             display: flex;
+            flex-direction: column;
             gap: 20px;
             margin-top: 20px;
             padding: 20px;
@@ -418,15 +419,21 @@ input[type='text'] {
     }
 
     // "Add Action" button toggles this panel
-    #action-setup-panel {
-        font-size: 14px;
-        gap: 50px;
+    #add-action-panel {
+        .header {
+            display: flex;
+            gap: 25px;
+            line-height: 35px;
+
+            .header-cell {
+                display: flex;
+                gap: 10px;
+            }
+        }
     }
 
     // "Manage Lots" button toggles this panel
     #manage-lots-panel {
-        flex-direction: column;
-
         #add-lot-wrapper {
             display: flex;
             white-space: nowrap;
@@ -594,12 +601,12 @@ input[type='text'] {
 
     // "Active Crew" button toggles this panel
     #active-crew-panel {
-        flex-direction: column;
+        //// ...
     }
 
     // "Switch / Add Crew" button toggles this panel
     #change-crew-panel {
-        flex-direction: column;
+        //// ...
     }
 }
 

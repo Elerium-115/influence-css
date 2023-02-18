@@ -197,6 +197,7 @@ input[type=text]:focus {
 .root-section .config-panels .config-panel {
   background-color: var(--color-black-faded-50);
   display: flex;
+  flex-direction: column;
   gap: 20px;
   margin-top: 20px;
   padding: 20px;
@@ -399,12 +400,14 @@ input[type=text]:focus {
   position: relative;
   z-index: 2;
 }
-#plan-actions #action-setup-panel {
-  font-size: 14px;
-  gap: 50px;
+#plan-actions #add-action-panel .header {
+  display: flex;
+  gap: 25px;
+  line-height: 35px;
 }
-#plan-actions #manage-lots-panel {
-  flex-direction: column;
+#plan-actions #add-action-panel .header .header-cell {
+  display: flex;
+  gap: 10px;
 }
 #plan-actions #manage-lots-panel #add-lot-wrapper {
   display: flex;
@@ -541,13 +544,6 @@ input[type=text]:focus {
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li:not(:hover) .lot-abandon {
   display: none;
 }
-#plan-actions #active-crew-panel {
-  flex-direction: column;
-}
-#plan-actions #change-crew-panel {
-  flex-direction: column;
-}
-
 #manage-actions #action-groups {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

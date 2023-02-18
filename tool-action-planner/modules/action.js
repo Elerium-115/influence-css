@@ -991,8 +991,10 @@ class Action {
 class ActionService {
     constructor() {
         this.actionsById = {};
-        this.elActionSetupTypeDropdown = document.getElementById('action-setup-type-dropdown');
-        this.actionSetupTypeDropdown = null;
+        this.elAddActionTypeDropdown = document.getElementById('add-action-type-dropdown');
+        this.addActionTypeDropdown = null;
+        this.elAddActionLotDropdown = document.getElementById('add-action-lot-dropdown');
+        this.addActionLotDropdown = null;
     }
 
     getActionForListItem(elListItem) {
@@ -1064,15 +1066,16 @@ class ActionService {
 
     toggleAddAction() {
         const elAddActionButton = document.getElementById('add-action-button');
-        const elActionSetupPanel = document.getElementById('action-setup-panel');
+        const elAddActionPanel = document.getElementById('add-action-panel');
         if (elAddActionButton.classList.contains('active')) {
             elAddActionButton.classList.remove('active');
-            elActionSetupPanel.classList.add('hidden');
+            elAddActionPanel.classList.add('hidden');
         } else {
             closeConfigPanels();
             elAddActionButton.classList.add('active');
-            elActionSetupPanel.classList.remove('hidden');
-            this.actionSetupTypeDropdown.updateOptionsMaxWidth();
+            elAddActionPanel.classList.remove('hidden');
+            this.addActionTypeDropdown.updateOptionsMaxWidth();
+            this.updateAddActionLotDropdown();
         }
     }
 
@@ -1106,10 +1109,10 @@ class ActionService {
         });
     }
 
-    setActionSetupTypeOptions() {
-        this.actionSetupTypeDropdown = new Dropdown(
-            this.elActionSetupTypeDropdown,
-            this.onSelectActionSetupTypeOption.bind(this),
+    initializeAddActionTypeDropdown() {
+        this.addActionTypeDropdown = new Dropdown(
+            this.elAddActionTypeDropdown,
+            this.onSelectAddActionTypeOption.bind(this),
         );
         const optionsData = Object.keys(ACTION_TYPE).map(actionType => {
             return {
@@ -1118,11 +1121,37 @@ class ActionService {
                 value: actionType,
             };
         });
-        this.actionSetupTypeDropdown.setOptions(optionsData);
+        this.addActionTypeDropdown.setOptions(optionsData);
     }
 
-    onSelectActionSetupTypeOption(actionType) {
+    onSelectAddActionTypeOption(actionType) {
         //// TO BE IMPLEMENTED
+        this.updateAddActionLotDropdown();
+    }
+
+    initializeAddActionLotDropdown() {
+        this.addActionLotDropdown = new Dropdown(
+            this.elAddActionLotDropdown,
+        );
+        this.updateAddActionLotDropdown();
+    }
+
+    updateAddActionLotDropdown() {
+        const actionType = this.addActionTypeDropdown.getSelectedVaue();
+        if (ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT) {
+            const optionsData = [];
+            const lots = crewService.getLotsForActiveCrewAndAsteroid() || [];
+            for (const lot of lots) {
+                optionsData.push({
+                    text: `${lot.id.toLocaleString()} (${lot.assetName || 'Empty Lot'})`,
+                    value: lot.id,
+                });
+            }
+            this.addActionLotDropdown.setOptions(optionsData);
+            this.addActionLotDropdown.updateOptionsMaxWidth();
+        } else {
+            //// TO DO: hide dropdown, show "N/A (action not on lot)"?
+        }
     }
 }
 
@@ -1154,8 +1183,11 @@ globalThis.onToggleAddAction = function() {
     actionService.toggleAddAction();
 }
 
-// Initialize action-type options in "#action-setup-type-dropdown" dropdown
-actionService.setActionSetupTypeOptions();
+// Initialize add-action-type dropdown
+actionService.initializeAddActionTypeDropdown();
+
+// Initialize add-action-lot dropdown
+actionService.initializeAddActionLotDropdown();
 
 export {
     Action,

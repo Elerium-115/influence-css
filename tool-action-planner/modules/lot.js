@@ -55,6 +55,8 @@ const LOT_STATE_DATA = {
 class Lot {
     constructor(id, asset = null, state = LOT_STATE.EMPTY) {
         this.id = id;
+        this.asset = null; // updated via "setAsset"
+        this.assetName = null; // updated via "setAsset"
         this.setAsset(asset); // expecting "LOT_ASSET" value, i.e. building or ship located at this lot (only for non-empty lots)
         this.state = state; // expecting "LOT_STATE" value
         this.isBeingAbandoned = false;

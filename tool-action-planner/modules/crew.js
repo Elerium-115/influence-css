@@ -238,7 +238,7 @@ class CrewService {
 
     getLotsForActiveCrewAndAsteroid() {
         const activeCrew = this.activeCrew;
-        return activeCrew.lotsByAsteroidId[activeCrew.asteroidId];
+        return activeCrew?.lotsByAsteroidId[activeCrew.asteroidId];
     }
 
     getLotByIdForActiveCrewAndAsteroid(lotId) {

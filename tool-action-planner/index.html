@@ -55,20 +55,30 @@
                     <button id="change-crew-button" onclick="onToggleChangeCrew()"><span class="icon-round icon-crew-members"></span>Change Crew</button>
                 </div>
                 <div class="config-panels">
-                    <div id="action-setup-panel" class="config-panel hidden">
-                        <div id="action-setup-type-dropdown" class="dropdown-wrapper"></div>
-                        <div id="action-setup-parameters">
-                            <!-- <div>
-                                Asteroid ID: [dropdown]<br>
-                                <br>
-                                Source Lot ID: [dropdown] &raquo; SOURCE_ITEM [auto-complete based on action-type]<br>
-                                &raquo; (dropdown values = only lots that contain an asset compatible with the SOURCE of action-type)<br>
-                                &raquo; (dropdown value "Plan new lot" => replace dropdown w/ text-input, only for actions compatible w/ empty lots)<br>
-                                <br>
-                                Destination Lot ID: [dropdown] &raquo; DESTINATION_ITEM [auto-complete based on action-type]<br>
-                                &raquo; (dropdown values = only lots that contain an asset compatible with the DESTINATION of action-type)<br>
-                            </div> -->
+                    <div id="add-action-panel" class="config-panel hidden">
+                        <div class="header">
+                            <div class="header-cell">
+                                <div id="add-action-type-dropdown" class="dropdown-wrapper"></div>
+                            </div>
+                            <div class="header-cell">Location:</div>
+                            <div class="header-cell">
+                                Asteroid
+                                <span class="active-asteroid-id"></span>
+                                <span class="active-asteroid-name hover-detail"></span>
+                            </div>
+                            <div class="header-cell">
+                                Lot
+                                <div id="add-action-lot-dropdown" class="dropdown-wrapper"></div>
+                            </div>
                         </div>
+                        <!-- <div>
+                            Source Lot ID: [dropdown] &raquo; SOURCE_ITEM [auto-complete based on action-type]<br>
+                            &raquo; (dropdown values = only lots that contain an asset compatible with the SOURCE of action-type)<br>
+                            &raquo; (dropdown value "Plan new lot" => replace dropdown w/ text-input, only for actions compatible w/ empty lots)<br>
+                            <br>
+                            Destination Lot ID: [dropdown] &raquo; DESTINATION_ITEM [auto-complete based on action-type]<br>
+                            &raquo; (dropdown values = only lots that contain an asset compatible with the DESTINATION of action-type)<br>
+                        </div> -->
                     </div>
                     <div id="manage-lots-panel" class="config-panel hidden">
                         <div id="add-lot-wrapper">

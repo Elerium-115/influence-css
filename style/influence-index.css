@@ -24,7 +24,6 @@
 html, body {
     cursor: var(--cursor-url-default) 5 5, auto;
     color: var(--color-gray-light);
-    font-family: Jura, sans-serif;
     height: 100%;
     margin: 0;
     padding: 0;
@@ -39,6 +38,7 @@ a, button, input[type='checkbox'] {
 
 * {
     box-sizing: border-box;
+    font-family: Jura, sans-serif;
 }
 
 input[type='number'] {

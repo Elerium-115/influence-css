@@ -1109,7 +1109,7 @@ class ActionService {
     setActionSetupTypeOptions() {
         this.actionSetupTypeDropdown = new Dropdown(
             this.elActionSetupTypeDropdown,
-            this.onSelectActionSetupTypeOption,
+            this.onSelectActionSetupTypeOption.bind(this),
         );
         const optionsData = Object.keys(ACTION_TYPE).map(actionType => {
             return {

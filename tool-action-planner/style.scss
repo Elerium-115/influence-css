@@ -106,8 +106,8 @@ button {
 input[type='text'] {
     background-color: var(--color-white-faded-10);
     border: 1px solid var(--color-highlight);
-    border-radius: 5px;
     color: white;
+    font-size: 14px;
     padding: 0 10px;
 
     &:focus {
@@ -319,8 +319,7 @@ input[type='text'] {
 
     ul {
         backdrop-filter: blur(8px);
-        border: 1px solid var(--color-highlight);
-        border-radius: 5px;
+        font-size: 14px;
         position: absolute;
         min-width: var(--min-width);
         z-index: 1;
@@ -335,7 +334,7 @@ input[type='text'] {
             padding: 0 20px 0 10px;
             white-space: nowrap;
 
-            &:hover {
+            &:hover:not(.option-group-label) {
                 background-color: var(--color-white-faded-20);
                 color: white;
 
@@ -346,6 +345,11 @@ input[type='text'] {
                         background-color: white;
                     }
                 }
+            }
+
+            &.option-group-label {
+                cursor: unset;
+                font-weight: bold;
             }
 
             &.active {
@@ -360,12 +364,18 @@ input[type='text'] {
         &.hover {
             background-color: var(--color-black-faded-75);
             box-shadow: 0 10px 20px black;
+            max-height: calc(var(--item-unit) * 13); // max 13 options
+            overflow: auto;
 
             li {
                 &.active {
                     background-color: var(--color-highlight);
                     color: white;
                     cursor: unset;
+                }
+
+                &.option-group {
+                    padding-left: 30px;
                 }
             }
         }
@@ -393,7 +403,7 @@ input[type='text'] {
         }
 
         &.shrink {
-            height: calc(var(--item-unit) + 2px); // account for top+bottom borders of 1px each
+            height: var(--item-unit);
             overflow: hidden;
         }
     }

@@ -86,7 +86,8 @@ class LotService {
         this.elAddLotWrapper = document.getElementById('add-lot-wrapper');
         this.elAddLotButton = document.getElementById('add-lot-button');
         this.elAddLotInputId = document.getElementById('add-lot-input-id');
-        this.elAddLotSelectAsset = document.getElementById('add-lot-select-asset');
+        this.elAddLotAssetDropdown = document.getElementById('add-lot-asset-dropdown');
+        this.addLotAssetDropdown = null;
         this.elAddLotStateDropdown = document.getElementById('add-lot-state-dropdown');
         this.addLotStateDropdown = null;
         this.elAddLotError = document.getElementById('add-lot-error');
@@ -94,32 +95,6 @@ class LotService {
 
     getNameIfLotAsset(potentialLotAsset) {
         return LOT_ASSET[potentialLotAsset] ? LOT_ASSET_DATA[potentialLotAsset].NAME : potentialLotAsset;
-    }    
-
-    populateAddLotSelectAsset() {
-        const elOptionEmpty = document.createElement('option');
-        // Inject "None" option
-        elOptionEmpty.value = '';
-        elOptionEmpty.textContent = 'None';
-        this.elAddLotSelectAsset.append(elOptionEmpty);
-        // Inject option-groups for buildings and ships
-        let elOptGroupBuildings = document.createElement('optgroup');
-        elOptGroupBuildings.label = 'Buildings';
-        let elOptGroupShips = document.createElement('optgroup');
-        elOptGroupShips.label = 'Ships';
-        for (const [lotAsset, lotAssetData] of Object.entries(LOT_ASSET_DATA)) {
-            const elOption = document.createElement('option');
-            elOption.value = lotAsset;
-            elOption.textContent = lotAssetData.NAME;
-            if (lotAssetData.IS_BUILDING) {
-                elOptGroupBuildings.append(elOption);
-            }
-            if (lotAssetData.IS_SHIP) {
-                elOptGroupShips.append(elOption);
-            }
-        }
-        this.elAddLotSelectAsset.append(elOptGroupBuildings);
-        this.elAddLotSelectAsset.append(elOptGroupShips);
     }
 
     getAddLotStateRawOptionsData() {
@@ -140,14 +115,62 @@ class LotService {
         return optionsData;
     }
 
-    populateAddLotSelectState() {
+    getAddLotAssetOptionsData() {
+        // Inject "None" option
+        const optionsData = [{
+            text: 'None',
+            value: '',
+        }];
+        // Inject option-group for buildings
+        optionsData.push({
+            isOptionGroupLabel: true,
+            text: 'Buildings',
+            value: '',
+        });
+        for (const lotAsset of Object.keys(LOT_ASSET)) {
+            if (LOT_ASSET_DATA[lotAsset].IS_BUILDING) {
+                optionsData.push({
+                    isOptionGroup: true,
+                    text: LOT_ASSET_DATA[lotAsset].NAME,
+                    value: lotAsset,
+                });
+            }
+        };
+        // Inject option-group for ships
+        optionsData.push({
+            isOptionGroupLabel: true,
+            text: 'Ships',
+            value: '',
+        });
+        for (const lotAsset of Object.keys(LOT_ASSET)) {
+            if (LOT_ASSET_DATA[lotAsset].IS_SHIP) {
+                optionsData.push({
+                    isOptionGroup: true,
+                    text: LOT_ASSET_DATA[lotAsset].NAME,
+                    value: lotAsset,
+                });
+            }
+        };
+        return optionsData;
+    }
+
+    populateAddLotAssetDropdown() {
+        this.addLotAssetDropdown = new Dropdown(
+            this.elAddLotAssetDropdown,
+            this.updateAddLotStateDropdownForLotAsset.bind(this),
+        );
+        this.addLotAssetDropdown.setOptions(this.getAddLotAssetOptionsData());
+        this.addLotAssetDropdown.updateOptionsMaxWidth();
+    }
+
+    populateAddLotStateDropdown() {
         this.addLotStateDropdown = new Dropdown(this.elAddLotStateDropdown);
         this.addLotStateDropdown.setOptions(this.getAddLotStateRawOptionsData());
         // Select lot-state based on pre-selected lot-asset
-        this.updateAddLotSelectStateForLotAsset(null, false);
+        this.updateAddLotStateDropdownForLotAsset(null, false);
     }
 
-    updateAddLotSelectStateForLotAsset(lotAsset = null, shouldUpdateMaxWidth = true) {
+    updateAddLotStateDropdownForLotAsset(lotAsset = null, shouldUpdateMaxWidth = true) {
         // Reset options in lot-state dropdown
         let optionsData = [];
         if (!lotAsset) {
@@ -188,14 +211,15 @@ class LotService {
     showAddLotForm() {
         this.elAddLotWrapper.classList.add('active');
         this.elAddLotButton.classList.add('submit');
+        this.addLotAssetDropdown.updateOptionsMaxWidth();
         this.addLotStateDropdown.updateOptionsMaxWidth();
     }
 
     resetAddLotForm() {
         this.elAddLotInputId.value = '';
-        this.elAddLotSelectAsset.value = '';
+        this.addLotAssetDropdown.selectOptionByValue('');
         // Select lot-state based on newly-selected lot-asset
-        this.updateAddLotSelectStateForLotAsset();
+        this.updateAddLotStateDropdownForLotAsset();
         this.elAddLotError.classList.add('hidden');
     }
 
@@ -224,7 +248,7 @@ class LotService {
             this.elAddLotError.classList.remove('hidden');
             return;
         }
-        const lotAsset = this.elAddLotSelectAsset.value;
+        const lotAsset = this.addLotAssetDropdown.getSelectedVaue();
         const lotState = this.addLotStateDropdown.getSelectedVaue();
         const activeCrew = crewService.activeCrew;
         activeCrew.initializeLot(activeCrew.asteroidId, lotId, lotAsset, lotState);
@@ -257,15 +281,11 @@ globalThis.validateAddLotInputId = function(el) {
     el.value = isNaN(intValue) || intValue < 1 ? 1 : Math.min(intValue, 1768484);
 }
 
-globalThis.onChangeAddLotSelectAsset = function(lotAsset) {
-    lotService.updateAddLotSelectStateForLotAsset(lotAsset);
-}
-
 // FIRST populate add-lot form > select asset
-lotService.populateAddLotSelectAsset();
+lotService.populateAddLotAssetDropdown();
 
 // THEN populate add-lot form > select state
-lotService.populateAddLotSelectState();
+lotService.populateAddLotStateDropdown();
 
 export {
     Lot,

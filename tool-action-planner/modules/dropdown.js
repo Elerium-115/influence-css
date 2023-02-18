@@ -47,6 +47,8 @@ class Dropdown {
      * Expecting "optionsData" as array of objects:
      *  {
      *      iconClass: string, // optional
+     *      isOptionGroupLabel: boolean, // optional, true for labels of an option-group
+     *      isOptionGroup: boolean, // optional, true for options grouped under an option-group-label
      *      text: string, // optional, defaults to "value"
      *      value: string,
      *  }
@@ -54,23 +56,26 @@ class Dropdown {
     setOptions(optionsData) {
         this.elList.textContent = '';
         for (const optionData of Object.values(optionsData)) {
-            let activeClass = '';
-            if (Object.values(optionsData).indexOf(optionData) === 0) {
-                // First option
-                activeClass = 'active';
-                this.selectedValue = optionData.value;
-            }
             let iconHtml = '';
             if (optionData.iconClass) {
                 iconHtml = /*html*/ `<span class="icon-round ${optionData.iconClass}"></span>`;
             }
-            const optionHtml = /*html*/ `
-                <li class="${activeClass}" data-value="${optionData.value}">
-                    ${iconHtml}${optionData.text || optionData.value}
-                </li>
-            `;
+            const optionHtml = /*html*/ `<li>${iconHtml}${optionData.text || optionData.value}</li>`;
             const elOption = createElementFromHtml(optionHtml);
-            elOption.addEventListener('click', () => this.selectOption(elOption));
+            if (Object.values(optionsData).indexOf(optionData) === 0) {
+                // First option => auto-select it
+                elOption.classList.add('active');
+                this.selectedValue = optionData.value;
+            }
+            if (optionData.isOptionGroup) {
+                elOption.classList.add('option-group');
+            }
+            if (optionData.isOptionGroupLabel) {
+                elOption.classList.add('option-group-label');
+            } else {
+                elOption.dataset.value = optionData.value;
+                elOption.addEventListener('click', () => this.selectOption(elOption));
+            }
             this.elList.append(elOption);
         }
         if (Object.keys(optionsData).length === 1) {

@@ -141,8 +141,8 @@ button .icon-round {
 input[type=text] {
   background-color: var(--color-white-faded-10);
   border: 1px solid var(--color-highlight);
-  border-radius: 5px;
   color: white;
+  font-size: 14px;
   padding: 0 10px;
 }
 input[type=text]:focus {
@@ -326,8 +326,7 @@ input[type=text]:focus {
 .dropdown-wrapper ul {
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
-  border: 1px solid var(--color-highlight);
-  border-radius: 5px;
+  font-size: 14px;
   position: absolute;
   min-width: var(--min-width);
   z-index: 1;
@@ -342,15 +341,19 @@ input[type=text]:focus {
   padding: 0 20px 0 10px;
   white-space: nowrap;
 }
-.dropdown-wrapper ul li:hover {
+.dropdown-wrapper ul li:hover:not(.option-group-label) {
   background-color: var(--color-white-faded-20);
   color: white;
 }
-.dropdown-wrapper ul li:hover .icon-round {
+.dropdown-wrapper ul li:hover:not(.option-group-label) .icon-round {
   background-color: unset;
 }
-.dropdown-wrapper ul li:hover .icon-round::after {
+.dropdown-wrapper ul li:hover:not(.option-group-label) .icon-round::after {
   background-color: white;
+}
+.dropdown-wrapper ul li.option-group-label {
+  cursor: unset;
+  font-weight: bold;
 }
 .dropdown-wrapper ul li.active .icon-round::after {
   background-color: white;
@@ -358,11 +361,16 @@ input[type=text]:focus {
 .dropdown-wrapper ul.hover {
   background-color: var(--color-black-faded-75);
   box-shadow: 0 10px 20px black;
+  max-height: calc(var(--item-unit) * 13);
+  overflow: auto;
 }
 .dropdown-wrapper ul.hover li.active {
   background-color: var(--color-highlight);
   color: white;
   cursor: unset;
+}
+.dropdown-wrapper ul.hover li.option-group {
+  padding-left: 30px;
 }
 .dropdown-wrapper ul:not(.hover)::after {
   align-items: center;
@@ -381,7 +389,7 @@ input[type=text]:focus {
   left: -1000px;
 }
 .dropdown-wrapper ul.shrink {
-  height: calc(var(--item-unit) + 2px);
+  height: var(--item-unit);
   overflow: hidden;
 }
 

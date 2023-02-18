@@ -1,7 +1,8 @@
 class Asteroid {
-    constructor(id, name) {
+    constructor(id, name, maxLots) {
         this.id = id;
         this.name = name;
+        this.maxLots = maxLots; // i.e. area in km2
         this.lots = []; // array of "Lot"
         asteroidService.asteroidsById[id] = this;
     }

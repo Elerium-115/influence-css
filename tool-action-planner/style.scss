@@ -203,7 +203,7 @@ input[type='text'] {
 
     &::before {
         background-image: linear-gradient(90deg, transparent, var(--color-black-faded-50));
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(8px);
         content: '';
         border-bottom: 1px solid var(--color-gray-dark);
         height: 39px;
@@ -273,7 +273,7 @@ input[type='text'] {
         padding-bottom: 15px;
 
         .notification {
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             padding: 10px 30px 10px 20px;
 
             @keyframes flash-notification {
@@ -364,7 +364,7 @@ input[type='text'] {
         &.hover {
             background-color: var(--color-black-faded-75);
             box-shadow: 0 10px 20px black;
-            max-height: calc(var(--item-unit) * 13); // max 13 options
+            max-height: calc(var(--item-unit) * var(--max-rows));
             overflow: auto;
 
             li {

@@ -5,19 +5,21 @@ import {Asteroid} from './asteroid.js';
 import {LOT_ASSET, LOT_ASSET_DATA} from './lot.js';
 
 // Example asteroids
-new Asteroid(1, 'Adalia Prime');
-new Asteroid(296, 'Tortuga');
+new Asteroid(1, 'Adalia Prime', 1768484);
+new Asteroid(296, 'Tortuga', 7940);
 
 // Example crew
 const exampleCrew = new Crew('Dragon');
-exampleCrew.setAsteroidId(1); // Adalia Prime
+// exampleCrew.setAsteroidId(1); // Adalia Prime
+exampleCrew.setAsteroidId(296); // Tortuga
 exampleCrew.setIsLanded(true);
 exampleCrew.setBase(666, LOT_ASSET_DATA[LOT_ASSET.LIGHT_TRANSPORT].NAME); // Light Transport at lot #666
 // exampleCrew.setIsLanded(false); //// TEST
 
 // Example lots on asteroid #1 for example crew
 for (const lotId of [666, 777, 89, 123, 1, 2, 4567]) {
-    exampleCrew.initializeLot(1, lotId);
+    // exampleCrew.initializeLot(1, lotId); // initialize lot on Adalia Prime
+    exampleCrew.initializeLot(296, lotId); // initialize lot on Tortuga
 }
 
 /**

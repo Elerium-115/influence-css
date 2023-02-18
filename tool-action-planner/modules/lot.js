@@ -277,8 +277,9 @@ globalThis.validateAddLotInputId = function(el) {
         return;
     }
     const intValue = parseInt(el.value);
-    // Min. 1, max. 1768484 (Adalia Prime)
-    el.value = isNaN(intValue) || intValue < 1 ? 1 : Math.min(intValue, 1768484);
+    const activeCrewAsteroidId = crewService.activeCrew.asteroidId;
+    const maxLots = asteroidService.asteroidsById[activeCrewAsteroidId].maxLots;
+    el.value = isNaN(intValue) || intValue < 1 ? 1 : Math.min(intValue, maxLots);
 }
 
 // FIRST populate add-lot form > select asset

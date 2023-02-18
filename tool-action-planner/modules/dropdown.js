@@ -1,9 +1,10 @@
 import {createElementFromHtml} from './abstract.js';
 
 class Dropdown {
-    constructor(elWrapper, onSelectValue = null) {
+    constructor(elWrapper, onSelectValue = null, maxRows = 10) {
         this.elWrapper = elWrapper;
         this.onSelectValue = onSelectValue;
+        this.elWrapper.style.setProperty('--max-rows', `${maxRows}`);
         this.selectedValue = null;
         // Inject the list with attached events
         this.elList = document.createElement('ul');
@@ -100,7 +101,7 @@ class Dropdown {
             this.shrinkDropdown();
         }
         // External handler
-        if (this.onSelectValue) {
+        if (typeof this.onSelectValue === 'function') {
             this.onSelectValue(elOptionToSelect.dataset.value);
         }
     }

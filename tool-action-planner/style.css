@@ -219,8 +219,8 @@ input[type=text]:focus {
 }
 #active-crew-sticky::before {
   background-image: linear-gradient(90deg, transparent, var(--color-black-faded-50));
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
   content: "";
   border-bottom: 1px solid var(--color-gray-dark);
   height: 39px;
@@ -280,8 +280,8 @@ input[type=text]:focus {
   padding-bottom: 15px;
 }
 #notifications .notification-wrapper .notification {
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
   padding: 10px 30px 10px 20px;
 }
 @keyframes flash-notification {
@@ -361,7 +361,7 @@ input[type=text]:focus {
 .dropdown-wrapper ul.hover {
   background-color: var(--color-black-faded-75);
   box-shadow: 0 10px 20px black;
-  max-height: calc(var(--item-unit) * 13);
+  max-height: calc(var(--item-unit) * var(--max-rows));
   overflow: auto;
 }
 .dropdown-wrapper ul.hover li.active {

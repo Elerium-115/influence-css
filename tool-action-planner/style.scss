@@ -61,42 +61,45 @@ body {
 }
 
 button {
-    .icon-round {
-        margin-left: -5px;
+    --button-color: var(--color-highlight);
+    --button-color-hover: var(--color-highlight-faded-25);
+    border-color: var(--button-color);
+    color: var(--button-color);
+
+    &:hover:not(:disabled) {
+        background-color: var(--button-color-hover);
+    }
+
+    &:active:not(:disabled) {
+        background-color: var(--button-color);
     }
 
     &.warning {
-        border-color: var(--color-warning);
-        color: var(--color-warning);
-
-        &:hover:not(:disabled) {
-            background-color: var(--color-warning-faded-25);
-        }
-
-        &:active:not(:disabled) {
-            background-color: var(--color-warning);
-        }
-
+        --button-color: var(--color-warning);
+        --button-color-hover: var(--color-warning-faded-25);
         &::after {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23df4300'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
         }
     }
 
     &.submit {
-        border-color: var(--color-ready);
-        color: var(--color-ready);
-
-        &:hover:not(:disabled) {
-            background-color: var(--color-ready-faded-25);
-        }
-
-        &:active:not(:disabled) {
-            background-color: var(--color-ready);
-        }
-
+        --button-color: var(--color-ready);
+        --button-color-hover: var(--color-ready-faded-25);
         &::after {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%2336cd36'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
         }
+    }
+
+    &.muted {
+        --button-color: var(--color-gray-dark);
+        --button-color-hover: var(--color-white-faded-10);
+        &::after {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23666666'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
+        }
+    }
+
+    .icon-round {
+        margin-left: -5px;
     }
 }
 
@@ -305,6 +308,14 @@ input[type='text'] {
     --min-width: calc(var(--options-max-width) + var(--item-unit));
     min-height: var(--item-unit);
     min-width: var(--min-width);
+
+    &.single-option {
+        --min-width: var(--options-max-width); // exclude width of "--item-unit"
+
+        ul::after {
+            content: unset !important; // hide dropdown-arrow
+        }
+    }
 
     ul {
         backdrop-filter: blur(8px);

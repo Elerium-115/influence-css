@@ -122,8 +122,7 @@ class LotService {
         this.elAddLotSelectAsset.append(elOptGroupShips);
     }
 
-    populateAddLotSelectState() {
-        this.addLotStateDropdown = new Dropdown(this.elAddLotStateDropdown);
+    getAddLotStateRawOptionsData() {
         const optionsData = [];
         for (const lotState of Object.keys(LOT_STATE)) {
             if (LOT_STATE_DATA[lotState].REQUIRES_ONGOING_ACTION) {
@@ -138,47 +137,47 @@ class LotService {
                 value: lotState,
             });
         };
-        this.addLotStateDropdown.setOptions(optionsData);
+        return optionsData;
+    }
+
+    populateAddLotSelectState() {
+        this.addLotStateDropdown = new Dropdown(this.elAddLotStateDropdown);
+        this.addLotStateDropdown.setOptions(this.getAddLotStateRawOptionsData());
         // Select lot-state based on pre-selected lot-asset
         this.updateAddLotSelectStateForLotAsset(null, false);
     }
 
     updateAddLotSelectStateForLotAsset(lotAsset = null, shouldUpdateMaxWidth = true) {
-        // Hide all lot-state options by default
-        const elsLotStateOption = this.elAddLotStateDropdown.querySelectorAll('ul li');
-        for (const elLotStateOption of elsLotStateOption) {
-            elLotStateOption.classList.add('hidden');
-        }
+        // Reset options in lot-state dropdown
+        let optionsData = [];
         if (!lotAsset) {
-            // Empty lot => auto-select lot-state "EMPTY", and make this option visible
-            this.addLotStateDropdown.selectOptionByValue(LOT_STATE.EMPTY);
-            [...elsLotStateOption].find(elOption => elOption.dataset.value === LOT_STATE.EMPTY).classList.remove('hidden');
-            if (shouldUpdateMaxWidth) {
-                this.addLotStateDropdown.updateOptionsMaxWidth();
-            }
-            return;
-        }
-        if (LOT_ASSET_DATA[lotAsset].IS_BUILDING) {
-            // Building asset on lot => auto-select lot-state "BUILDING_COMPLETED"
-            this.addLotStateDropdown.selectOptionByValue(LOT_STATE.BUILDING_COMPLETED);
-        }
-        if (LOT_ASSET_DATA[lotAsset].IS_SHIP) {
-            // Ship asset on lot => auto-select lot-state "SHIP_LANDED"
-            this.addLotStateDropdown.selectOptionByValue(LOT_STATE.SHIP_LANDED);
-        }
-        for (const elLotStateOption of elsLotStateOption) {
-            const lotState = elLotStateOption.dataset.value;
-            if (LOT_ASSET_DATA[lotAsset].IS_BUILDING) {
-                // Building asset on lot => make all building-related lot-state options visible
-                if (LOT_STATE_DATA[lotState].IS_BUILDING_STATE) {
-                    elLotStateOption.classList.remove('hidden');
+            // Empty lot => single lot-state option "EMPTY" => auto-selected
+            optionsData = [{
+                text: LOT_STATE_DATA[LOT_STATE.EMPTY].TEXT_SHORT,
+                value: LOT_STATE.EMPTY,
+            }];
+        } else {
+            // Parse the "raw" lot-state options, keeping only the options that are valid for the selected lot-asset
+            optionsData = this.getAddLotStateRawOptionsData().filter(optionData => {
+                if (LOT_ASSET_DATA[lotAsset].IS_BUILDING) {
+                    // Building asset on lot => keep all building-related lot-state options
+                    return LOT_STATE_DATA[optionData.value].IS_BUILDING_STATE;
                 }
+                if (LOT_ASSET_DATA[lotAsset].IS_SHIP) {
+                    // Ship asset on lot => keep all ship-related lot-state options
+                    return LOT_STATE_DATA[optionData.value].IS_SHIP_STATE;
+                }
+            });
+        }
+        this.addLotStateDropdown.setOptions(optionsData);
+        if (lotAsset) {
+            if (LOT_ASSET_DATA[lotAsset].IS_BUILDING) {
+                // Building asset on lot => select lot-state "BUILDING_COMPLETED"
+                this.addLotStateDropdown.selectOptionByValue(LOT_STATE.BUILDING_COMPLETED);
             }
             if (LOT_ASSET_DATA[lotAsset].IS_SHIP) {
-                // Ship asset on lot => make all ship-related lot-state options visible
-                if (LOT_STATE_DATA[lotState].IS_SHIP_STATE) {
-                    elLotStateOption.classList.remove('hidden');
-                }
+                // Ship asset on lot => select lot-state "SHIP_LANDED"
+                this.addLotStateDropdown.selectOptionByValue(LOT_STATE.SHIP_LANDED);
             }
         }
         if (shouldUpdateMaxWidth) {

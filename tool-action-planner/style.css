@@ -101,34 +101,41 @@ body.embed {
   display: none !important;
 }
 
-button .icon-round {
-  margin-left: -5px;
+button {
+  --button-color: var(--color-highlight);
+  --button-color-hover: var(--color-highlight-faded-25);
+  border-color: var(--button-color);
+  color: var(--button-color);
+}
+button:hover:not(:disabled) {
+  background-color: var(--button-color-hover);
+}
+button:active:not(:disabled) {
+  background-color: var(--button-color);
 }
 button.warning {
-  border-color: var(--color-warning);
-  color: var(--color-warning);
-}
-button.warning:hover:not(:disabled) {
-  background-color: var(--color-warning-faded-25);
-}
-button.warning:active:not(:disabled) {
-  background-color: var(--color-warning);
+  --button-color: var(--color-warning);
+  --button-color-hover: var(--color-warning-faded-25);
 }
 button.warning::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23df4300'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
 }
 button.submit {
-  border-color: var(--color-ready);
-  color: var(--color-ready);
-}
-button.submit:hover:not(:disabled) {
-  background-color: var(--color-ready-faded-25);
-}
-button.submit:active:not(:disabled) {
-  background-color: var(--color-ready);
+  --button-color: var(--color-ready);
+  --button-color-hover: var(--color-ready-faded-25);
 }
 button.submit::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%2336cd36'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
+}
+button.muted {
+  --button-color: var(--color-gray-dark);
+  --button-color-hover: var(--color-white-faded-10);
+}
+button.muted::after {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg' stroke='%23666666'%3E%3Cline x1='0' y1='10' x2='10' y2='0'%3E%3C/line%3E%3C/svg%3E");
+}
+button .icon-round {
+  margin-left: -5px;
 }
 
 input[type=text] {
@@ -309,6 +316,12 @@ input[type=text]:focus {
   --min-width: calc(var(--options-max-width) + var(--item-unit));
   min-height: var(--item-unit);
   min-width: var(--min-width);
+}
+.dropdown-wrapper.single-option {
+  --min-width: var(--options-max-width);
+}
+.dropdown-wrapper.single-option ul::after {
+  content: unset !important;
 }
 .dropdown-wrapper ul {
   -webkit-backdrop-filter: blur(8px);

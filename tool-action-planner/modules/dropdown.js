@@ -52,6 +52,7 @@ class Dropdown {
      *  }
      */
     setOptions(optionsData) {
+        this.elList.textContent = '';
         for (const optionData of Object.values(optionsData)) {
             let activeClass = '';
             if (Object.values(optionsData).indexOf(optionData) === 0) {
@@ -71,6 +72,11 @@ class Dropdown {
             const elOption = createElementFromHtml(optionHtml);
             elOption.addEventListener('click', () => this.selectOption(elOption));
             this.elList.append(elOption);
+        }
+        if (Object.keys(optionsData).length === 1) {
+            this.elWrapper.classList.add('single-option');
+        } else {
+            this.elWrapper.classList.remove('single-option');
         }
     }
 

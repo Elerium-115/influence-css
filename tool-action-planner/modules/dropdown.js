@@ -20,6 +20,29 @@ class Dropdown {
         return this.selectedValue;
     }
 
+    updateOptionsMaxWidth(doSecondPass = true) {
+        /**
+         * FIRST reset any previously-injected max-width from the CSS,
+         * otherwise the max-width keeps increasing, every time this is executed.
+         */
+        this.elWrapper.style.setProperty('--options-max-width', `0px`);
+        // THEN inject the max-width of the widest option element into CSS
+        let maxWidth = 0;
+        for (const elOption of this.elList.querySelectorAll('li')) {
+            maxWidth = Math.max(maxWidth, elOption.getBoundingClientRect().width);
+        }
+        this.elWrapper.style.setProperty('--options-max-width', `${maxWidth}px`);
+        if (doSecondPass) {
+            /**
+             * Dodgy fix (increase delay if needed) for bug re: max-width too small,
+             * if the first option is the selected-and-widest option in the dropdown.
+             */
+            setTimeout(() => {
+                this.updateOptionsMaxWidth(false);
+            }, 200);
+        }
+    }
+
     /**
      * Expecting "optionsData" as array of objects:
      *  {
@@ -51,24 +74,33 @@ class Dropdown {
         }
     }
 
-    selectOption(elOption) {
+    selectOption(elOptionToSelect) {
         // Default handler
-        const activeOption = this.elList.querySelector('li.active');
-        if (activeOption === elOption) {
+        const elOptionActive = this.elList.querySelector('li.active');
+        if (elOptionActive === elOptionToSelect) {
             // Option already selected => do nothing
             return;
         }
-        this.selectedValue = elOption.dataset.value;
-        activeOption.classList.remove('active');
-        elOption.classList.add('active');
-        if (elOption !== this.elList.firstElementChild) {
+        this.selectedValue = elOptionToSelect.dataset.value;
+        elOptionActive.classList.remove('active');
+        elOptionToSelect.classList.add('active');
+        if (elOptionToSelect !== this.elList.firstElementChild) {
             // Non-first option selected
             this.shrinkDropdown();
         }
         // External handler
         if (this.onSelectValue) {
-            this.onSelectValue(elOption.dataset.value);
+            this.onSelectValue(elOptionToSelect.dataset.value);
         }
+    }
+
+    selectOptionByValue(value) {
+        const elOptionToSelect = this.elList.querySelector(`li[data-value="${value}"]`);
+        if (!elOptionToSelect) {
+            console.log(`%c--- ERROR: option with value "${value}" not found => can NOT select`, 'color: orange;');
+            return;
+        }
+        this.selectOption(elOptionToSelect);
     }
 
     /**

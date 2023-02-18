@@ -92,12 +92,10 @@ initializeExampleActionsById();
 actionService.updateQueuedDraggables();
 actionService.updateQueuedActionsReadiness();
 
-// Initialize action-type options in "#action-setup-type" dropdown
-actionService.setActionSetupTypeOptions();
-
 //// TEST
 // document.getElementById('plan-actions').classList.add('hidden'); // hide "Plan Actions"
 // document.getElementById('toggle-action-types-label').click(); // hide action types
 // document.getElementById('toggle-compact-lists-label').click(); // show expanded lists
 // document.getElementById('add-action-button').click(); // show "Add Action" panel
 // document.getElementById('manage-lots-button').click(); // show "Manage Lots" panel
+// document.getElementById('add-lot-button').click(); // show "Add Lot" form @ "Manage Lots" panel

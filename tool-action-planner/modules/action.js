@@ -991,7 +991,7 @@ class Action {
 class ActionService {
     constructor() {
         this.actionsById = {};
-        this.elActionSetupType = document.getElementById('action-setup-type');
+        this.elActionSetupTypeDropdown = document.getElementById('action-setup-type-dropdown');
         this.actionSetupTypeDropdown = null;
     }
 
@@ -1071,15 +1071,8 @@ class ActionService {
         } else {
             closeConfigPanels();
             elAddActionButton.classList.add('active');
-            // FIRST remove any previously-injected max-width from the CSS, and make the action-setup panel visible
-            this.elActionSetupType.style.removeProperty('--action-types-max-width');
             elActionSetupPanel.classList.remove('hidden');
-            // THEN inject the max-width of the widest action-type list-item into CSS
-            let actionTypesMaxWidth = 0;
-            for (const elListItem of this.elActionSetupType.querySelectorAll('ul li')) {
-                actionTypesMaxWidth = Math.max(actionTypesMaxWidth, elListItem.getBoundingClientRect().width);
-            }
-            this.elActionSetupType.style.setProperty('--action-types-max-width', `${actionTypesMaxWidth}px`);
+            this.actionSetupTypeDropdown.updateOptionsMaxWidth();
         }
     }
 
@@ -1113,23 +1106,23 @@ class ActionService {
         });
     }
 
-    onSelectActionSetupTypeOption(actionType) {
-        //// TO BE IMPLEMENTED
-    }
-
     setActionSetupTypeOptions() {
         this.actionSetupTypeDropdown = new Dropdown(
-            this.elActionSetupType,
+            this.elActionSetupTypeDropdown,
             this.onSelectActionSetupTypeOption,
         );
-        const actionSetupTypeOptions = Object.keys(ACTION_TYPE).map(actionType => {
+        const optionsData = Object.keys(ACTION_TYPE).map(actionType => {
             return {
                 iconClass: ACTION_TYPE_DATA[actionType].ICON_CLASS,
                 text: ACTION_TYPE_DATA[actionType].TEXT,
                 value: actionType,
             };
         });
-        this.actionSetupTypeDropdown.setOptions(actionSetupTypeOptions);
+        this.actionSetupTypeDropdown.setOptions(optionsData);
+    }
+
+    onSelectActionSetupTypeOption(actionType) {
+        //// TO BE IMPLEMENTED
     }
 }
 
@@ -1160,6 +1153,9 @@ globalThis.onTransitionActionById = function(actionId) {
 globalThis.onToggleAddAction = function() {
     actionService.toggleAddAction();
 }
+
+// Initialize action-type options in "#action-setup-type-dropdown" dropdown
+actionService.setActionSetupTypeOptions();
 
 export {
     Action,

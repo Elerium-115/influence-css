@@ -1,3 +1,5 @@
+import {Dropdown} from './dropdown.js';
+
 const LOT_ASSET = {
     EXTRACTOR: 'EXTRACTOR',
     FACTORY: 'FACTORY',
@@ -85,7 +87,8 @@ class LotService {
         this.elAddLotButton = document.getElementById('add-lot-button');
         this.elAddLotInputId = document.getElementById('add-lot-input-id');
         this.elAddLotSelectAsset = document.getElementById('add-lot-select-asset');
-        this.elAddLotSelectState = document.getElementById('add-lot-select-state');
+        this.elAddLotStateDropdown = document.getElementById('add-lot-state-dropdown');
+        this.addLotStateDropdown = null;
         this.elAddLotError = document.getElementById('add-lot-error');
     }
 
@@ -120,57 +123,73 @@ class LotService {
     }
 
     populateAddLotSelectState() {
-        for (const [lotState, lotStateData] of Object.entries(LOT_STATE_DATA)) {
-            if (lotStateData.REQUIRES_ONGOING_ACTION) {
+        this.addLotStateDropdown = new Dropdown(this.elAddLotStateDropdown);
+        const optionsData = [];
+        for (const lotState of Object.keys(LOT_STATE)) {
+            if (LOT_STATE_DATA[lotState].REQUIRES_ONGOING_ACTION) {
                 /**
                  * Skip lot-states which require an ongoing action,
                  * b/c adding a new lot will NOT create any action.
                  */
                 continue;
             }
-            const elOption = document.createElement('option');
-            elOption.value = lotState;
-            elOption.textContent = lotStateData.TEXT_SHORT;
-            this.elAddLotSelectState.append(elOption);
-        }
+            optionsData.push({
+                text: LOT_STATE_DATA[lotState].TEXT_SHORT,
+                value: lotState,
+            });
+        };
+        this.addLotStateDropdown.setOptions(optionsData);
         // Select lot-state based on pre-selected lot-asset
-        this.updateAddLotSelectStateForLotAsset();
+        this.updateAddLotSelectStateForLotAsset(null, false);
     }
 
-    updateAddLotSelectStateForLotAsset(lotAsset = null) {
+    updateAddLotSelectStateForLotAsset(lotAsset = null, shouldUpdateMaxWidth = true) {
         // Hide all lot-state options by default
-        const elsLotStateOption = lotService.elAddLotSelectState.querySelectorAll('option');
+        const elsLotStateOption = this.elAddLotStateDropdown.querySelectorAll('ul li');
         for (const elLotStateOption of elsLotStateOption) {
             elLotStateOption.classList.add('hidden');
         }
         if (!lotAsset) {
             // Empty lot => auto-select lot-state "EMPTY", and make this option visible
-            lotService.elAddLotSelectState.value = LOT_STATE.EMPTY;
-            lotService.elAddLotSelectState.querySelector(`option[value="${LOT_STATE.EMPTY}"]`).classList.remove('hidden');
+            this.addLotStateDropdown.selectOptionByValue(LOT_STATE.EMPTY);
+            [...elsLotStateOption].find(elOption => elOption.dataset.value === LOT_STATE.EMPTY).classList.remove('hidden');
+            if (shouldUpdateMaxWidth) {
+                this.addLotStateDropdown.updateOptionsMaxWidth();
+            }
             return;
         }
+        if (LOT_ASSET_DATA[lotAsset].IS_BUILDING) {
+            // Building asset on lot => auto-select lot-state "BUILDING_COMPLETED"
+            this.addLotStateDropdown.selectOptionByValue(LOT_STATE.BUILDING_COMPLETED);
+        }
+        if (LOT_ASSET_DATA[lotAsset].IS_SHIP) {
+            // Ship asset on lot => auto-select lot-state "SHIP_LANDED"
+            this.addLotStateDropdown.selectOptionByValue(LOT_STATE.SHIP_LANDED);
+        }
         for (const elLotStateOption of elsLotStateOption) {
-            const lotState = elLotStateOption.value;
+            const lotState = elLotStateOption.dataset.value;
             if (LOT_ASSET_DATA[lotAsset].IS_BUILDING) {
-                // Building asset on lot => auto-select lot-state "BUILDING_COMPLETED", and make building-related lot-state options visible
-                lotService.elAddLotSelectState.value = LOT_STATE.BUILDING_COMPLETED;
+                // Building asset on lot => make all building-related lot-state options visible
                 if (LOT_STATE_DATA[lotState].IS_BUILDING_STATE) {
                     elLotStateOption.classList.remove('hidden');
                 }
             }
             if (LOT_ASSET_DATA[lotAsset].IS_SHIP) {
-                // Ship asset on lot => auto-select lot-state "SHIP_LANDED", and make ship-related lot-state options visible
-                lotService.elAddLotSelectState.value = LOT_STATE.SHIP_LANDED;
+                // Ship asset on lot => make all ship-related lot-state options visible
                 if (LOT_STATE_DATA[lotState].IS_SHIP_STATE) {
                     elLotStateOption.classList.remove('hidden');
                 }
             }
+        }
+        if (shouldUpdateMaxWidth) {
+            this.addLotStateDropdown.updateOptionsMaxWidth();
         }
     }
 
     showAddLotForm() {
         this.elAddLotWrapper.classList.add('active');
         this.elAddLotButton.classList.add('submit');
+        this.addLotStateDropdown.updateOptionsMaxWidth();
     }
 
     resetAddLotForm() {
@@ -207,7 +226,7 @@ class LotService {
             return;
         }
         const lotAsset = this.elAddLotSelectAsset.value;
-        const lotState = this.elAddLotSelectState.value;
+        const lotState = this.addLotStateDropdown.getSelectedVaue();
         const activeCrew = crewService.activeCrew;
         activeCrew.initializeLot(activeCrew.asteroidId, lotId, lotAsset, lotState);
         this.hideAddLotForm();

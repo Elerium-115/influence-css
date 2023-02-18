@@ -306,21 +306,22 @@ input[type=text]:focus {
 
 .dropdown-wrapper {
   --item-unit: 35px;
-  --min-width: calc(var(--action-types-max-width) + var(--item-unit));
+  --min-width: calc(var(--options-max-width) + var(--item-unit));
   min-height: var(--item-unit);
   min-width: var(--min-width);
 }
 .dropdown-wrapper ul {
-  -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(8px);
+          backdrop-filter: blur(8px);
   border: 1px solid var(--color-highlight);
   border-radius: 5px;
   position: absolute;
-  width: var(--min-width);
+  min-width: var(--min-width);
   z-index: 1;
 }
 .dropdown-wrapper ul li {
   align-items: center;
+  background-color: var(--color-white-faded-10);
   cursor: var(--cursor-url-active) 5 5, auto;
   display: flex;
   gap: 5px;
@@ -329,7 +330,7 @@ input[type=text]:focus {
   white-space: nowrap;
 }
 .dropdown-wrapper ul li:hover {
-  background-color: var(--color-white-faded-10);
+  background-color: var(--color-white-faded-20);
   color: white;
 }
 .dropdown-wrapper ul li:hover .icon-round {
@@ -337,9 +338,6 @@ input[type=text]:focus {
 }
 .dropdown-wrapper ul li:hover .icon-round::after {
   background-color: white;
-}
-.dropdown-wrapper ul li.active {
-  background-color: var(--color-white-faded-10);
 }
 .dropdown-wrapper ul li.active .icon-round::after {
   background-color: white;
@@ -397,6 +395,9 @@ input[type=text]:focus {
 }
 #plan-actions #manage-lots-panel #add-lot-wrapper.active #add-lot-button::before {
   content: "Submit Lot";
+}
+#plan-actions #manage-lots-panel #add-lot-wrapper:not(.active) #add-lot-form {
+  position: relative;
 }
 #plan-actions #manage-lots-panel #add-lot-wrapper #add-lot-form {
   transition: all 300ms ease 0s;

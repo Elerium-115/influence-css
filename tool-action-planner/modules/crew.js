@@ -243,6 +243,10 @@ class CrewService {
 
     getLotByIdForActiveCrewAndAsteroid(lotId) {
         const lots = crewService.getLotsForActiveCrewAndAsteroid();
+        if (!lots) {
+            // e.g. called during initializations of add-action dropdowns etc.
+            return null;
+        }
         return lots.find(lot => lot.id === lotId);
     }
 

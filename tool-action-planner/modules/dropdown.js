@@ -125,6 +125,14 @@ class Dropdown {
             this.elList.classList.remove('shrink');
         }, 100);
     }
+
+    setDropdownWarning(isWarning) {
+        if (isWarning) {
+            this.elWrapper.classList.add('warning');
+        } else {
+            this.elWrapper.classList.remove('warning');
+        }
+    }
 }
 
 export {Dropdown};

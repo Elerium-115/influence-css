@@ -89,6 +89,10 @@ body.embed {
   color: var(--color-highlight);
 }
 
+.text-ready {
+  color: var(--color-ready);
+}
+
 .text-warning {
   color: var(--color-warning);
 }
@@ -324,6 +328,9 @@ input[type=text]:focus {
 .dropdown-wrapper.single-option ul::after {
   content: unset !important;
 }
+.dropdown-wrapper.warning ul:not(.hover)::after {
+  background-color: var(--color-warning);
+}
 .dropdown-wrapper ul {
   -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
@@ -400,14 +407,18 @@ input[type=text]:focus {
   position: relative;
   z-index: 2;
 }
-#plan-actions #add-action-panel .header {
+#plan-actions #add-action-panel .flex-row {
   display: flex;
   gap: 25px;
-  line-height: 35px;
+  min-height: 35px;
 }
-#plan-actions #add-action-panel .header .header-cell {
+#plan-actions #add-action-panel .flex-row .flex-row-cell {
+  align-items: center;
   display: flex;
   gap: 10px;
+}
+#plan-actions #add-action-panel .add-action-requirement:not(:last-child)::after {
+  content: ",";
 }
 #plan-actions #manage-lots-panel #add-lot-wrapper {
   display: flex;

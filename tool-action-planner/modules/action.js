@@ -8,6 +8,7 @@ import {
 import {leaderLineConnectElements} from './leader-line-utils.js';
 import {CREW_INVOLVEMENT} from './crew.js';
 import {
+    LOT_ASSET,
     LOT_STATE,
     LOT_STATE_DATA,
 } from './lot.js';
@@ -32,11 +33,39 @@ const ACTION_TYPE = {
     TRAVEL: 'TRAVEL',
 };
 
+const REQUIREMENT = {
+    ASSET_WITH_SHIP: 'ASSET_WITH_SHIP', // asset w/ ship = landed ship / Spaceport with docked ship
+    ASSET_WITH_STORAGE: 'ASSET_WITH_STORAGE', // asset w/ storage = Warehouse / landed ship / Spaceport with docked ship
+    ASTEROID: 'ASTEROID',
+    BUILDING_EXTRACTOR: 'BUILDING_EXTRACTOR',
+    BUILDING_MATCHING_ACTION_SUBJECT: 'BUILDING_MATCHING_ACTION_SUBJECT', // re: Deconstruct
+    BUILDING_REFINERY: 'BUILDING_REFINERY',
+    CREW_FOR_FULL_DURATION: 'CREW_FOR_FULL_DURATION', // re: Core Sample
+    CREW_IN_ORBIT: 'CREW_IN_ORBIT', // re: Land + Travel
+    CREW_LANDED: 'CREW_LANDED', // re: Launch + all actions-on-lot
+    EMPTY_LOT: 'EMPTY_LOT', // re: Construct
+};
+
+const REQUIREMENT_TEXT = {
+    ASSET_WITH_SHIP: 'Ship',
+    ASSET_WITH_STORAGE: 'Storage',
+    ASTEROID: 'Asteroid',
+    BUILDING_EXTRACTOR: 'Extractor',
+    BUILDING_MATCHING_ACTION_SUBJECT: 'Matching Building',
+    BUILDING_REFINERY: 'Refinery',
+    CREW_FOR_FULL_DURATION: 'Crew Required for Duration',
+    CREW_IN_ORBIT: 'Crew in Orbit',
+    CREW_LANDED: 'Crew Landed',
+    EMPTY_LOT: 'Empty Lot',
+};
+
 const ACTION_TYPE_DATA = {
     CONSTRUCT: {
         ICON_CLASS: 'icon-construct',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.EMPTY_LOT],
+        REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 15 * 1000,
         TEXT: 'Construct',
         TEXT_ING: 'Constructing',
@@ -45,6 +74,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-core-sample',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: false,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.CREW_FOR_FULL_DURATION],
+        REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
         TEXT: 'Core Sample',
         TEXT_ING: 'Core Sampling',
@@ -53,6 +84,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-deconstruct',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING_ACTION_SUBJECT],
+        REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 15 * 1000,
         TEXT: 'Deconstruct',
         TEXT_ING: 'Deconstructing',
@@ -61,6 +94,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-yield',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_EXTRACTOR],
+        REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 5 * 1000,
         TEXT: 'Extract',
         TEXT_ING: 'Extracting',
@@ -69,6 +104,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ship-down',
         IS_ACTION_ON_LOT: true, // WARNING: "Land" actions will use "sourceId" (NOT "destinationId") as the lot ID to land at
         IS_EXCLUSIVE_PER_LOT: true,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.EMPTY_LOT],
+        REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 5 * 1000,
         TEXT: 'Land', // Land from orbit
         TEXT_ING: 'Landing', // Landing from orbit
@@ -77,6 +114,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ship-up',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.ASSET_WITH_SHIP],
+        REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 5 * 1000,
         TEXT: 'Launch', // Launch to orbit
         TEXT_ING: 'Launching', // Launching to orbit
@@ -85,6 +124,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ready',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_REFINERY],
+        REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 5 * 1000,
         TEXT: 'Refine',
         TEXT_ING: 'Refining',
@@ -93,6 +134,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-trade',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: false,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.ASSET_WITH_STORAGE],
+        REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 0, // Crew presence not required for action "Transfer" => no cooldown
         TEXT: 'Transfer',
         TEXT_ING: 'Transfering',
@@ -101,6 +144,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ship-right',
         IS_ACTION_ON_LOT: false, // "Travel" is currently the only action whose source ID is not a lot ID
         IS_EXCLUSIVE_PER_LOT: true,
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.ASTEROID],
+        REQUIRES_AT_DESTINATION: [REQUIREMENT.ASTEROID],
         STARTUP_DURATION: 5 * 1000,
         TEXT: 'Travel',
         TEXT_ING: 'Traveling',
@@ -991,10 +1036,16 @@ class Action {
 class ActionService {
     constructor() {
         this.actionsById = {};
+        this.elAddActionRequiresSource = document.getElementById('add-action-requires-source');
+        this.elAddActionRequiresDestination = document.getElementById('add-action-requires-destination');
         this.elAddActionTypeDropdown = document.getElementById('add-action-type-dropdown');
         this.addActionTypeDropdown = null;
         this.elAddActionLotDropdown = document.getElementById('add-action-lot-dropdown');
         this.addActionLotDropdown = null;
+        this.elAddActionDestinationLotDropdown = document.getElementById('add-action-destination-lot-dropdown');
+        this.addActionDestinationLotDropdown = null; //// TO BE initialized
+        this.elAddActionDestinationAsteroidDropdown = document.getElementById('add-action-destination-asteroid-dropdown');
+        this.addActionDestinationAsteroidDropdown = null; //// TO BE initialized
     }
 
     getActionForListItem(elListItem) {
@@ -1075,7 +1126,7 @@ class ActionService {
             elAddActionButton.classList.add('active');
             elAddActionPanel.classList.remove('hidden');
             this.addActionTypeDropdown.updateOptionsMaxWidth();
-            this.updateAddActionLotDropdown();
+            this.updateAddActionDetails();
         }
     }
 
@@ -1125,20 +1176,76 @@ class ActionService {
     }
 
     onSelectAddActionTypeOption(actionType) {
-        //// TO BE IMPLEMENTED
-        this.updateAddActionLotDropdown();
+        // Update requires at source
+        this.elAddActionRequiresSource.textContent = '';
+        for (const requirement of ACTION_TYPE_DATA[actionType].REQUIRES_AT_SOURCE) {
+            const elRequirementHtml = /*html*/ `
+                <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_TEXT[requirement]}</span>
+            `;
+            this.elAddActionRequiresSource.append(createElementFromHtml(elRequirementHtml));
+        }
+        // Update requires at destination
+        const elsRequiresDestination = document.querySelectorAll('.requires-destination');
+        const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
+        this.elAddActionRequiresDestination.textContent = '';
+        if (requiresAtDesination.length) {
+            elsRequiresDestination.forEach(el => el.classList.remove('hidden'));
+            for (const requirement of requiresAtDesination) {
+                const elRequirementHtml = /*html*/ `
+                    <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_TEXT[requirement]}</span>
+                `;
+                this.elAddActionRequiresDestination.append(createElementFromHtml(elRequirementHtml));
+            }
+        } else {
+            // Hide requires at destination
+            elsRequiresDestination.forEach(el => el.classList.add('hidden'));
+        }
+        // Update other details
+        this.updateAddActionDetails();
     }
 
     initializeAddActionLotDropdown() {
         this.addActionLotDropdown = new Dropdown(
             this.elAddActionLotDropdown,
+            this.onSelectAddActionLotOption.bind(this),
         );
-        this.updateAddActionLotDropdown();
     }
 
-    updateAddActionLotDropdown() {
+    /**
+     * Update details in add-action panel, based on the currently selected action-type:
+     * - source-lot + destination-lot dropdowns (if visible)
+     * - destination-asteroid dropdown (if visible)
+     */
+    updateAddActionDetails() {
         const actionType = this.addActionTypeDropdown.getSelectedVaue();
-        if (ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT) {
+        const isActionAtLot = ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT;
+        const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
+        /**
+         * Show all dropdowns by default.
+         * NOT hiding them by default, to avoid dropdown-width flicker, as much as possible.
+         */
+        this.elAddActionLotDropdown.parentElement.classList.remove('hidden');
+        this.elAddActionDestinationLotDropdown.parentElement.classList.remove('hidden');
+        this.elAddActionDestinationAsteroidDropdown.parentElement.classList.remove('hidden');
+        const elDestinationLabel = document.getElementById('add-action-destination-label');
+        if (requiresAtDesination.length) {
+            // Show destination label
+            elDestinationLabel.classList.remove('hidden');
+            if (isActionAtLot) {
+                // Hide destination asteroid
+                this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
+            } else {
+                // Hide destination lot
+                this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
+            }
+        } else {
+            // Hide destination label + lot + asteroid
+            elDestinationLabel.classList.add('hidden');
+            this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
+            this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
+        }
+        if (isActionAtLot) {
+            // Action on lot
             const optionsData = [];
             const lots = crewService.getLotsForActiveCrewAndAsteroid() || [];
             for (const lot of lots) {
@@ -1149,8 +1256,74 @@ class ActionService {
             }
             this.addActionLotDropdown.setOptions(optionsData);
             this.addActionLotDropdown.updateOptionsMaxWidth();
+            // Handle pre-selected lot ID
+            this.onSelectAddActionLotOption(this.addActionLotDropdown.getSelectedVaue());
         } else {
-            //// TO DO: hide dropdown, show "N/A (action not on lot)"?
+            // Hide source lot (destination lot already hidden, at this point)
+            this.elAddActionLotDropdown.parentElement.classList.add('hidden');
+        }
+    }
+
+    onSelectAddActionLotOption(lotId) {
+        let lotSource = null;
+        if (lotId) {
+            lotId = Number(lotId);
+            lotSource = crewService.getLotByIdForActiveCrewAndAsteroid(lotId);
+        }
+        // Clear warnings
+        this.addActionLotDropdown.setDropdownWarning(false);
+        // Validate requires at source
+        for (const elRequirement of this.elAddActionRequiresSource.querySelectorAll('.add-action-requirement')) {
+            const requirement = elRequirement.dataset.value;
+            // Clear SOURCE-LOT-RELATED status for this requirement
+            this.setAddActionLotRequirementStatus(elRequirement, false, false);
+            switch (requirement) {
+                case REQUIREMENT.ASSET_WITH_SHIP:
+                    if (lotSource && ([LOT_ASSET.LIGHT_TRANSPORT, LOT_ASSET.SPACEPORT].includes(lotSource.asset))) {
+                        // Valid
+                        this.setAddActionLotRequirementStatus(elRequirement, true, false);
+                    } else {
+                        // Invalid
+                        this.setAddActionLotRequirementStatus(elRequirement, false, true);
+                    }
+                    break;
+                case REQUIREMENT.BUILDING_EXTRACTOR:
+                    if (lotSource && lotSource.asset === LOT_ASSET.EXTRACTOR) {
+                        // Valid
+                        this.setAddActionLotRequirementStatus(elRequirement, true, false);
+                    } else {
+                        // Invalid
+                        this.setAddActionLotRequirementStatus(elRequirement, false, true);
+                    }
+                    break;
+                case REQUIREMENT.EMPTY_LOT:
+                    if (lotSource && lotSource.asset) {
+                        // Invalid
+                        this.setAddActionLotRequirementStatus(elRequirement, false, true);
+                    } else {
+                        // Valid
+                        this.setAddActionLotRequirementStatus(elRequirement, true, false);
+                    }
+                    break;
+                //// ...
+            }
+        }
+        // Validate requires at destination
+        //// ...
+    }
+
+    setAddActionLotRequirementStatus(elRequirement, isReady, isWarning) {
+        if (isReady) {
+            elRequirement.classList.add('text-ready');
+        } else {
+            elRequirement.classList.remove('text-ready');
+        }
+        if (isWarning) {
+            elRequirement.classList.add('text-warning');
+            this.addActionLotDropdown.setDropdownWarning(true);
+        } else {
+            elRequirement.classList.remove('text-warning');
+            this.addActionLotDropdown.setDropdownWarning(false);
         }
     }
 }
@@ -1188,6 +1361,9 @@ actionService.initializeAddActionTypeDropdown();
 
 // Initialize add-action-lot dropdown
 actionService.initializeAddActionLotDropdown();
+
+// Update add-action-panel after all dropdowns initialized, using the pre-selected action type
+actionService.onSelectAddActionTypeOption(actionService.addActionTypeDropdown.getSelectedVaue());
 
 export {
     Action,

@@ -48,6 +48,10 @@ body {
     color: var(--color-highlight);
 }
 
+.text-ready {
+    color: var(--color-ready);
+}
+
 .text-warning {
     color: var(--color-warning);
 }
@@ -318,6 +322,14 @@ input[type='text'] {
         }
     }
 
+    &.warning {
+        ul:not(.hover) {
+            &::after {
+                background-color: var(--color-warning);
+            }
+        }
+    }
+
     ul {
         backdrop-filter: blur(8px);
         font-size: 14px;
@@ -420,15 +432,20 @@ input[type='text'] {
 
     // "Add Action" button toggles this panel
     #add-action-panel {
-        .header {
+        .flex-row {
             display: flex;
             gap: 25px;
-            line-height: 35px;
+            min-height: 35px;
 
-            .header-cell {
+            .flex-row-cell {
+                align-items: center;
                 display: flex;
                 gap: 10px;
             }
+        }
+
+        .add-action-requirement:not(:last-child)::after {
+            content: ',';
         }
     }
 

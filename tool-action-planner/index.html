@@ -56,29 +56,40 @@
                 </div>
                 <div class="config-panels">
                     <div id="add-action-panel" class="config-panel hidden">
-                        <div class="header">
-                            <div class="header-cell">
+                        <div class="flex-row">
+                            <div class="flex-row-cell">
                                 <div id="add-action-type-dropdown" class="dropdown-wrapper"></div>
                             </div>
-                            <div class="header-cell">Location:</div>
-                            <div class="header-cell">
+                            <div class="flex-row-cell text-highlight">Requires:</div>
+                            <div id="add-action-requires-source" class="flex-row-cell"></div>
+                            <div class="flex-row-cell text-highlight requires-destination">Requires at Destination:</div>
+                            <div id="add-action-requires-destination" class="flex-row-cell requires-destination"></div>
+                        </div>
+                        <div class="flex-row">
+                            <div class="flex-row-cell text-highlight">Where:</div>
+                            <div class="flex-row-cell">
                                 Asteroid
                                 <span class="active-asteroid-id"></span>
                                 <span class="active-asteroid-name hover-detail"></span>
                             </div>
-                            <div class="header-cell">
-                                Lot
+                            <div class="flex-row-cell">
+                                <div>Lot</div>
                                 <div id="add-action-lot-dropdown" class="dropdown-wrapper"></div>
                             </div>
+                            <div id="add-action-destination-label" class="flex-row-cell text-highlight">Destination:</div>
+                            <div class="flex-row-cell">
+                                <div>Lot</div>
+                                <div id="add-action-destination-lot-dropdown" class="dropdown-wrapper"></div>
+                            </div>
+                            <div class="flex-row-cell">
+                                <div>Asteroid</div>
+                                <div id="add-action-destination-asteroid-dropdown" class="dropdown-wrapper"></div>
+                            </div>
                         </div>
-                        <!-- <div>
-                            Source Lot ID: [dropdown] &raquo; SOURCE_ITEM [auto-complete based on action-type]<br>
-                            &raquo; (dropdown values = only lots that contain an asset compatible with the SOURCE of action-type)<br>
-                            &raquo; (dropdown value "Plan new lot" => replace dropdown w/ text-input, only for actions compatible w/ empty lots)<br>
-                            <br>
-                            Destination Lot ID: [dropdown] &raquo; DESTINATION_ITEM [auto-complete based on action-type]<br>
-                            &raquo; (dropdown values = only lots that contain an asset compatible with the DESTINATION of action-type)<br>
-                        </div> -->
+                        <div class="flex-row">
+                            <div class="flex-row-cell text-highlight">What:</div>
+                            <div class="flex-row-cell">...</div>
+                        </div>
                     </div>
                     <div id="manage-lots-panel" class="config-panel hidden">
                         <div id="add-lot-wrapper">

@@ -38,25 +38,67 @@ const REQUIREMENT = {
     ASSET_WITH_STORAGE: 'ASSET_WITH_STORAGE', // asset w/ storage = Warehouse / landed ship / Spaceport with docked ship
     ASTEROID: 'ASTEROID',
     BUILDING_EXTRACTOR: 'BUILDING_EXTRACTOR',
-    BUILDING_MATCHING_ACTION_SUBJECT: 'BUILDING_MATCHING_ACTION_SUBJECT', // re: Deconstruct
+    BUILDING_MATCHING: 'BUILDING_MATCHING', // re: Deconstruct
+    BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT: 'BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT', // re: Construct
     BUILDING_REFINERY: 'BUILDING_REFINERY',
     CREW_FOR_FULL_DURATION: 'CREW_FOR_FULL_DURATION', // re: Core Sample
     CREW_IN_ORBIT: 'CREW_IN_ORBIT', // re: Land + Travel
     CREW_LANDED: 'CREW_LANDED', // re: Launch + all actions-on-lot
-    EMPTY_LOT: 'EMPTY_LOT', // re: Construct
+    EMPTY_LOT: 'EMPTY_LOT', // re: Land
 };
 
-const REQUIREMENT_TEXT = {
-    ASSET_WITH_SHIP: 'Ship',
-    ASSET_WITH_STORAGE: 'Storage',
-    ASTEROID: 'Asteroid',
-    BUILDING_EXTRACTOR: 'Extractor',
-    BUILDING_MATCHING_ACTION_SUBJECT: 'Matching Building',
-    BUILDING_REFINERY: 'Refinery',
-    CREW_FOR_FULL_DURATION: 'Crew Required for Duration',
-    CREW_IN_ORBIT: 'Crew in Orbit',
-    CREW_LANDED: 'Crew Landed',
-    EMPTY_LOT: 'Empty Lot',
+const REQUIREMENT_DATA = {
+    ASSET_WITH_SHIP: {
+        LOT_RELATED: true,
+        TEXT: 'Ship',
+    },
+    ASSET_WITH_STORAGE: {
+        LOT_RELATED: true,
+        TEXT: 'Storage',
+    },
+    ASTEROID: {
+        LOT_RELATED: false,
+        TEXT: 'Asteroid',
+    },
+    BUILDING_EXTRACTOR: {
+        LOT_RELATED: true,
+        TEXT: 'Extractor',
+    },
+    BUILDING_MATCHING: {
+        LOT_RELATED: true,
+        TEXT: 'Matching Building',
+    },
+    BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT: {
+        LOT_RELATED: true,
+        TEXT: 'Matching Building Planned / Empty Lot',
+    },
+    BUILDING_REFINERY: {
+        LOT_RELATED: true,
+        TEXT: 'Refinery',
+    },
+    CREW_FOR_FULL_DURATION: {
+        LOT_RELATED: false,
+        TEXT: 'Crew Required for Duration',
+    },
+    CREW_IN_ORBIT: {
+        LOT_RELATED: false,
+        TEXT: 'Crew in Orbit',
+    },
+    CREW_LANDED: {
+        LOT_RELATED: false,
+        TEXT: 'Crew Landed',
+    },
+    EMPTY_LOT: {
+        LOT_RELATED: true,
+        TEXT: 'Empty Lot',
+    },
+};
+
+const ACTION_SUBJECT_TYPE = {
+    BUILDING: 'BUILDING',
+    RESOURCE: 'RESOURCE',
+    PRODUCT: 'PRODUCT', // including resources
+    SHIP: 'SHIP',
 };
 
 const ACTION_TYPE_DATA = {
@@ -64,9 +106,10 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-construct',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
-        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.EMPTY_LOT],
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 15 * 1000,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.BUILDING,
         TEXT: 'Construct',
         TEXT_ING: 'Constructing',
     },
@@ -77,6 +120,7 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.CREW_FOR_FULL_DURATION],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.RESOURCE,
         TEXT: 'Core Sample',
         TEXT_ING: 'Core Sampling',
     },
@@ -84,9 +128,10 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-deconstruct',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
-        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING_ACTION_SUBJECT],
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 15 * 1000,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.BUILDING,
         TEXT: 'Deconstruct',
         TEXT_ING: 'Deconstructing',
     },
@@ -97,6 +142,7 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_EXTRACTOR],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 5 * 1000,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.RESOURCE,
         TEXT: 'Extract',
         TEXT_ING: 'Extracting',
     },
@@ -107,6 +153,7 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.EMPTY_LOT],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 5 * 1000,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Land', // Land from orbit
         TEXT_ING: 'Landing', // Landing from orbit
     },
@@ -117,6 +164,7 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.ASSET_WITH_SHIP],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 5 * 1000,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Launch', // Launch to orbit
         TEXT_ING: 'Launching', // Launching to orbit
     },
@@ -127,6 +175,7 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_REFINERY],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 5 * 1000,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.RESOURCE,
         TEXT: 'Refine',
         TEXT_ING: 'Refining',
     },
@@ -137,16 +186,18 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.ASSET_WITH_STORAGE],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 0, // Crew presence not required for action "Transfer" => no cooldown
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.PRODUCT,
         TEXT: 'Transfer',
         TEXT_ING: 'Transfering',
     },
     TRAVEL: {
         ICON_CLASS: 'icon-ship-right',
         IS_ACTION_ON_LOT: false, // "Travel" is currently the only action whose source ID is not a lot ID
-        IS_EXCLUSIVE_PER_LOT: true,
+        IS_EXCLUSIVE_PER_LOT: false,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.ASTEROID],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASTEROID],
         STARTUP_DURATION: 5 * 1000,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Travel',
         TEXT_ING: 'Traveling',
     },
@@ -949,7 +1000,7 @@ class Action {
             }
             const elLotState = elLotsListItem.querySelector('.lot-state');
             elLotState.dataset.stateClass = actionLot.getLotStateClass();
-            elLotState.textContent = LOT_STATE_DATA[newLotStateData.state].TEXT_SHORT;
+            elLotState.textContent = LOT_STATE_DATA[newLotStateData.state].TEXT;
         }
         // Update cell for this specific action, from within ".lot-actions"
         const elLotActions = elLotsListItem.querySelector('.lot-actions');
@@ -1006,7 +1057,7 @@ class Action {
                         actionLot.state = LOT_STATE.BUILDING_COMPLETED;
                         const elLotState = elLotsListItem.querySelector('.lot-state');
                         elLotState.dataset.stateClass = actionLot.getLotStateClass();
-                        elLotState.textContent = LOT_STATE_DATA[actionLot.state].TEXT_SHORT;
+                        elLotState.textContent = LOT_STATE_DATA[actionLot.state].TEXT;
                         break;
                 }
             }
@@ -1043,9 +1094,9 @@ class ActionService {
         this.elAddActionLotDropdown = document.getElementById('add-action-lot-dropdown');
         this.addActionLotDropdown = null;
         this.elAddActionDestinationLotDropdown = document.getElementById('add-action-destination-lot-dropdown');
-        this.addActionDestinationLotDropdown = null; //// TO BE initialized
+        this.addActionDestinationLotDropdown = null;
         this.elAddActionDestinationAsteroidDropdown = document.getElementById('add-action-destination-asteroid-dropdown');
-        this.addActionDestinationAsteroidDropdown = null; //// TO BE initialized
+        this.addActionDestinationAsteroidDropdown = null;
     }
 
     getActionForListItem(elListItem) {
@@ -1175,12 +1226,44 @@ class ActionService {
         this.addActionTypeDropdown.setOptions(optionsData);
     }
 
+    initializeAddActionLotDropdowns() {
+        this.addActionLotDropdown = new Dropdown(
+            this.elAddActionLotDropdown,
+            this.onSelectAddActionLotOption.bind(this),
+        );
+        this.addActionDestinationLotDropdown = new Dropdown(
+            this.elAddActionDestinationLotDropdown,
+            this.onSelectAddActionDestinationLotOption.bind(this),
+        );
+    }
+
+    initializeAddActionDestinationAsteroidDropdowns() {
+        //// TO DO: initialize "addActionDestinationAsteroidDropdown"
+    }
+
+    getLotOptionsData() {
+        const optionsData = [];
+        const lots = crewService.getLotsForActiveCrewAndAsteroid() || [];
+        for (const lot of lots) {
+            let lotAssetText = '';
+            if (lot.assetName) {
+                lotAssetText = ` (${lot.assetName})`;
+            }
+            optionsData.push({
+                text: `${lot.id.toLocaleString()}${lotAssetText}`,
+                textSecondary: LOT_STATE_DATA[lot.state].TEXT,
+                value: lot.id,
+            });
+        }
+        return optionsData;
+    }
+
     onSelectAddActionTypeOption(actionType) {
         // Update requires at source
         this.elAddActionRequiresSource.textContent = '';
         for (const requirement of ACTION_TYPE_DATA[actionType].REQUIRES_AT_SOURCE) {
             const elRequirementHtml = /*html*/ `
-                <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_TEXT[requirement]}</span>
+                <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_DATA[requirement].TEXT}</span>
             `;
             this.elAddActionRequiresSource.append(createElementFromHtml(elRequirementHtml));
         }
@@ -1192,7 +1275,7 @@ class ActionService {
             elsRequiresDestination.forEach(el => el.classList.remove('hidden'));
             for (const requirement of requiresAtDesination) {
                 const elRequirementHtml = /*html*/ `
-                    <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_TEXT[requirement]}</span>
+                    <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_DATA[requirement].TEXT}</span>
                 `;
                 this.elAddActionRequiresDestination.append(createElementFromHtml(elRequirementHtml));
             }
@@ -1204,20 +1287,13 @@ class ActionService {
         this.updateAddActionDetails();
     }
 
-    initializeAddActionLotDropdown() {
-        this.addActionLotDropdown = new Dropdown(
-            this.elAddActionLotDropdown,
-            this.onSelectAddActionLotOption.bind(this),
-        );
-    }
-
     /**
      * Update details in add-action panel, based on the currently selected action-type:
      * - source-lot + destination-lot dropdowns (if visible)
      * - destination-asteroid dropdown (if visible)
      */
     updateAddActionDetails() {
-        const actionType = this.addActionTypeDropdown.getSelectedVaue();
+        const actionType = this.addActionTypeDropdown.getSelectedValue();
         const isActionAtLot = ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT;
         const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
         /**
@@ -1227,10 +1303,10 @@ class ActionService {
         this.elAddActionLotDropdown.parentElement.classList.remove('hidden');
         this.elAddActionDestinationLotDropdown.parentElement.classList.remove('hidden');
         this.elAddActionDestinationAsteroidDropdown.parentElement.classList.remove('hidden');
-        const elDestinationLabel = document.getElementById('add-action-destination-label');
+        const elDestinationRow = document.getElementById('add-action-destination-row');
         if (requiresAtDesination.length) {
             // Show destination label
-            elDestinationLabel.classList.remove('hidden');
+            elDestinationRow.classList.remove('hidden');
             if (isActionAtLot) {
                 // Hide destination asteroid
                 this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
@@ -1240,90 +1316,126 @@ class ActionService {
             }
         } else {
             // Hide destination label + lot + asteroid
-            elDestinationLabel.classList.add('hidden');
+            elDestinationRow.classList.add('hidden');
             this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
             this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
         }
         if (isActionAtLot) {
             // Action on lot
-            const optionsData = [];
-            const lots = crewService.getLotsForActiveCrewAndAsteroid() || [];
-            for (const lot of lots) {
-                optionsData.push({
-                    text: `${lot.id.toLocaleString()} (${lot.assetName || 'Empty Lot'})`,
-                    value: lot.id,
-                });
-            }
-            this.addActionLotDropdown.setOptions(optionsData);
+            this.addActionLotDropdown.setOptions(this.getLotOptionsData());
             this.addActionLotDropdown.updateOptionsMaxWidth();
+            this.addActionDestinationLotDropdown.setOptions(this.getLotOptionsData());
+            this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
             // Handle pre-selected lot ID
-            this.onSelectAddActionLotOption(this.addActionLotDropdown.getSelectedVaue());
+            this.onSelectAddActionLotOption(this.addActionLotDropdown.getSelectedValue());
+            this.onSelectAddActionDestinationLotOption(this.addActionDestinationLotDropdown.getSelectedValue());
         } else {
             // Hide source lot (destination lot already hidden, at this point)
             this.elAddActionLotDropdown.parentElement.classList.add('hidden');
         }
     }
 
-    onSelectAddActionLotOption(lotId) {
-        let lotSource = null;
+    onSelectAddActionLotOption(lotId, isDestinationLot = false) {
+        if (!lotId) {
+            // Add-action-lot dropdown not yet initialized
+            return;
+        }
+        let lot = null;
         if (lotId) {
             lotId = Number(lotId);
-            lotSource = crewService.getLotByIdForActiveCrewAndAsteroid(lotId);
+            lot = crewService.getLotByIdForActiveCrewAndAsteroid(lotId);
         }
-        // Clear warnings
-        this.addActionLotDropdown.setDropdownWarning(false);
-        // Validate requires at source
-        for (const elRequirement of this.elAddActionRequiresSource.querySelectorAll('.add-action-requirement')) {
+        const lotDropdown = isDestinationLot ? this.addActionDestinationLotDropdown : this.addActionLotDropdown;
+        // Clear warning from lot-dropdown (if any)
+        lotDropdown.setDropdownWarning(false);
+        const isEmptyLot = !lot.asset;
+        // If action-subject is a building, and lot-asset also a building => check if matching building
+        let isBuildingMatching = false;
+        const actionType = this.addActionTypeDropdown.getSelectedValue();
+        if (ACTION_TYPE_DATA[actionType].SUBJECT_TYPE === ACTION_SUBJECT_TYPE.BUILDING) {
+            // Action-subject is a building
+            const actionSubject = LOT_ASSET.FARM; //// TEST
+            isBuildingMatching = actionSubject === lot.asset;
+        }
+        // Validate each source / destination requirement
+        const elRequirementsContainer = isDestinationLot ? this.elAddActionRequiresDestination : this.elAddActionRequiresSource;
+        for (const elRequirement of elRequirementsContainer.querySelectorAll('.add-action-requirement')) {
             const requirement = elRequirement.dataset.value;
-            // Clear SOURCE-LOT-RELATED status for this requirement
-            this.setAddActionLotRequirementStatus(elRequirement, false, false);
+            // Parse only lot-related requirements
+            if (!REQUIREMENT_DATA[requirement].LOT_RELATED) {
+                continue;
+            }
+            let isValid = false;
+            // Clear source-lot-related status for this requirement
+            this.setAddActionLotRequirementStatus(elRequirement, false, false, isDestinationLot);
             switch (requirement) {
                 case REQUIREMENT.ASSET_WITH_SHIP:
-                    if (lotSource && ([LOT_ASSET.LIGHT_TRANSPORT, LOT_ASSET.SPACEPORT].includes(lotSource.asset))) {
-                        // Valid
-                        this.setAddActionLotRequirementStatus(elRequirement, true, false);
-                    } else {
-                        // Invalid
-                        this.setAddActionLotRequirementStatus(elRequirement, false, true);
+                    // Landed ship / Spaceport with docked ship
+                    if ([LOT_ASSET.LIGHT_TRANSPORT, LOT_ASSET.SPACEPORT].includes(lot.asset)) {
+                        isValid = true;
+                    }
+                    break;
+                case REQUIREMENT.ASSET_WITH_STORAGE:
+                    // Warehouse / landed ship / Spaceport with docked ship
+                    if ([LOT_ASSET.WAREHOUSE, LOT_ASSET.LIGHT_TRANSPORT, LOT_ASSET.SPACEPORT].includes(lot.asset)) {
+                        isValid = true;
                     }
                     break;
                 case REQUIREMENT.BUILDING_EXTRACTOR:
-                    if (lotSource && lotSource.asset === LOT_ASSET.EXTRACTOR) {
-                        // Valid
-                        this.setAddActionLotRequirementStatus(elRequirement, true, false);
-                    } else {
-                        // Invalid
-                        this.setAddActionLotRequirementStatus(elRequirement, false, true);
+                    if (lot.asset === LOT_ASSET.EXTRACTOR) {
+                        isValid = true;
+                    }
+                    break;
+                case REQUIREMENT.BUILDING_MATCHING:
+                    if (isBuildingMatching) {
+                        isValid = true;
+                    }
+                    break;
+                case REQUIREMENT.BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT:
+                    const isBuildingMatchingPlanned = isBuildingMatching && lot.state === LOT_STATE.BUILDING_SITE_PLAN;
+                    if (isBuildingMatchingPlanned || isEmptyLot) {
+                        isValid = true;
+                    }
+                    break;
+                case REQUIREMENT.BUILDING_REFINERY:
+                    if (lot.asset === LOT_ASSET.REFINERY) {
+                        isValid = true;
                     }
                     break;
                 case REQUIREMENT.EMPTY_LOT:
-                    if (lotSource && lotSource.asset) {
-                        // Invalid
-                        this.setAddActionLotRequirementStatus(elRequirement, false, true);
-                    } else {
-                        // Valid
-                        this.setAddActionLotRequirementStatus(elRequirement, true, false);
+                    if (isEmptyLot) {
+                        isValid = true;
                     }
                     break;
                 //// ...
+            }
+            if (isValid) {
+                this.setAddActionLotRequirementStatus(elRequirement, true, false, isDestinationLot);
+            } else {
+                this.setAddActionLotRequirementStatus(elRequirement, false, true, isDestinationLot);
             }
         }
         // Validate requires at destination
         //// ...
     }
 
-    setAddActionLotRequirementStatus(elRequirement, isReady, isWarning) {
+    onSelectAddActionDestinationLotOption(lotId) {
+        this.onSelectAddActionLotOption(lotId, true);
+    }
+
+    setAddActionLotRequirementStatus(elRequirement, isReady, isWarning, isDestinationLot = false) {
         if (isReady) {
             elRequirement.classList.add('text-ready');
         } else {
             elRequirement.classList.remove('text-ready');
         }
+        const lotDropdown = isDestinationLot ? this.addActionDestinationLotDropdown : this.addActionLotDropdown;
         if (isWarning) {
             elRequirement.classList.add('text-warning');
-            this.addActionLotDropdown.setDropdownWarning(true);
+            lotDropdown.setDropdownWarning(true);
         } else {
             elRequirement.classList.remove('text-warning');
-            this.addActionLotDropdown.setDropdownWarning(false);
+            lotDropdown.setDropdownWarning(false);
         }
     }
 }
@@ -1359,11 +1471,14 @@ globalThis.onToggleAddAction = function() {
 // Initialize add-action-type dropdown
 actionService.initializeAddActionTypeDropdown();
 
-// Initialize add-action-lot dropdown
-actionService.initializeAddActionLotDropdown();
+// Initialize add-action-lot dropdowns (source + destination)
+actionService.initializeAddActionLotDropdowns();
+
+// Initialize add-action-destination-asteroid dropdown
+actionService.initializeAddActionDestinationAsteroidDropdowns();
 
 // Update add-action-panel after all dropdowns initialized, using the pre-selected action type
-actionService.onSelectAddActionTypeOption(actionService.addActionTypeDropdown.getSelectedVaue());
+actionService.onSelectAddActionTypeOption(actionService.addActionTypeDropdown.getSelectedValue());
 
 export {
     Action,

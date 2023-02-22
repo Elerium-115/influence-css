@@ -165,7 +165,7 @@ class Crew {
             <li id="lot_${lot.id}" data-id="${lot.id}">
                 <div class="lot-id">${lot.id.toLocaleString()}</div>
                 <div class="lot-asset">${lot.assetName}</div>
-                <div class="lot-state" data-state-class="${lot.getLotStateClass()}">${LOT_STATE_DATA[lot.state].TEXT_SHORT}</div>
+                <div class="lot-state" data-state-class="${lot.getLotStateClass()}">${LOT_STATE_DATA[lot.state].TEXT}</div>
                 <div class="lot-actions"></div>
                 <div class="lot-abandon" data-abandon-lot-id="Abandon Lot #${lot.id.toLocaleString()}" onclick="onAbandonLotId(${lot.id})"></div>
             </li>
@@ -243,10 +243,6 @@ class CrewService {
 
     getLotByIdForActiveCrewAndAsteroid(lotId) {
         const lots = crewService.getLotsForActiveCrewAndAsteroid();
-        if (!lots) {
-            // e.g. called during initializations of add-action dropdowns etc.
-            return null;
-        }
         return lots.find(lot => lot.id === lotId);
     }
 

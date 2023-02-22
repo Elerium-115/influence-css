@@ -17,7 +17,7 @@ class Dropdown {
         this.elWrapper.append(this.elList);
     }
 
-    getSelectedVaue() {
+    getSelectedValue() {
         return this.selectedValue;
     }
 
@@ -61,7 +61,14 @@ class Dropdown {
             if (optionData.iconClass) {
                 iconHtml = /*html*/ `<span class="icon-round ${optionData.iconClass}"></span>`;
             }
-            const optionHtml = /*html*/ `<li>${iconHtml}${optionData.text || optionData.value}</li>`;
+            const textHtml = /*html*/ `<span>${optionData.text || optionData.value}</span>`
+            const textSecondaryHtml = optionData.textSecondary ? /*html*/ `<div class="secondary">${optionData.textSecondary}</div>` : '';
+            const optionHtml = /*html*/ `
+                <li>
+                    <div>${iconHtml}${textHtml}</div>
+                    ${textSecondaryHtml}
+                </li>
+            `;
             const elOption = createElementFromHtml(optionHtml);
             if (Object.values(optionsData).indexOf(optionData) === 0) {
                 // First option => auto-select it

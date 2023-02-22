@@ -38,14 +38,14 @@ const LOT_STATE = {
 };
 
 const LOT_STATE_DATA = {
-    BUILDING_COMPLETED:             {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: false, TEXT_SHORT: 'Ready'},
-    BUILDING_SITE_PLAN:             {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: false, TEXT_SHORT: 'Planned'},
-    BUILDING_UNDER_CONSTRUCTION:    {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: true, TEXT_SHORT: 'Under Construction'},
-    BUILDING_UNDER_DECONSTRUCTION:  {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: true, TEXT_SHORT: 'Under Deconstruction'},
-    EMPTY:                          {IS_BUILDING_STATE: false, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: false, TEXT_SHORT: 'Empty'},
-    SHIP_LANDED:                    {IS_BUILDING_STATE: false, IS_SHIP_STATE: true, REQUIRES_ONGOING_ACTION: false, TEXT_SHORT: 'Ship Landed'},
-    SHIP_LANDING:                   {IS_BUILDING_STATE: false, IS_SHIP_STATE: true, REQUIRES_ONGOING_ACTION: true, TEXT_SHORT: 'Ship Landing'},
-    SHIP_LAUNCHING:                 {IS_BUILDING_STATE: false, IS_SHIP_STATE: true, REQUIRES_ONGOING_ACTION: true, TEXT_SHORT: 'Ship Launching'},
+    BUILDING_COMPLETED:             {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: false, TEXT: 'Ready'},
+    BUILDING_SITE_PLAN:             {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: false, TEXT: 'Planned'},
+    BUILDING_UNDER_CONSTRUCTION:    {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: true, TEXT: 'Under Construction'},
+    BUILDING_UNDER_DECONSTRUCTION:  {IS_BUILDING_STATE: true, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: true, TEXT: 'Under Deconstruction'},
+    EMPTY:                          {IS_BUILDING_STATE: false, IS_SHIP_STATE: false, REQUIRES_ONGOING_ACTION: false, TEXT: 'Empty'},
+    SHIP_LANDED:                    {IS_BUILDING_STATE: false, IS_SHIP_STATE: true, REQUIRES_ONGOING_ACTION: false, TEXT: 'Ship Landed'},
+    SHIP_LANDING:                   {IS_BUILDING_STATE: false, IS_SHIP_STATE: true, REQUIRES_ONGOING_ACTION: true, TEXT: 'Ship Landing'},
+    SHIP_LAUNCHING:                 {IS_BUILDING_STATE: false, IS_SHIP_STATE: true, REQUIRES_ONGOING_ACTION: true, TEXT: 'Ship Launching'},
 };
 
 /**
@@ -110,7 +110,7 @@ class LotService {
                 continue;
             }
             optionsData.push({
-                text: LOT_STATE_DATA[lotState].TEXT_SHORT,
+                text: LOT_STATE_DATA[lotState].TEXT,
                 value: lotState,
             });
         };
@@ -178,7 +178,7 @@ class LotService {
         if (!lotAsset) {
             // Empty lot => single lot-state option "EMPTY" => auto-selected
             optionsData = [{
-                text: LOT_STATE_DATA[LOT_STATE.EMPTY].TEXT_SHORT,
+                text: LOT_STATE_DATA[LOT_STATE.EMPTY].TEXT,
                 value: LOT_STATE.EMPTY,
             }];
         } else {
@@ -250,8 +250,8 @@ class LotService {
             this.elAddLotError.classList.remove('hidden');
             return;
         }
-        const lotAsset = this.addLotAssetDropdown.getSelectedVaue();
-        const lotState = this.addLotStateDropdown.getSelectedVaue();
+        const lotAsset = this.addLotAssetDropdown.getSelectedValue();
+        const lotState = this.addLotStateDropdown.getSelectedValue();
         const activeCrew = crewService.activeCrew;
         activeCrew.initializeLot(activeCrew.asteroidId, lotId, lotAsset, lotState);
         this.hideAddLotForm();

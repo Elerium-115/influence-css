@@ -1,30 +1,23 @@
 import {Dropdown} from './dropdown.js';
+import {
+    BUILDING_NAMES,
+    SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT,
+} from './product.js'
 
-const LOT_ASSET = {
-    EXTRACTOR: 'EXTRACTOR',
-    FACTORY: 'FACTORY',
-    FARM: 'FARM',
-    HABITAT: 'HABITAT',
-    LIGHT_TRANSPORT: 'LIGHT_TRANSPORT',
-    MARKETPLACE: 'MARKETPLACE',
-    REFINERY: 'REFINERY',
-    SHIPYARD: 'SHIPYARD',
-    SPACEPORT: 'SPACEPORT',
-    WAREHOUSE: 'WAREHOUSE',
-};
+const LOT_ASSET_NAMES = BUILDING_NAMES.concat(SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT);
 
-const LOT_ASSET_DATA = {
-    EXTRACTOR:          {IS_BUILDING: true, IS_SHIP: false, NAME: 'Extractor'},
-    FACTORY:            {IS_BUILDING: true, IS_SHIP: false, NAME: 'Factory'},
-    FARM:               {IS_BUILDING: true, IS_SHIP: false, NAME: 'Farm'},
-    HABITAT:            {IS_BUILDING: true, IS_SHIP: false, NAME: 'Habitat'},
-    LIGHT_TRANSPORT:    {IS_BUILDING: false, IS_SHIP: true, NAME: 'Light Transport'},
-    MARKETPLACE:        {IS_BUILDING: true, IS_SHIP: false, NAME: 'Marketplace'},
-    REFINERY:           {IS_BUILDING: true, IS_SHIP: false, NAME: 'Refinery'},
-    SHIPYARD:           {IS_BUILDING: true, IS_SHIP: false, NAME: 'Shipyard'},
-    SPACEPORT:          {IS_BUILDING: true, IS_SHIP: false, NAME: 'Spaceport'},
-    WAREHOUSE:          {IS_BUILDING: true, IS_SHIP: false, NAME: 'Warehouse'},
-};
+const LOT_ASSET = {};
+
+const LOT_ASSET_DATA = {};
+
+for (const lotAssetName of LOT_ASSET_NAMES) {
+    LOT_ASSET[lotAssetName] = lotAssetName;
+    LOT_ASSET_DATA[lotAssetName] = {
+        IS_BUILDING: BUILDING_NAMES.includes(lotAssetName),
+        IS_SHIP: SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT.includes(lotAssetName),
+        NAME: lotAssetName,
+    };
+}
 
 const LOT_STATE = {
     BUILDING_COMPLETED: 'BUILDING_COMPLETED',

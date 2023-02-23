@@ -41,16 +41,16 @@ const REQUIREMENT = {
     BUILDING_MATCHING: 'BUILDING_MATCHING', // re: Deconstruct
     BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT: 'BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT', // re: Construct
     BUILDING_REFINERY: 'BUILDING_REFINERY',
+    BUILDING_SPACEPORT_OR_EMPTY_LOT: 'BUILDING_SPACEPORT_OR_EMPTY_LOT', // re: Land
     CREW_FOR_FULL_DURATION: 'CREW_FOR_FULL_DURATION', // re: Core Sample
     CREW_IN_ORBIT: 'CREW_IN_ORBIT', // re: Land + Travel
     CREW_LANDED: 'CREW_LANDED', // re: Launch + all actions-on-lot
-    EMPTY_LOT: 'EMPTY_LOT', // re: Land
 };
 
 const REQUIREMENT_DATA = {
     ASSET_WITH_SHIP: {
         LOT_RELATED: true,
-        TEXT: 'Ship',
+        TEXT: 'Ship Landed / Docked',
     },
     ASSET_WITH_STORAGE: {
         LOT_RELATED: true,
@@ -76,6 +76,10 @@ const REQUIREMENT_DATA = {
         LOT_RELATED: true,
         TEXT: 'Refinery',
     },
+    BUILDING_SPACEPORT_OR_EMPTY_LOT: {
+        LOT_RELATED: true,
+        TEXT: 'Spaceport / Empty Lot',
+    },
     CREW_FOR_FULL_DURATION: {
         LOT_RELATED: false,
         TEXT: 'Crew Required for Duration',
@@ -88,10 +92,6 @@ const REQUIREMENT_DATA = {
         LOT_RELATED: false,
         TEXT: 'Crew Landed',
     },
-    EMPTY_LOT: {
-        LOT_RELATED: true,
-        TEXT: 'Empty Lot',
-    },
 };
 
 const ACTION_SUBJECT_TYPE = {
@@ -101,11 +101,16 @@ const ACTION_SUBJECT_TYPE = {
     SHIP: 'SHIP',
 };
 
+const ACTION_PREFIX_SOURCE_DEFAULT = 'Where';
+const ACTION_PREFIX_SUBJECT_DEFAULT = 'What';
+
 const ACTION_TYPE_DATA = {
     CONSTRUCT: {
         ICON_CLASS: 'icon-construct',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        PREFIX_SOURCE: ACTION_PREFIX_SOURCE_DEFAULT,
+        PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 15 * 1000,
@@ -117,6 +122,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-core-sample',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: false,
+        PREFIX_SOURCE: ACTION_PREFIX_SOURCE_DEFAULT,
+        PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.CREW_FOR_FULL_DURATION],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
@@ -128,6 +135,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-deconstruct',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        PREFIX_SOURCE: ACTION_PREFIX_SOURCE_DEFAULT,
+        PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 15 * 1000,
@@ -139,6 +148,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-yield',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        PREFIX_SOURCE: ACTION_PREFIX_SOURCE_DEFAULT,
+        PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_EXTRACTOR],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 5 * 1000,
@@ -150,7 +161,9 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ship-down',
         IS_ACTION_ON_LOT: true, // WARNING: "Land" actions will use "sourceId" (NOT "destinationId") as the lot ID to land at
         IS_EXCLUSIVE_PER_LOT: true,
-        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.EMPTY_LOT],
+        PREFIX_SOURCE: ACTION_PREFIX_SOURCE_DEFAULT,
+        PREFIX_SUBJECT: 'Ship',
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.BUILDING_SPACEPORT_OR_EMPTY_LOT],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
@@ -161,6 +174,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ship-up',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        PREFIX_SOURCE: 'From',
+        PREFIX_SUBJECT: 'Ship',
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.ASSET_WITH_SHIP],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 5 * 1000,
@@ -172,6 +187,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ready',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: true,
+        PREFIX_SOURCE: ACTION_PREFIX_SOURCE_DEFAULT,
+        PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_REFINERY],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 5 * 1000,
@@ -183,6 +200,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-trade',
         IS_ACTION_ON_LOT: true,
         IS_EXCLUSIVE_PER_LOT: false,
+        PREFIX_SOURCE: 'From',
+        PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.ASSET_WITH_STORAGE],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 0, // Crew presence not required for action "Transfer" => no cooldown
@@ -194,6 +213,8 @@ const ACTION_TYPE_DATA = {
         ICON_CLASS: 'icon-ship-right',
         IS_ACTION_ON_LOT: false, // "Travel" is currently the only action whose source ID is not a lot ID
         IS_EXCLUSIVE_PER_LOT: false,
+        PREFIX_SOURCE: 'From',
+        PREFIX_SUBJECT: 'Ship',
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.ASTEROID],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASTEROID],
         STARTUP_DURATION: 5 * 1000,
@@ -226,10 +247,10 @@ class Action {
         this.type = type; // expecting "ACTION_TYPE" value
         this.subject = subject; // string (e.g. "Hydrogen" for "ACTION_TYPE.EXTRACT") or "LOT_ASSET" (e.g. for "ACTION_TYPE.CONSTRUCT")
         this.subjectName = lotService.getNameIfLotAsset(subject); // if "subject" is a "LOT_ASSET" value => convert it to lot-asset name
-        this.source = source; // string (e.g. "LOT_ASSET.EXTRACTOR" for "ACTION_TYPE.EXTRACT") or "Empty Lot" (e.g. for  "ACTION_TYPE.CONSTRUCT")
+        this.source = source; // string (e.g. "LOT_ASSET['Extractor']" for "ACTION_TYPE.EXTRACT") or "Empty Lot" (e.g. for  "ACTION_TYPE.CONSTRUCT")
         this.sourceName = lotService.getNameIfLotAsset(source); // if "source" is a "LOT_ASSET" value => convert it to lot-asset name
         this.sourceId = sourceId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
-        this.destination = destination; // string (e.g. "LOT_ASSET.WAREHOUSE" for "ACTION_TYPE.EXTRACT") or NULL (e.g. for "ACTION_TYPE.CORE_SAMPLE")
+        this.destination = destination; // string (e.g. "LOT_ASSET['Warehouse']" for "ACTION_TYPE.EXTRACT") or NULL (e.g. for "ACTION_TYPE.CORE_SAMPLE")
         this.destinationName = lotService.getNameIfLotAsset(destination); // if "destination" is a "LOT_ASSET" value => convert it to lot-asset name
         this.destinationId = destinationId; // number - e.g. lot ID, or asteroid ID for "ACTION_TYPE.TRAVEL"
         this.durationStartup = ACTION_TYPE_DATA[type].STARTUP_DURATION;
@@ -866,7 +887,7 @@ class Action {
                 /**
                  * For these types of actions, a lot's asset is the action's subject
                  * (value of type "LOT_ASSET"), regardless if the action is ongoing or done:
-                 * e.g. Construct "WAREHOUSE", Land "LIGHT_TRANSPORT"
+                 * e.g. Construct "Warehouse", Land "Light Transport"
                  */
                 newLotAssetData.asset = this.subject; // NOT "this.subjectName"
                 newLotAssetData.shouldUpdateAsset = true;
@@ -1296,6 +1317,9 @@ class ActionService {
         const actionType = this.addActionTypeDropdown.getSelectedValue();
         const isActionAtLot = ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT;
         const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
+        // Update prefix
+        document.getElementById('add-action-prefix-source').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SOURCE}:`;
+        document.getElementById('add-action-prefix-subject').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SUBJECT}:`;
         /**
          * Show all dropdowns by default.
          * NOT hiding them by default, to avoid dropdown-width flicker, as much as possible.
@@ -1354,7 +1378,7 @@ class ActionService {
         const actionType = this.addActionTypeDropdown.getSelectedValue();
         if (ACTION_TYPE_DATA[actionType].SUBJECT_TYPE === ACTION_SUBJECT_TYPE.BUILDING) {
             // Action-subject is a building
-            const actionSubject = LOT_ASSET.FARM; //// TEST
+            const actionSubject = LOT_ASSET['Farm']; //// TEST
             isBuildingMatching = actionSubject === lot.asset;
         }
         // Validate each source / destination requirement
@@ -1370,19 +1394,19 @@ class ActionService {
             this.setAddActionLotRequirementStatus(elRequirement, false, false, isDestinationLot);
             switch (requirement) {
                 case REQUIREMENT.ASSET_WITH_SHIP:
-                    // Landed ship / Spaceport with docked ship
-                    if ([LOT_ASSET.LIGHT_TRANSPORT, LOT_ASSET.SPACEPORT].includes(lot.asset)) {
+                    // Landed ship / Spaceport with (assumed) docked ship
+                    if ([LOT_ASSET['Light Transport'], LOT_ASSET['Spaceport']].includes(lot.asset)) {
                         isValid = true;
                     }
                     break;
                 case REQUIREMENT.ASSET_WITH_STORAGE:
-                    // Warehouse / landed ship / Spaceport with docked ship
-                    if ([LOT_ASSET.WAREHOUSE, LOT_ASSET.LIGHT_TRANSPORT, LOT_ASSET.SPACEPORT].includes(lot.asset)) {
+                    // Warehouse / landed ship / Spaceport with (assumed) docked ship
+                    if ([LOT_ASSET['Warehouse'], LOT_ASSET['Light Transport'], LOT_ASSET['Spaceport']].includes(lot.asset)) {
                         isValid = true;
                     }
                     break;
                 case REQUIREMENT.BUILDING_EXTRACTOR:
-                    if (lot.asset === LOT_ASSET.EXTRACTOR) {
+                    if (lot.asset === LOT_ASSET['Extractor']) {
                         isValid = true;
                     }
                     break;
@@ -1398,12 +1422,12 @@ class ActionService {
                     }
                     break;
                 case REQUIREMENT.BUILDING_REFINERY:
-                    if (lot.asset === LOT_ASSET.REFINERY) {
+                    if (lot.asset === LOT_ASSET['Refinery']) {
                         isValid = true;
                     }
                     break;
-                case REQUIREMENT.EMPTY_LOT:
-                    if (isEmptyLot) {
+                case REQUIREMENT.BUILDING_SPACEPORT_OR_EMPTY_LOT:
+                    if (lot.asset === LOT_ASSET['Spaceport'] || isEmptyLot) {
                         isValid = true;
                     }
                     break;

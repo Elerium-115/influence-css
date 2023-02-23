@@ -66,7 +66,11 @@
                             <div id="add-action-requires-destination" class="flex-row-cell requires-destination"></div>
                         </div>
                         <div class="flex-row">
-                            <div class="flex-row-cell text-highlight">Where:</div>
+                            <div id="add-action-prefix-subject" class="flex-row-cell flex-row-label text-highlight">What:</div>
+                            <div class="flex-row-cell">TEST</div>
+                        </div>
+                        <div class="flex-row">
+                            <div id="add-action-prefix-source" class="flex-row-cell flex-row-label text-highlight">Where:</div>
                             <div class="flex-row-cell">
                                 Asteroid
                                 <span class="active-asteroid-id"></span>
@@ -78,7 +82,7 @@
                             </div>
                         </div>
                         <div class="flex-row" id="add-action-destination-row">
-                            <div class="flex-row-cell text-highlight">Destination:</div>
+                            <div class="flex-row-cell flex-row-label text-highlight">Destination:</div>
                             <div class="flex-row-cell">
                                 <div>Lot</div>
                                 <div id="add-action-destination-lot-dropdown" class="dropdown-wrapper"></div>
@@ -87,10 +91,6 @@
                                 <div>Asteroid</div>
                                 <div id="add-action-destination-asteroid-dropdown" class="dropdown-wrapper"></div>
                             </div>
-                        </div>
-                        <div class="flex-row">
-                            <div class="flex-row-cell text-highlight">What:</div>
-                            <div class="flex-row-cell">Farm (placeholder)</div>
                         </div>
                     </div>
                     <div id="manage-lots-panel" class="config-panel hidden">
@@ -137,11 +137,11 @@
                             </span>
                             <button>Change</button>
                         </div>
-                        <div class="hidden">
+                        <!-- <div>
                             Crew assets: [owned by this crew, on this asteroid]<br>
                             &raquo; (compact summary view - e.g. "1 Light Transport, 1 Warehouse, 3 Extractors")<br>
                             &raquo; (overlay w/ detailed view)<br>
-                        </div>
+                        </div> -->
                     </div>
                     <div id="change-crew-panel" class="config-panel hidden">
                         <div>

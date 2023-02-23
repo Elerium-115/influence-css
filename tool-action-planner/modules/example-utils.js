@@ -13,7 +13,7 @@ const exampleCrew = new Crew('Dragon');
 // exampleCrew.setAsteroidId(1); // Adalia Prime
 exampleCrew.setAsteroidId(296); // Tortuga
 exampleCrew.setIsLanded(true);
-exampleCrew.setBase(666, LOT_ASSET_DATA[LOT_ASSET.LIGHT_TRANSPORT].NAME); // Light Transport at lot #666
+exampleCrew.setBase(666, LOT_ASSET_DATA['Light Transport'].NAME); // Light Transport at lot #666
 // exampleCrew.setIsLanded(false); //// TEST
 
 // Example lots on asteroid #1 for example crew
@@ -45,26 +45,26 @@ for (const lotId of [666, 777, 89, 123, 1, 2, 4567]) {
  */
 const exampleActionsTemplate = [
     // Done actions, defined in reverse b/c they are prepended, NOT appended
-    [ACTION_TYPE.LAND,          LOT_ASSET.LIGHT_TRANSPORT,  'Empty Lot',                666,    null,                       null,   0,              false,  ACTION_STATE.DONE,      false,  120 ], // done 5 days ago
-    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET.WAREHOUSE,        'Empty Lot',                777,    null,                       null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  96  ], // done 4 days ago
-    [ACTION_TYPE.TRANSFER,      'Core Samplers',            LOT_ASSET.LIGHT_TRANSPORT,  666,    LOT_ASSET.WAREHOUSE,        777,    1 * HOUR,       false,  ACTION_STATE.DONE,      false,  72  ], // done 3 days ago
-    [ACTION_TYPE.CORE_SAMPLE,   'Water',                    'Empty Lot',                89,     null,                       null,   0,              false,  ACTION_STATE.DONE,      false,  48  ], // done 2 days ago, NO runtime duration (only startup duration) for Core Sample
-    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET.EXTRACTOR,        'Empty Lot',                89,     null,                       null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  24  ], // done 1 day ago
-    [ACTION_TYPE.CORE_SAMPLE,   'Hydrogen',                 'Empty Lot',                123,    null,                       null,   0,              false,  ACTION_STATE.DONE,      false,  18  ], // done 18 hours ago, NO runtime duration (only startup duration) for Core Sample
+    [ACTION_TYPE.LAND,          LOT_ASSET['Light Transport'],   'Empty Lot',                    666,    null,                           null,   0,              false,  ACTION_STATE.DONE,      false,  120 ], // done 5 days ago
+    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET['Warehouse'],         'Empty Lot',                    777,    null,                           null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  96  ], // done 4 days ago
+    [ACTION_TYPE.TRANSFER,      'Core Samplers',                LOT_ASSET['Light Transport'],   666,    LOT_ASSET['Warehouse'],         777,    1 * HOUR,       false,  ACTION_STATE.DONE,      false,  72  ], // done 3 days ago
+    [ACTION_TYPE.CORE_SAMPLE,   'Water',                        'Empty Lot',                    89,     null,                           null,   0,              false,  ACTION_STATE.DONE,      false,  48  ], // done 2 days ago, NO runtime duration (only startup duration) for Core Sample
+    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET['Extractor'],         'Empty Lot',                    89,     null,                           null,   23 * HOUR,      false,  ACTION_STATE.DONE,      false,  24  ], // done 1 day ago
+    [ACTION_TYPE.CORE_SAMPLE,   'Hydrogen',                     'Empty Lot',                    123,    null,                           null,   0,              false,  ACTION_STATE.DONE,      false,  18  ], // done 18 hours ago, NO runtime duration (only startup duration) for Core Sample
 
     // Ongoing actions
-    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET.EXTRACTOR,        'Empty Lot',                123,    null,                       null,   23 * HOUR,      true,   ACTION_STATE.ONGOING                ],
-    [ACTION_TYPE.EXTRACT,       'Water',                    LOT_ASSET.EXTRACTOR,        89,     LOT_ASSET.WAREHOUSE,        777,    0.0125 * HOUR,  false,  ACTION_STATE.ONGOING,   true        ], // startup finished
-    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET.MARKETPLACE,      'Empty Lot',                1,      null,                       null,   23 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
-    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET.SPACEPORT,        'Empty Lot',                2,      null,                       null,   12 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
+    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET['Extractor'],         'Empty Lot',                    123,    null,                           null,   23 * HOUR,      true,   ACTION_STATE.ONGOING                ],
+    [ACTION_TYPE.EXTRACT,       'Water',                        LOT_ASSET['Extractor'],         89,     LOT_ASSET['Warehouse'],         777,    0.0125 * HOUR,  false,  ACTION_STATE.ONGOING,   true        ], // startup finished
+    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET['Marketplace'],       'Empty Lot',                    1,      null,                           null,   23 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
+    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET['Spaceport'],         'Empty Lot',                    2,      null,                           null,   12 * HOUR,      false,  ACTION_STATE.ONGOING,   true        ], // startup finished
 
     // Queued actions
-    [ACTION_TYPE.EXTRACT,       'Hydrogen',                 LOT_ASSET.EXTRACTOR,        123,    LOT_ASSET.WAREHOUSE,        777,    0.0125 * HOUR,                                              ], // duration 45 seconds (test fast completion)
-    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET.EXTRACTOR,        'Empty Lot',                4567,   null,                       null,   0.0025 * HOUR,                                              ],
-    [ACTION_TYPE.CORE_SAMPLE,   'Methane',                  'Empty Lot',                4567,   null,                       null,   0,                                                          ], // NO runtime duration (only startup duration) for Core Sample
-    [ACTION_TYPE.EXTRACT,       'Methane',                  LOT_ASSET.EXTRACTOR,        4567,   LOT_ASSET.WAREHOUSE,        777,    8 * HOUR,                                                   ],
-    [ACTION_TYPE.DECONSTRUCT,   LOT_ASSET.EXTRACTOR,        LOT_ASSET.EXTRACTOR,        89,     LOT_ASSET.WAREHOUSE,        777,    0.0125 * HOUR,                                              ],
-    [ACTION_TYPE.TRANSFER,      '[multiple]',               LOT_ASSET.WAREHOUSE,        777,    LOT_ASSET.LIGHT_TRANSPORT,  666,    0.0025 * HOUR,                                              ],
+    [ACTION_TYPE.EXTRACT,       'Hydrogen',                     LOT_ASSET['Extractor'],         123,    LOT_ASSET['Warehouse'],         777,    0.0125 * HOUR,                                              ], // duration 45 seconds (test fast completion)
+    [ACTION_TYPE.CONSTRUCT,     LOT_ASSET['Extractor'],         'Empty Lot',                    4567,   null,                           null,   0.0025 * HOUR,                                              ],
+    [ACTION_TYPE.CORE_SAMPLE,   'Methane',                      'Empty Lot',                    4567,   null,                           null,   0,                                                          ], // NO runtime duration (only startup duration) for Core Sample
+    [ACTION_TYPE.EXTRACT,       'Methane',                      LOT_ASSET['Extractor'],         4567,   LOT_ASSET['Warehouse'],         777,    8 * HOUR,                                                   ],
+    [ACTION_TYPE.DECONSTRUCT,   LOT_ASSET['Extractor'],         LOT_ASSET['Extractor'],         89,     LOT_ASSET['Warehouse'],         777,    0.0125 * HOUR,                                              ],
+    [ACTION_TYPE.TRANSFER,      '[multiple]',                   LOT_ASSET['Warehouse'],         777,    LOT_ASSET['Light Transport'],   666,    0.0025 * HOUR,                                              ],
 ];
 
 function initializeExampleActionsById() {

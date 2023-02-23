@@ -465,6 +465,11 @@ input[type='text'] {
                 align-items: center;
                 display: flex;
                 gap: 10px;
+
+                &.flex-row-label {
+                    justify-content: flex-end;
+                    width: 100px;
+                }
             }
         }
 

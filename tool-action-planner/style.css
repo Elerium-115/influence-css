@@ -436,6 +436,10 @@ input[type=text]:focus {
   display: flex;
   gap: 10px;
 }
+#plan-actions #add-action-panel .flex-row .flex-row-cell.flex-row-label {
+  justify-content: flex-end;
+  width: 100px;
+}
 #plan-actions #add-action-panel .add-action-requirement:not(:last-child)::after {
   content: ",";
 }

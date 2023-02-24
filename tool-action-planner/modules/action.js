@@ -14,6 +14,13 @@ import {
 } from './lot.js';
 import {NotificationService} from './notification.js';
 import {Dropdown} from './dropdown.js';
+import {
+    BUILDING_NAMES,
+    PRODUCT_NAMES,
+    RESOURCE_NAMES,
+    SHIP_NAMES,
+    SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT,
+} from './product.js';
 
 const ACTION_STATE = {
     DONE: 'DONE',
@@ -34,7 +41,7 @@ const ACTION_TYPE = {
 };
 
 const REQUIREMENT = {
-    ASSET_WITH_SHIP: 'ASSET_WITH_SHIP', // asset w/ ship = landed ship / Spaceport with docked ship
+    ASSET_WITH_MATCHING_SHIP: 'ASSET_WITH_MATCHING_SHIP', // asset w/ matching ship = landed ship / Spaceport with docked ship
     ASSET_WITH_STORAGE: 'ASSET_WITH_STORAGE', // asset w/ storage = Warehouse / landed ship / Spaceport with docked ship
     ASTEROID: 'ASTEROID',
     BUILDING_EXTRACTOR: 'BUILDING_EXTRACTOR',
@@ -48,9 +55,9 @@ const REQUIREMENT = {
 };
 
 const REQUIREMENT_DATA = {
-    ASSET_WITH_SHIP: {
+    ASSET_WITH_MATCHING_SHIP: {
         LOT_RELATED: true,
-        TEXT: 'Ship Landed / Docked',
+        TEXT: 'Matching Ship Landed / Docked at Spaceport',
     },
     ASSET_WITH_STORAGE: {
         LOT_RELATED: true,
@@ -176,7 +183,7 @@ const ACTION_TYPE_DATA = {
         IS_EXCLUSIVE_PER_LOT: true,
         PREFIX_SOURCE: 'From',
         PREFIX_SUBJECT: 'Ship',
-        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.ASSET_WITH_SHIP],
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.ASSET_WITH_MATCHING_SHIP],
         REQUIRES_AT_DESTINATION: [],
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
@@ -1110,12 +1117,20 @@ class ActionService {
         this.actionsById = {};
         this.elAddActionRequiresSource = document.getElementById('add-action-requires-source');
         this.elAddActionRequiresDestination = document.getElementById('add-action-requires-destination');
+        // Action type
         this.elAddActionTypeDropdown = document.getElementById('add-action-type-dropdown');
         this.addActionTypeDropdown = null;
+        // Action subject
+        this.elAddActionSubjectDropdown = document.getElementById('add-action-subject-dropdown');
+        this.addActionSubjectDropdown = null;
+        // Action source-lot
         this.elAddActionLotDropdown = document.getElementById('add-action-lot-dropdown');
         this.addActionLotDropdown = null;
+        // Action destination-lot
         this.elAddActionDestinationLotDropdown = document.getElementById('add-action-destination-lot-dropdown');
         this.addActionDestinationLotDropdown = null;
+        this.elAddActionDestinationLotError = document.getElementById('add-action-destination-lot-error');
+        // Action destination-asteroid
         this.elAddActionDestinationAsteroidDropdown = document.getElementById('add-action-destination-asteroid-dropdown');
         this.addActionDestinationAsteroidDropdown = null;
     }
@@ -1247,6 +1262,13 @@ class ActionService {
         this.addActionTypeDropdown.setOptions(optionsData);
     }
 
+    initializeAddActionSubjectDropdown() {
+        this.addActionSubjectDropdown = new Dropdown(
+            this.elAddActionSubjectDropdown,
+            this.onSelectAddActionSubjectOption.bind(this),
+        );
+    }
+
     initializeAddActionLotDropdowns() {
         this.addActionLotDropdown = new Dropdown(
             this.elAddActionLotDropdown,
@@ -1262,7 +1284,33 @@ class ActionService {
         //// TO DO: initialize "addActionDestinationAsteroidDropdown"
     }
 
-    getLotOptionsData() {
+    getAddActionSubjectOptionsData() {
+        let optionsData = [];
+        let optionNames;
+        const actionType = this.addActionTypeDropdown.getSelectedValue();
+        switch (ACTION_TYPE_DATA[actionType].SUBJECT_TYPE) {
+            case ACTION_SUBJECT_TYPE.BUILDING:
+                optionNames = BUILDING_NAMES;
+                break;
+            case ACTION_SUBJECT_TYPE.PRODUCT:
+                optionNames = PRODUCT_NAMES;
+                break;
+            case ACTION_SUBJECT_TYPE.RESOURCE:
+                optionNames = RESOURCE_NAMES;
+                break;
+            case ACTION_SUBJECT_TYPE.SHIP:
+                optionNames = SHIP_NAMES;
+                break;
+        }
+        optionsData = optionNames.map(optionName => {
+            return {
+                value: optionName,
+            };
+        });
+        return optionsData;
+    }
+
+    getAddActionLotOptionsData() {
         const optionsData = [];
         const lots = crewService.getLotsForActiveCrewAndAsteroid() || [];
         for (const lot of lots) {
@@ -1277,6 +1325,72 @@ class ActionService {
             });
         }
         return optionsData;
+    }
+
+    /**
+     * Update details in add-action panel, based on the currently selected action-type:
+     * - subject
+     * - source-lot + destination-lot dropdowns (if visible)
+     * - destination-asteroid dropdown (if visible)
+     */
+    updateAddActionDetails() {
+        this.updateAddActionSubject();
+        this.updateAddActionSourceAndDestination();
+    }
+
+    updateAddActionSubject() {
+        const actionType = this.addActionTypeDropdown.getSelectedValue();
+        // Update subject prefix
+        document.getElementById('add-action-prefix-subject').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SUBJECT}:`;
+        const optionsData = this.getAddActionSubjectOptionsData();
+        this.addActionSubjectDropdown.setOptions(optionsData);
+        this.addActionSubjectDropdown.updateOptionsMaxWidth();
+    }
+
+    updateAddActionSourceAndDestination() {
+        const actionType = this.addActionTypeDropdown.getSelectedValue();
+        const isActionAtLot = ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT;
+        const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
+        // Update source prefix
+        document.getElementById('add-action-prefix-source').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SOURCE}:`;
+        /**
+         * Show all source+destination dropdowns by default.
+         * NOT hiding them by default, to avoid dropdown-width flicker, as much as possible.
+         */
+        this.elAddActionLotDropdown.parentElement.classList.remove('hidden');
+        this.elAddActionDestinationLotDropdown.parentElement.classList.remove('hidden');
+        this.elAddActionDestinationAsteroidDropdown.parentElement.classList.remove('hidden');
+        const elDestinationRow = document.getElementById('add-action-destination-row');
+        if (requiresAtDesination.length) {
+            // Show destination label
+            elDestinationRow.classList.remove('hidden');
+            if (isActionAtLot) {
+                // Hide destination asteroid
+                this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
+            } else {
+                // Hide destination lot
+                this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
+            }
+        } else {
+            // Hide destination label + lot + asteroid
+            elDestinationRow.classList.add('hidden');
+            this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
+            this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
+        }
+        if (isActionAtLot) {
+            // Action on lot
+            const addActionLotOptionsData = this.getAddActionLotOptionsData();
+            this.addActionLotDropdown.setOptions(addActionLotOptionsData);
+            this.addActionLotDropdown.updateOptionsMaxWidth();
+            this.addActionDestinationLotDropdown.setOptions(addActionLotOptionsData);
+            this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
+            // Handle pre-selected lot ID
+            this.onSelectAddActionLotOption(this.addActionLotDropdown.getSelectedValue());
+            this.onSelectAddActionDestinationLotOption(this.addActionDestinationLotDropdown.getSelectedValue());
+        } else {
+            // Hide source lot (destination lot already hidden, at this point)
+            this.elAddActionLotDropdown.parentElement.classList.add('hidden');
+        }
     }
 
     onSelectAddActionTypeOption(actionType) {
@@ -1308,55 +1422,8 @@ class ActionService {
         this.updateAddActionDetails();
     }
 
-    /**
-     * Update details in add-action panel, based on the currently selected action-type:
-     * - source-lot + destination-lot dropdowns (if visible)
-     * - destination-asteroid dropdown (if visible)
-     */
-    updateAddActionDetails() {
-        const actionType = this.addActionTypeDropdown.getSelectedValue();
-        const isActionAtLot = ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT;
-        const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
-        // Update prefix
-        document.getElementById('add-action-prefix-source').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SOURCE}:`;
-        document.getElementById('add-action-prefix-subject').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SUBJECT}:`;
-        /**
-         * Show all dropdowns by default.
-         * NOT hiding them by default, to avoid dropdown-width flicker, as much as possible.
-         */
-        this.elAddActionLotDropdown.parentElement.classList.remove('hidden');
-        this.elAddActionDestinationLotDropdown.parentElement.classList.remove('hidden');
-        this.elAddActionDestinationAsteroidDropdown.parentElement.classList.remove('hidden');
-        const elDestinationRow = document.getElementById('add-action-destination-row');
-        if (requiresAtDesination.length) {
-            // Show destination label
-            elDestinationRow.classList.remove('hidden');
-            if (isActionAtLot) {
-                // Hide destination asteroid
-                this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
-            } else {
-                // Hide destination lot
-                this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
-            }
-        } else {
-            // Hide destination label + lot + asteroid
-            elDestinationRow.classList.add('hidden');
-            this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
-            this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
-        }
-        if (isActionAtLot) {
-            // Action on lot
-            this.addActionLotDropdown.setOptions(this.getLotOptionsData());
-            this.addActionLotDropdown.updateOptionsMaxWidth();
-            this.addActionDestinationLotDropdown.setOptions(this.getLotOptionsData());
-            this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
-            // Handle pre-selected lot ID
-            this.onSelectAddActionLotOption(this.addActionLotDropdown.getSelectedValue());
-            this.onSelectAddActionDestinationLotOption(this.addActionDestinationLotDropdown.getSelectedValue());
-        } else {
-            // Hide source lot (destination lot already hidden, at this point)
-            this.elAddActionLotDropdown.parentElement.classList.add('hidden');
-        }
+    onSelectAddActionSubjectOption() {
+        this.updateAddActionSourceAndDestination();
     }
 
     onSelectAddActionLotOption(lotId, isDestinationLot = false) {
@@ -1375,11 +1442,18 @@ class ActionService {
         const isEmptyLot = !lot.asset;
         // If action-subject is a building, and lot-asset also a building => check if matching building
         let isBuildingMatching = false;
+        let isShipMatching = false;
+        let isShipCanLandWithoutSpaceport = false;
         const actionType = this.addActionTypeDropdown.getSelectedValue();
+        const actionSubject = this.addActionSubjectDropdown.getSelectedValue();
         if (ACTION_TYPE_DATA[actionType].SUBJECT_TYPE === ACTION_SUBJECT_TYPE.BUILDING) {
             // Action-subject is a building
-            const actionSubject = LOT_ASSET['Farm']; //// TEST
             isBuildingMatching = actionSubject === lot.asset;
+        }
+        if (ACTION_TYPE_DATA[actionType].SUBJECT_TYPE === ACTION_SUBJECT_TYPE.SHIP) {
+            // Action-subject is a ship
+            isShipMatching = actionSubject === lot.asset;
+            isShipCanLandWithoutSpaceport = SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT.includes(actionSubject);
         }
         // Validate each source / destination requirement
         const elRequirementsContainer = isDestinationLot ? this.elAddActionRequiresDestination : this.elAddActionRequiresSource;
@@ -1393,9 +1467,10 @@ class ActionService {
             // Clear source-lot-related status for this requirement
             this.setAddActionLotRequirementStatus(elRequirement, false, false, isDestinationLot);
             switch (requirement) {
-                case REQUIREMENT.ASSET_WITH_SHIP:
-                    // Landed ship / Spaceport with (assumed) docked ship
-                    if ([LOT_ASSET['Light Transport'], LOT_ASSET['Spaceport']].includes(lot.asset)) {
+                case REQUIREMENT.ASSET_WITH_MATCHING_SHIP:
+                    // Matching landed ship / Spaceport with (assumed matching) docked ship
+                    const isShipMatchingLanded = isShipMatching && SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT.includes(lot.asset);
+                    if (lot.asset === LOT_ASSET['Spaceport'] || isShipMatchingLanded) {
                         isValid = true;
                     }
                     break;
@@ -1427,7 +1502,7 @@ class ActionService {
                     }
                     break;
                 case REQUIREMENT.BUILDING_SPACEPORT_OR_EMPTY_LOT:
-                    if (lot.asset === LOT_ASSET['Spaceport'] || isEmptyLot) {
+                    if (lot.asset === LOT_ASSET['Spaceport'] || (isEmptyLot && isShipCanLandWithoutSpaceport)) {
                         isValid = true;
                     }
                     break;
@@ -1439,8 +1514,13 @@ class ActionService {
                 this.setAddActionLotRequirementStatus(elRequirement, false, true, isDestinationLot);
             }
         }
-        // Validate requires at destination
-        //// ...
+        // Ensure source and destination are different
+        if (this.addActionLotDropdown.getSelectedValue() === this.addActionDestinationLotDropdown.getSelectedValue()) {
+            lotDropdown.setDropdownWarning(true);
+            this.elAddActionDestinationLotError.classList.remove('hidden');
+        } else {
+            this.elAddActionDestinationLotError.classList.add('hidden');
+        }
     }
 
     onSelectAddActionDestinationLotOption(lotId) {
@@ -1494,6 +1574,9 @@ globalThis.onToggleAddAction = function() {
 
 // Initialize add-action-type dropdown
 actionService.initializeAddActionTypeDropdown();
+
+// Initialize add-action-subject dropdown
+actionService.initializeAddActionSubjectDropdown();
 
 // Initialize add-action-lot dropdowns (source + destination)
 actionService.initializeAddActionLotDropdowns();

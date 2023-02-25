@@ -1120,6 +1120,7 @@ class ActionService {
         // Action type
         this.elAddActionTypeDropdown = document.getElementById('add-action-type-dropdown');
         this.addActionTypeDropdown = null;
+        this.addActionTypePreviousValue = null;
         // Action subject
         this.elAddActionSubjectDropdown = document.getElementById('add-action-subject-dropdown');
         this.addActionSubjectDropdown = null;
@@ -1341,17 +1342,19 @@ class ActionService {
      * - source-lot + destination-lot dropdowns (if visible)
      * - destination-asteroid dropdown (if visible)
      */
-    updateAddActionDetails() {
-        this.updateAddActionSubject();
-        this.updateAddActionSourceAndDestination();
+    updateAddActionDetails(isChangedSubjectType = true) {
+        this.updateAddActionSubject(isChangedSubjectType);
+        this.updateAddActionSourceAndDestination(isChangedSubjectType);
     }
 
-    updateAddActionSubject() {
+    updateAddActionSubject(resetSubjectOptions = true) {
         const actionType = this.addActionTypeDropdown.getSelectedValue();
         // Update subject prefix
         document.getElementById('add-action-prefix-subject').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SUBJECT}:`;
-        const optionsData = this.getAddActionSubjectOptionsData();
-        this.addActionSubjectDropdown.setOptions(optionsData);
+        if (resetSubjectOptions) {
+            const optionsData = this.getAddActionSubjectOptionsData();
+            this.addActionSubjectDropdown.setOptions(optionsData);
+        }
         this.addActionSubjectDropdown.updateOptionsMaxWidth();
     }
 
@@ -1390,10 +1393,10 @@ class ActionService {
             if (resetLotOptions) {
                 const addActionLotOptionsData = this.getAddActionLotOptionsData();
                 this.addActionLotDropdown.setOptions(addActionLotOptionsData);
-                this.addActionLotDropdown.updateOptionsMaxWidth();
                 this.addActionDestinationLotDropdown.setOptions(addActionLotOptionsData);
-                this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
             }
+            this.addActionLotDropdown.updateOptionsMaxWidth();
+            this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
             // Handle pre-selected / previously-selected lot IDs (pre-selected if "resetLotOptions" TRUE)
             this.onSelectAddActionLotOption(this.addActionLotDropdown.getSelectedValue());
             this.onSelectAddActionDestinationLotOption(this.addActionDestinationLotDropdown.getSelectedValue());
@@ -1429,7 +1432,9 @@ class ActionService {
             elsRequiresDestination.forEach(el => el.classList.add('hidden'));
         }
         // Update other details
-        this.updateAddActionDetails();
+        const isChangedSubjectType = ACTION_TYPE_DATA[actionType].SUBJECT_TYPE !== ACTION_TYPE_DATA[this.addActionTypePreviousValue]?.SUBJECT_TYPE;
+        this.updateAddActionDetails(isChangedSubjectType);
+        this.addActionTypePreviousValue = actionType;
     }
 
     onSelectAddActionSubjectOption() {

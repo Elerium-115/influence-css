@@ -6,7 +6,7 @@ const BUILDING_NAMES = InfluenceProductionChainsJSON.buildings
     .sort();
 
 const PRODUCT_NAMES = [];
-
+const PRODUCT_NOT_BUILDING_NAMES = [];
 const RESOURCE_NAMES = [];
 
 const SHIP_NAMES = [
@@ -22,18 +22,22 @@ const SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT = [
 for (const productDataRaw of InfluenceProductionChainsJSON.products) {
     const productName = productDataRaw.name;
     PRODUCT_NAMES.push(productName);
+    if (!BUILDING_NAMES.includes(productName)) {
+        PRODUCT_NOT_BUILDING_NAMES.push(productName);
+    }
     if (productDataRaw.type === 'Raw Material') {
         RESOURCE_NAMES.push(productName);
     }
 }
 
 PRODUCT_NAMES.sort();
-
+PRODUCT_NOT_BUILDING_NAMES.sort();
 RESOURCE_NAMES.sort();
 
 export {
     BUILDING_NAMES,
     PRODUCT_NAMES,
+    PRODUCT_NOT_BUILDING_NAMES,
     RESOURCE_NAMES,
     SHIP_NAMES,
     SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT,

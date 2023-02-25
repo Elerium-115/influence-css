@@ -17,6 +17,7 @@ import {Dropdown} from './dropdown.js';
 import {
     BUILDING_NAMES,
     PRODUCT_NAMES,
+    PRODUCT_NOT_BUILDING_NAMES,
     RESOURCE_NAMES,
     SHIP_NAMES,
     SHIP_NAMES_CAN_LAND_WITHOUT_SPACEPORT,
@@ -105,6 +106,7 @@ const ACTION_SUBJECT_TYPE = {
     BUILDING: 'BUILDING',
     RESOURCE: 'RESOURCE',
     PRODUCT: 'PRODUCT', // including resources
+    PRODUCT_NOT_BUILDING: 'PRODUCT_NOT_BUILDING',
     SHIP: 'SHIP',
 };
 
@@ -212,7 +214,7 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.ASSET_WITH_STORAGE],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
         STARTUP_DURATION: 0, // Crew presence not required for action "Transfer" => no cooldown
-        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.PRODUCT,
+        SUBJECT_TYPE: ACTION_SUBJECT_TYPE.PRODUCT_NOT_BUILDING,
         TEXT: 'Transfer',
         TEXT_ING: 'Transfering',
     },
@@ -1278,14 +1280,14 @@ class ActionService {
             this.onSelectAddActionLotOption.bind(this),
             10,
             true,
-            'Search by ID',
+            'Search by ID, asset or state',
         );
         this.addActionDestinationLotDropdown = new Dropdown(
             this.elAddActionDestinationLotDropdown,
             this.onSelectAddActionDestinationLotOption.bind(this),
             10,
             true,
-            'Search by ID',
+            'Search by ID, asset or state',
         );
     }
 
@@ -1303,6 +1305,9 @@ class ActionService {
                 break;
             case ACTION_SUBJECT_TYPE.PRODUCT:
                 optionNames = PRODUCT_NAMES;
+                break;
+            case ACTION_SUBJECT_TYPE.PRODUCT_NOT_BUILDING:
+                optionNames = PRODUCT_NOT_BUILDING_NAMES;
                 break;
             case ACTION_SUBJECT_TYPE.RESOURCE:
                 optionNames = RESOURCE_NAMES;

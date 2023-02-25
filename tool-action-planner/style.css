@@ -350,22 +350,34 @@ input[type=text]:focus {
   padding: 0 10px;
   white-space: nowrap;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label) {
+.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) {
   background-color: var(--color-white-faded-20);
   color: white;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label) .icon-round {
+.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) .icon-round {
   background-color: unset;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label) .icon-round::after {
+.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) .icon-round::after {
   background-color: white;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label) .secondary {
+.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) .secondary {
   color: white;
 }
 .dropdown-wrapper ul li.option-group-label {
   cursor: unset;
   font-weight: bold;
+}
+.dropdown-wrapper ul li.option-search {
+  background-color: black;
+  padding: 0;
+  position: sticky;
+  top: 0;
+}
+.dropdown-wrapper ul li.option-search input {
+  width: 100%;
+}
+.dropdown-wrapper ul li.not-matching-search {
+  display: none;
 }
 .dropdown-wrapper ul li.active .icon-round::after {
   background-color: white;

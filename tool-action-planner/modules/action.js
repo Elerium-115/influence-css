@@ -1266,6 +1266,8 @@ class ActionService {
         this.addActionSubjectDropdown = new Dropdown(
             this.elAddActionSubjectDropdown,
             this.onSelectAddActionSubjectOption.bind(this),
+            10,
+            true,
         );
     }
 

@@ -1,24 +1,54 @@
 import {createElementFromHtml} from './abstract.js';
 
 class Dropdown {
-    constructor(elWrapper, onSelectValue = null, maxRows = 10) {
+    constructor(elWrapper, onSelectValue = null, maxRows = 10, hasSearch = false) {
         this.elWrapper = elWrapper;
         this.onSelectValue = onSelectValue;
+        this.hasSearch = hasSearch;
+        this.elSearchInput = null;
+        this.lastSelectedDate = null;
         this.elWrapper.style.setProperty('--max-rows', `${maxRows}`);
         this.selectedValue = null;
         // Inject the list with attached events
         this.elList = document.createElement('ul');
         this.elList.addEventListener('mouseenter', () => {
-            this.elList.classList.add('hover');
+            this.expandIfNotJustSelected();
+        });
+        this.elList.addEventListener('click', () => {
+            this.expandIfNotJustSelected();
         });
         this.elList.addEventListener('mouseleave', () => {
-            this.elList.classList.remove('hover');
+            this.collapse();
+            this.resetSearch();
         });
         this.elWrapper.append(this.elList);
     }
 
     getSelectedValue() {
         return this.selectedValue;
+    }
+
+    collapse() {
+        this.elList.classList.remove('hover');
+    }
+
+    /**
+     * Expand the dropdown, unless an option has just been selected.
+     * This avoids an issue where the dropdown remains expanded,
+     * immediately after selecting an option.
+     */
+    expandIfNotJustSelected() {
+        if (this.lastSelectedDate) {
+            const lastSelectedMsAgo = Date.now() - this.lastSelectedDate.getTime();
+            this.lastSelectedDate = null;
+            if (lastSelectedMsAgo < 100) {
+                return;
+            }
+        }
+        this.elList.classList.add('hover');
+        if (this.hasSearch) {
+            this.elSearchInput.focus();
+        }
     }
 
     updateOptionsMaxWidth(doSecondPass = true) {
@@ -56,6 +86,20 @@ class Dropdown {
      */
     setOptions(optionsData) {
         this.elList.textContent = '';
+        if (this.hasSearch) {
+            // Inject search-input
+            const optionHtml = /*html*/ `
+                <li class="option-search">
+                    <input type="text" placeholder="Search">
+                </li>
+            `;
+            const elOption = createElementFromHtml(optionHtml);
+            this.elSearchInput = elOption.querySelector('input');
+            this.elSearchInput.addEventListener('input', () => this.onChangeSearch());
+            this.elSearchInput.addEventListener('keydown', event => this.onKeydownSearch(event));
+            this.elList.append(elOption);
+        }
+        // Inject options
         for (const optionData of Object.values(optionsData)) {
             let iconHtml = '';
             if (optionData.iconClass) {
@@ -93,6 +137,39 @@ class Dropdown {
         }
     }
 
+    onChangeSearch() {
+        for (const elOption of this.elList.querySelectorAll('li[data-value]')) {
+            if (elOption.dataset.value.toLowerCase().includes(this.elSearchInput.value)) {
+                elOption.classList.remove('not-matching-search');
+            } else {
+                elOption.classList.add('not-matching-search');
+            }
+        }
+    }
+
+    onKeydownSearch(event) {
+        if (event.key === 'Enter') {
+            // Select the first-matching option
+            const firstSearchMatch = this.elList.querySelector('li[data-value]:not(.not-matching-search)');
+            if (this.elSearchInput.value.length && firstSearchMatch) {
+                this.selectOption(firstSearchMatch);
+            }
+        }
+    }
+
+    resetSearch() {
+        if (!this.hasSearch) {
+            // No search functionality for this dropdown
+            return;
+        }
+        this.elSearchInput.value = '';
+        this.elSearchInput.blur();
+        // Re-show the options which did not match the previous search
+        for (const elOption of this.elList.querySelectorAll('.not-matching-search')) {
+            elOption.classList.remove('not-matching-search');
+        }
+    }
+
     selectOption(elOptionToSelect) {
         // Default handler
         const elOptionActive = this.elList.querySelector('li.active');
@@ -103,10 +180,9 @@ class Dropdown {
         this.selectedValue = elOptionToSelect.dataset.value;
         elOptionActive.classList.remove('active');
         elOptionToSelect.classList.add('active');
-        if (elOptionToSelect !== this.elList.firstElementChild) {
-            // Non-first option selected
-            this.shrinkDropdown();
-        }
+        this.lastSelectedDate = new Date();
+        this.collapse();
+        this.resetSearch();
         // External handler
         if (typeof this.onSelectValue === 'function') {
             this.onSelectValue(elOptionToSelect.dataset.value);
@@ -120,17 +196,6 @@ class Dropdown {
             return;
         }
         this.selectOption(elOptionToSelect);
-    }
-
-    /**
-     * Briefly limit the height of the dropdown, in order to shrink it.
-     * NOTE: This only works if the cursor is over a non-first option.
-     */
-    shrinkDropdown() {
-        this.elList.classList.add('shrink');
-        setTimeout(() => {
-            this.elList.classList.remove('shrink');
-        }, 100);
     }
 
     setDropdownWarning(isWarning) {

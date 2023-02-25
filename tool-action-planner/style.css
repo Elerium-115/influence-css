@@ -350,17 +350,19 @@ input[type=text]:focus {
   padding: 0 10px;
   white-space: nowrap;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) {
-  background-color: var(--color-white-faded-20);
+.dropdown-wrapper ul li:hover:not(.option-group-label) {
   color: white;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) .icon-round {
+.dropdown-wrapper ul li:hover:not(.option-group-label):not(.active):not(.option-search) {
+  background-color: var(--color-white-faded-20);
+}
+.dropdown-wrapper ul li:hover:not(.option-group-label) .icon-round {
   background-color: unset;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) .icon-round::after {
+.dropdown-wrapper ul li:hover:not(.option-group-label) .icon-round::after {
   background-color: white;
 }
-.dropdown-wrapper ul li:hover:not(.option-group-label):not(.option-search) .secondary {
+.dropdown-wrapper ul li:hover:not(.option-group-label) .secondary {
   color: white;
 }
 .dropdown-wrapper ul li.option-group-label {

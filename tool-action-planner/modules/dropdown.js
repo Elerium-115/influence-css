@@ -1,10 +1,11 @@
 import {createElementFromHtml} from './abstract.js';
 
 class Dropdown {
-    constructor(elWrapper, onSelectValue = null, maxRows = 10, hasSearch = false) {
+    constructor(elWrapper, onSelectValue = null, maxRows = 10, hasSearch = false, searchPlaceholder = 'Search') {
         this.elWrapper = elWrapper;
         this.onSelectValue = onSelectValue;
         this.hasSearch = hasSearch;
+        this.searchPlaceholder = searchPlaceholder;
         this.elSearchInput = null;
         this.lastSelectedDate = null;
         this.elWrapper.style.setProperty('--max-rows', `${maxRows}`);
@@ -90,7 +91,7 @@ class Dropdown {
             // Inject search-input
             const optionHtml = /*html*/ `
                 <li class="option-search">
-                    <input type="text" placeholder="Search">
+                    <input type="text" placeholder="${this.searchPlaceholder}">
                 </li>
             `;
             const elOption = createElementFromHtml(optionHtml);

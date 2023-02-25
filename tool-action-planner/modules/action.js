@@ -1275,10 +1275,16 @@ class ActionService {
         this.addActionLotDropdown = new Dropdown(
             this.elAddActionLotDropdown,
             this.onSelectAddActionLotOption.bind(this),
+            10,
+            true,
+            'Search by ID',
         );
         this.addActionDestinationLotDropdown = new Dropdown(
             this.elAddActionDestinationLotDropdown,
             this.onSelectAddActionDestinationLotOption.bind(this),
+            10,
+            true,
+            'Search by ID',
         );
     }
 

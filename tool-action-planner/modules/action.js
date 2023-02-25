@@ -1355,7 +1355,7 @@ class ActionService {
         this.addActionSubjectDropdown.updateOptionsMaxWidth();
     }
 
-    updateAddActionSourceAndDestination() {
+    updateAddActionSourceAndDestination(resetLotOptions = true) {
         const actionType = this.addActionTypeDropdown.getSelectedValue();
         const isActionAtLot = ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT;
         const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
@@ -1387,12 +1387,14 @@ class ActionService {
         }
         if (isActionAtLot) {
             // Action on lot
-            const addActionLotOptionsData = this.getAddActionLotOptionsData();
-            this.addActionLotDropdown.setOptions(addActionLotOptionsData);
-            this.addActionLotDropdown.updateOptionsMaxWidth();
-            this.addActionDestinationLotDropdown.setOptions(addActionLotOptionsData);
-            this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
-            // Handle pre-selected lot ID
+            if (resetLotOptions) {
+                const addActionLotOptionsData = this.getAddActionLotOptionsData();
+                this.addActionLotDropdown.setOptions(addActionLotOptionsData);
+                this.addActionLotDropdown.updateOptionsMaxWidth();
+                this.addActionDestinationLotDropdown.setOptions(addActionLotOptionsData);
+                this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
+            }
+            // Handle pre-selected / previously-selected lot IDs (pre-selected if "resetLotOptions" TRUE)
             this.onSelectAddActionLotOption(this.addActionLotDropdown.getSelectedValue());
             this.onSelectAddActionDestinationLotOption(this.addActionDestinationLotDropdown.getSelectedValue());
         } else {
@@ -1431,7 +1433,7 @@ class ActionService {
     }
 
     onSelectAddActionSubjectOption() {
-        this.updateAddActionSourceAndDestination();
+        this.updateAddActionSourceAndDestination(false);
     }
 
     onSelectAddActionLotOption(lotId, isDestinationLot = false) {

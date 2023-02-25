@@ -324,9 +324,15 @@ input[type='text'] {
     }
 
     &.warning {
-        ul:not(.hover) {
-            &::after {
-                background-color: var(--color-warning);
+        ul {
+            &:not(.hover) {
+                &::after {
+                    background-color: var(--color-warning);
+                }
+            }
+
+            &.highlight {
+                outline: 1px solid var(--color-warning);
             }
         }
     }
@@ -455,11 +461,6 @@ input[type='text'] {
                     margin-right: var(--item-unit);
                 }
             }
-        }
-
-        &.shrink {
-            height: var(--item-unit);
-            overflow: hidden;
         }
     }
 }

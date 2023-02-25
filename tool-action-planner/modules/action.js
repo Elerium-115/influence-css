@@ -1384,8 +1384,9 @@ class ActionService {
                 // Hide destination asteroid
                 this.elAddActionDestinationAsteroidDropdown.parentElement.classList.add('hidden');
             } else {
-                // Hide destination lot
+                // Hide destination lot and error
                 this.elAddActionDestinationLotDropdown.parentElement.classList.add('hidden');
+                this.elAddActionDestinationLotError.classList.add('hidden');
             }
         } else {
             // Hide destination label + lot + asteroid
@@ -1411,6 +1412,15 @@ class ActionService {
         }
     }
 
+    toggleHighlightAddActionLotDropdown(isHighlightEnabled, isDestinationLot) {
+        const lotDropdown = isDestinationLot ? this.addActionDestinationLotDropdown : this.addActionLotDropdown;
+        if (isHighlightEnabled) {
+            lotDropdown.elList.classList.add('highlight');
+        } else {
+            lotDropdown.elList.classList.remove('highlight');
+        }
+    }
+
     onSelectAddActionTypeOption(actionType) {
         // Update requires at source
         this.elAddActionRequiresSource.textContent = '';
@@ -1418,7 +1428,12 @@ class ActionService {
             const elRequirementHtml = /*html*/ `
                 <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_DATA[requirement].TEXT}</span>
             `;
-            this.elAddActionRequiresSource.append(createElementFromHtml(elRequirementHtml));
+            const elRequirement = createElementFromHtml(elRequirementHtml);
+            if (REQUIREMENT_DATA[requirement].LOT_RELATED) {
+                elRequirement.addEventListener('mouseenter', () => this.toggleHighlightAddActionLotDropdown(true, false));
+                elRequirement.addEventListener('mouseleave', () => this.toggleHighlightAddActionLotDropdown(false, false));
+            }
+            this.elAddActionRequiresSource.append(elRequirement);
         }
         // Update requires at destination
         const elsRequiresDestination = document.querySelectorAll('.requires-destination');
@@ -1430,7 +1445,12 @@ class ActionService {
                 const elRequirementHtml = /*html*/ `
                     <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_DATA[requirement].TEXT}</span>
                 `;
-                this.elAddActionRequiresDestination.append(createElementFromHtml(elRequirementHtml));
+                const elRequirement = createElementFromHtml(elRequirementHtml);
+                if (REQUIREMENT_DATA[requirement].LOT_RELATED) {
+                    elRequirement.addEventListener('mouseenter', () => this.toggleHighlightAddActionLotDropdown(true, true));
+                    elRequirement.addEventListener('mouseleave', () => this.toggleHighlightAddActionLotDropdown(false, true));
+                }
+                this.elAddActionRequiresDestination.append(elRequirement);
             }
         } else {
             // Hide requires at destination
@@ -1534,7 +1554,7 @@ class ActionService {
                 this.setAddActionLotRequirementStatus(elRequirement, false, true, isDestinationLot);
             }
         }
-        // Ensure source and destination are different
+        // Ensure source and destination lots are different
         if (this.addActionLotDropdown.getSelectedValue() === this.addActionDestinationLotDropdown.getSelectedValue()) {
             lotDropdown.setDropdownWarning(true);
             this.elAddActionDestinationLotError.classList.remove('hidden');

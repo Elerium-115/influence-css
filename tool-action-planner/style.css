@@ -332,6 +332,9 @@ input[type=text]:focus {
 .dropdown-wrapper.warning ul:not(.hover)::after {
   background-color: var(--color-warning);
 }
+.dropdown-wrapper.warning ul.highlight {
+  outline: 1px solid var(--color-warning);
+}
 .dropdown-wrapper ul {
   --dropdown-z-index: 1;
   -webkit-backdrop-filter: blur(8px);
@@ -428,10 +431,6 @@ input[type=text]:focus {
 }
 .dropdown-wrapper ul:not(.hover) li .secondary {
   margin-right: var(--item-unit);
-}
-.dropdown-wrapper ul.shrink {
-  height: var(--item-unit);
-  overflow: hidden;
 }
 
 #plan-actions h2 {

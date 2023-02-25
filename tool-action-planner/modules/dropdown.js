@@ -140,7 +140,11 @@ class Dropdown {
 
     onChangeSearch() {
         for (const elOption of this.elList.querySelectorAll('li[data-value]')) {
-            if (elOption.dataset.value.toLowerCase().includes(this.elSearchInput.value)) {
+            /**
+             * Search in text, NOT in value, in order to also match e.g. lots based on their asset-name, not just lot ID.
+             * This also avoids unexpected results if the text and value have different formats (e.g. "Core Sample" vs. "CORE_SAMPLE").
+             */
+            if (elOption.textContent.toLowerCase().includes(this.elSearchInput.value.toLowerCase())) {
                 elOption.classList.remove('not-matching-search');
             } else {
                 elOption.classList.add('not-matching-search');

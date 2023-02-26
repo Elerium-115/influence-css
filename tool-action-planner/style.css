@@ -234,6 +234,9 @@ input[type=text]:focus {
   width: 100%;
   z-index: -1;
 }
+#active-crew-sticky > * {
+  height: var(--sticky-line-height);
+}
 #active-crew-sticky #active-crew.ready {
   color: var(--color-ready);
 }
@@ -259,6 +262,15 @@ input[type=text]:focus {
 #active-crew-sticky #active-asteroid,
 #active-crew-sticky #active-base {
   opacity: 0.5;
+}
+#active-crew-sticky #active-asteroid.warning,
+#active-crew-sticky #active-base.warning {
+  background-color: var(--color-warning);
+  color: white;
+  border-left: 10px solid var(--color-warning);
+  border-right: 10px solid var(--color-warning);
+  margin: 0 -10px;
+  opacity: 1;
 }
 #active-crew-sticky #active-asteroid .hover-detail,
 #active-crew-sticky #active-base .hover-detail {

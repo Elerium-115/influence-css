@@ -57,46 +57,57 @@ const REQUIREMENT = {
 
 const REQUIREMENT_DATA = {
     ASSET_WITH_MATCHING_SHIP: {
+        CREW_RELATED: false,
         LOT_RELATED: true,
         TEXT: 'Matching Ship Landed / Docked at Spaceport',
     },
     ASSET_WITH_STORAGE: {
+        CREW_RELATED: false,
         LOT_RELATED: true,
         TEXT: 'Storage',
     },
     ASTEROID: {
+        CREW_RELATED: false,
         LOT_RELATED: false,
         TEXT: 'Asteroid',
     },
     BUILDING_EXTRACTOR: {
+        CREW_RELATED: false,
         LOT_RELATED: true,
         TEXT: 'Extractor',
     },
     BUILDING_MATCHING: {
+        CREW_RELATED: false,
         LOT_RELATED: true,
         TEXT: 'Matching Building',
     },
     BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT: {
+        CREW_RELATED: false,
         LOT_RELATED: true,
         TEXT: 'Matching Building Planned / Empty Lot',
     },
     BUILDING_REFINERY: {
+        CREW_RELATED: false,
         LOT_RELATED: true,
         TEXT: 'Refinery',
     },
     BUILDING_SPACEPORT_OR_EMPTY_LOT: {
+        CREW_RELATED: false,
         LOT_RELATED: true,
         TEXT: 'Spaceport / Empty Lot',
     },
     CREW_FOR_FULL_DURATION: {
+        CREW_RELATED: true,
         LOT_RELATED: false,
         TEXT: 'Crew Required for Duration',
     },
     CREW_IN_ORBIT: {
+        CREW_RELATED: true,
         LOT_RELATED: false,
         TEXT: 'Crew in Orbit',
     },
     CREW_LANDED: {
+        CREW_RELATED: true,
         LOT_RELATED: false,
         TEXT: 'Crew Landed',
     },
@@ -1350,6 +1361,7 @@ class ActionService {
     updateAddActionDetails(isChangedSubjectType = true) {
         this.updateAddActionSubject(isChangedSubjectType);
         this.updateAddActionSourceAndDestination(isChangedSubjectType);
+        this.updateCrewRequirementsStatus();
     }
 
     updateAddActionSubject(resetSubjectOptions = true) {
@@ -1366,7 +1378,7 @@ class ActionService {
     updateAddActionSourceAndDestination(resetLotOptions = true) {
         const actionType = this.addActionTypeDropdown.getSelectedValue();
         const isActionAtLot = ACTION_TYPE_DATA[actionType].IS_ACTION_ON_LOT;
-        const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
+        const requiresAtDestination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
         // Update source prefix
         document.getElementById('add-action-prefix-source').textContent = `${ACTION_TYPE_DATA[actionType].PREFIX_SOURCE}:`;
         /**
@@ -1377,7 +1389,7 @@ class ActionService {
         this.elAddActionDestinationLotDropdown.parentElement.classList.remove('hidden');
         this.elAddActionDestinationAsteroidDropdown.parentElement.classList.remove('hidden');
         const elDestinationRow = document.getElementById('add-action-destination-row');
-        if (requiresAtDesination.length) {
+        if (requiresAtDestination.length) {
             // Show destination label
             elDestinationRow.classList.remove('hidden');
             if (isActionAtLot) {
@@ -1412,12 +1424,58 @@ class ActionService {
         }
     }
 
+    updateCrewRequirementsStatus() {
+        for (const elRequirement of this.elAddActionRequiresSource.querySelectorAll('.add-action-requirement')) {
+            const requirement = elRequirement.dataset.value;
+            // Parse only lot-related requirements
+            if (!REQUIREMENT_DATA[requirement].CREW_RELATED) {
+                continue;
+            }
+            // Crew-related requirement
+            let isValid = false;
+            switch (requirement) {
+                case REQUIREMENT.CREW_FOR_FULL_DURATION:
+                    // Just a tip, NOT an actual requirement
+                    isValid = null;
+                    break;
+                case REQUIREMENT.CREW_IN_ORBIT:
+                    // FALSE before the "activeCrew" is initialized
+                    isValid = Boolean(crewService.activeCrew && !crewService.activeCrew.isLanded);
+                    break;
+                    case REQUIREMENT.CREW_LANDED:
+                    // FALSE before the "activeCrew" is initialized
+                    isValid = Boolean(crewService.activeCrew && crewService.activeCrew.isLanded);
+                    break;
+            }
+            if (isValid === null) {
+                // Do not change the status of non-requirement tips
+                continue;
+            }
+            if (isValid) {
+                elRequirement.classList.add('text-ready');
+                elRequirement.classList.remove('text-warning');
+            } else {
+                elRequirement.classList.remove('text-ready');
+                elRequirement.classList.add('text-warning');
+            }
+        }
+    }
+
     toggleHighlightAddActionLotDropdown(highlight, isDestinationLot) {
         const lotDropdown = isDestinationLot ? this.addActionDestinationLotDropdown : this.addActionLotDropdown;
         if (highlight) {
             lotDropdown.elList.classList.add('highlight');
         } else {
             lotDropdown.elList.classList.remove('highlight');
+        }
+    }
+
+    toggleWarningActiveCrewBase(warn) {
+        const elActiveBase = document.getElementById('active-base');
+        if (warn) {
+            elActiveBase.classList.add('warning');
+        } else {
+            elActiveBase.classList.remove('warning');
         }
     }
 
@@ -1433,15 +1491,19 @@ class ActionService {
                 elRequirement.addEventListener('mouseenter', () => this.toggleHighlightAddActionLotDropdown(true, false));
                 elRequirement.addEventListener('mouseleave', () => this.toggleHighlightAddActionLotDropdown(false, false));
             }
+            if (REQUIREMENT_DATA[requirement].CREW_RELATED) {
+                elRequirement.addEventListener('mouseenter', () => this.toggleWarningActiveCrewBase(elRequirement.classList.contains('text-warning')));
+                elRequirement.addEventListener('mouseleave', () => this.toggleWarningActiveCrewBase(false));
+            }
             this.elAddActionRequiresSource.append(elRequirement);
         }
         // Update requires at destination
         const elsRequiresDestination = document.querySelectorAll('.requires-destination');
-        const requiresAtDesination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
+        const requiresAtDestination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
         this.elAddActionRequiresDestination.textContent = '';
-        if (requiresAtDesination.length) {
+        if (requiresAtDestination.length) {
             elsRequiresDestination.forEach(el => el.classList.remove('hidden'));
-            for (const requirement of requiresAtDesination) {
+            for (const requirement of requiresAtDestination) {
                 const elRequirementHtml = /*html*/ `
                     <span class="add-action-requirement" data-value="${requirement}">${REQUIREMENT_DATA[requirement].TEXT}</span>
                 `;

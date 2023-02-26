@@ -218,6 +218,10 @@ input[type='text'] {
         z-index: -1;
     }
 
+    > * {
+        height: var(--sticky-line-height);
+    }
+
     #active-crew {
         &.ready {
             color: var(--color-ready);
@@ -251,6 +255,15 @@ input[type='text'] {
     #active-asteroid,
     #active-base {
         opacity: 0.5;
+
+        &.warning {
+            background-color: var(--color-warning);
+            color: white;
+            border-left: 10px solid var(--color-warning);
+            border-right: 10px solid var(--color-warning);
+            margin: 0 -10px; // compensate for borders
+            opacity: 1;
+        }
 
         .hover-detail {
             display: none;

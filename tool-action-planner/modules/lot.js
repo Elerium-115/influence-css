@@ -246,7 +246,7 @@ class LotService {
         const lotAsset = this.addLotAssetDropdown.getSelectedValue();
         const lotState = this.addLotStateDropdown.getSelectedValue();
         const activeCrew = crewService.activeCrew;
-        activeCrew.initializeLot(activeCrew.asteroidId, lotId, lotAsset, lotState);
+        activeCrew.initializeLot(activeCrew.asteroidId, lotId, lotAsset, lotState, true);
         this.hideAddLotForm();
     }
 }

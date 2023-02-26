@@ -521,6 +521,14 @@ input[type=text]:focus {
   margin-top: calc(0px - var(--this-height));
   opacity: 0;
 }
+#plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li.flash {
+  animation: flash-lot 600ms linear;
+}
+@keyframes flash-lot {
+  0% {
+    background-color: var(--color-highlight);
+  }
+}
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li.header {
   border-bottom: 1px solid var(--color-gray-dark);
   color: var(--color-gray-dark);

@@ -1412,9 +1412,9 @@ class ActionService {
         }
     }
 
-    toggleHighlightAddActionLotDropdown(isHighlightEnabled, isDestinationLot) {
+    toggleHighlightAddActionLotDropdown(highlight, isDestinationLot) {
         const lotDropdown = isDestinationLot ? this.addActionDestinationLotDropdown : this.addActionLotDropdown;
-        if (isHighlightEnabled) {
+        if (highlight) {
             lotDropdown.elList.classList.add('highlight');
         } else {
             lotDropdown.elList.classList.remove('highlight');

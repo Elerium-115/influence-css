@@ -141,7 +141,7 @@ class Crew {
      * @param {LOT_STATE} lotState 
      * @returns 
      */
-    initializeLot(asteroidId, lotId, lotAsset = null, lotState = LOT_STATE.EMPTY) {
+    initializeLot(asteroidId, lotId, lotAsset = null, lotState = LOT_STATE.EMPTY, flash = false) {
         if (!this.lotsByAsteroidId[asteroidId]) {
             this.lotsByAsteroidId[asteroidId] = [];
         }
@@ -154,6 +154,12 @@ class Crew {
         asteroidLots.push(lot);
         asteroidLots.sort((a, b) => a.id > b.id);
         this.injectLotsListItem(lot);
+        if (flash) {
+            lot.elLotsListItem.classList.add('flash');
+            setTimeout(() => {
+                lot.elLotsListItem.classList.remove('flash');
+            }, 600);
+        }
     }
 
     /**

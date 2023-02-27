@@ -877,14 +877,16 @@ class Action {
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }
 
-    moveToTopOfQueue() {
+    moveToTopOfQueue(updateReadinessAndFlash = true) {
         if (this.state !== ACTION_STATE.QUEUED) {
             console.log(`%c--- ERROR: action not queued => can NOT move to top of queue`, 'color: orange;');
             return;
         }
         document.querySelector('#actions-queued ul').prepend(this.elListItem);
-        actionService.updateQueuedActionsReadiness();
-        this.flashListItem();
+        if (updateReadinessAndFlash) {
+            actionService.updateQueuedActionsReadiness();
+            this.flashListItem();
+        }
     }
 
     /**
@@ -1137,6 +1139,7 @@ class Action {
 class ActionService {
     constructor() {
         this.actionsById = {};
+        this.queuedActionsContainer = document.querySelector('#actions-queued ul');
         this.elAddActionRequiresSource = document.getElementById('add-action-requires-source');
         this.elAddActionRequiresDestination = document.getElementById('add-action-requires-destination');
         // Action type
@@ -1164,7 +1167,7 @@ class ActionService {
     }
 
     updateQueuedActionsReadiness() {
-        document.querySelectorAll('#actions-queued ul li').forEach((elListItem, elListItemIndex) => {
+        this.queuedActionsContainer.querySelectorAll('li').forEach((elListItem, elListItemIndex) => {
             const action = this.getActionForListItem(elListItem);
             if (elListItemIndex === 0) {
                 action.setReadyIfDifferent(true);
@@ -1175,30 +1178,41 @@ class ActionService {
         //// TO DO: rework this method, to properly update the readiness of queued actions, based on e.g. [action-type vs. lot-availability]
     }
 
+    addEventListenersForDraggable(draggable) {
+        if (draggable.dataset.handlesDragEvents) {
+            console.log(`%c--- ERROR: #${draggable.id} already listening for drag events`, 'color: orange;');
+            return;
+        }
+        const container = this.queuedActionsContainer;
+        draggable.addEventListener('dragstart', () => {
+            container.classList.add('dragging-wrapper');
+            draggable.classList.add('dragging', 'highlight');
+        });
+        draggable.addEventListener('dragend', () => {
+            container.classList.remove('dragging-wrapper');
+            draggable.classList.remove('dragging', 'highlight');
+            const action = this.getActionForListItem(draggable);
+            this.updateQueuedActionsReadiness();
+            action.flashListItem();
+        });
+        draggable.dataset.handlesDragEvents = true;
+    }
+
     /**
      * Based on: https://www.youtube.com/watch?v=jfYWwQrtzzY
      */
-    updateQueuedDraggables() {
-        const container = document.querySelector('#actions-queued ul');
-        const draggables = container.querySelectorAll('li');
-        draggables.forEach(draggable => {
-            draggable.addEventListener('dragstart', () => {
-                container.classList.add('dragging-wrapper');
-                draggable.classList.add('dragging', 'highlight');
-            });
-            draggable.addEventListener('dragend', () => {
-                container.classList.remove('dragging-wrapper');
-                draggable.classList.remove('dragging', 'highlight');
-                const action = this.getActionForListItem(draggable);
-                this.updateQueuedActionsReadiness();
-                action.flashListItem();
-            });
-        });
+    updateInitiallyQueuedDraggables() {
+        const container = this.queuedActionsContainer;
+        if (container.dataset.handlesDragover) {
+            console.log(`%c--- ERROR: queued-actions container already listening for dragover`, 'color: orange;');
+            return;
+        }
+        container.querySelectorAll('li').forEach(draggable => this.addEventListenersForDraggable(draggable));
         container.addEventListener('dragover', event => {
             // Prevent default to allow drop (does not seem to be required in Firefox, but keeping it, just to be safe)
             event.preventDefault();
             const listItemDragging = container.querySelector('.dragging');
-            const listItemNext = this.getListItemAfterTheOneBeingDragged(container, event.clientY);
+            const listItemNext = this.getListItemAfterTheOneBeingDragged(event.clientY);
             if (listItemNext === null) {
                 // List item being dragged is below all draggables
                 container.appendChild(listItemDragging);
@@ -1206,10 +1220,11 @@ class ActionService {
                 container.insertBefore(listItemDragging, listItemNext);
             }
         });
+        container.dataset.handlesDragover = true;
     }
 
-    getListItemAfterTheOneBeingDragged(container, y) {
-        const elsDraggable = [...container.querySelectorAll('[draggable]:not(.dragging)')];
+    getListItemAfterTheOneBeingDragged(y) {
+        const elsDraggable = [...this.queuedActionsContainer.querySelectorAll('[draggable]:not(.dragging)')];
         return elsDraggable.reduce((closest, child) => {
             const box = child.getBoundingClientRect();
             const offset = y - box.top - box.height;
@@ -1704,8 +1719,12 @@ class ActionService {
             durationRuntime,        // durationRuntime
         );
         action.injectListItem();
-        actionService.updateQueuedDraggables();
+        if (document.getElementById('toggle-add-action-top-priority').checked) {
+            action.moveToTopOfQueue(false);
+        }
+        actionService.addEventListenersForDraggable(action.elListItem);
         actionService.updateQueuedActionsReadiness();
+        action.flashListItem();
     }
 }
 

@@ -89,7 +89,7 @@ on('mouseleave', selectorLotsListItem, el => {
 
 // Initialize example actions
 initializeExampleActionsById();
-actionService.updateQueuedDraggables();
+actionService.updateInitiallyQueuedDraggables();
 actionService.updateQueuedActionsReadiness();
 
 //// TEST

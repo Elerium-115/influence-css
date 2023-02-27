@@ -74,9 +74,9 @@
                         <div class="flex-row">
                             <div id="add-action-prefix-source" class="flex-row-cell flex-row-label text-highlight">Where:</div>
                             <div class="flex-row-cell">
-                                Asteroid
-                                <span class="active-asteroid-id"></span>
-                                <span class="active-asteroid-name hover-detail"></span>
+                                <div>Asteroid</div>
+                                <div class="active-asteroid-id"></div>
+                                <div class="active-asteroid-name hover-detail"></div>
                             </div>
                             <div class="flex-row-cell">
                                 <div>Lot</div>
@@ -99,6 +99,7 @@
                         </div>
                         <div class="flex-row">
                             <button class="no-margin" onclick="onSubmitAddAction()">Add Action</button>
+                            <label class="label-for-input"><input type="checkbox" id="toggle-add-action-top-priority"> Top Priority</label>
                         </div>
                     </div>
                     <div id="manage-lots-panel" class="config-panel hidden">

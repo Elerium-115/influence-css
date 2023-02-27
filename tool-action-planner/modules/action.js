@@ -243,10 +243,10 @@ const ACTION_TYPE_DATA = {
         IS_EXCLUSIVE_PER_LOT: false,
         PREFIX_SOURCE: 'From',
         PREFIX_SUBJECT: 'Ship',
-        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.ASTEROID],
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.CREW_FOR_FULL_DURATION, REQUIREMENT.ASTEROID],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASTEROID],
-        RUNTIME_DURATION: 15 * 1000,
-        STARTUP_DURATION: 5 * 1000,
+        RUNTIME_DURATION: 0,
+        STARTUP_DURATION: 30 * 1000, // Crew presence required for total duration of "Travel" => startup duration = total duration
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Travel',
         TEXT_ING: 'Traveling',
@@ -315,13 +315,13 @@ class Action {
     }
 
     getActionText(includeSource = true, includeDestination = false) {
-        const sourceType = this.isActionOnLot ? 'Lot' : 'Asteroid';
+        const lotOrAsteroid = this.isActionOnLot ? 'Lot' : 'Asteroid';
         let actionText = `${ACTION_TYPE_DATA[this.type].TEXT}: ${this.subjectName}`;
         if (includeSource) {
-            actionText += ` at ${sourceType} ${this.sourceId.toLocaleString()} (${this.sourceName})`;
+            actionText += ` at ${lotOrAsteroid} ${this.sourceId.toLocaleString()} (${this.sourceName})`;
         }
         if (includeDestination && this.destinationId) {
-            actionText += `, to ${sourceType} ${this.destinationId.toLocaleString()} (${this.destinationName})`;
+            actionText += `, to ${lotOrAsteroid} ${this.destinationId.toLocaleString()} (${this.destinationName})`;
         }
         return actionText;
     }
@@ -498,10 +498,11 @@ class Action {
     getListItemHtml() {
         const readyClass = this.isReady ? 'ready' : '';
         const draggableAttribute = this.state === ACTION_STATE.QUEUED ? 'draggable="true"' : '';
+        const lotOrAsteroid = this.isActionOnLot ? 'Lot' : 'Asteroid';
         let destinationHtml = '';
         if (this.destinationName) {
             destinationHtml = /*html*/ `
-                <div class="value value-destination">Lot ${this.destinationId.toLocaleString()} (${this.destinationName})</div>
+                <div class="value value-destination">${lotOrAsteroid} ${this.destinationId.toLocaleString()} (${this.destinationName})</div>
             `;
         }
         let timerCompactHtml = '';
@@ -575,7 +576,7 @@ class Action {
                 </div>
                 <div class="item-expand">
                     <div class="action-details">
-                        <div class="value value-source">Lot ${this.sourceId.toLocaleString()} (${this.sourceName})</div>
+                        <div class="value value-source">${lotOrAsteroid} ${this.sourceId.toLocaleString()} (${this.sourceName})</div>
                         ${destinationHtml}
                     </div>
                     <div class="subactions">
@@ -715,9 +716,6 @@ class Action {
             case ACTION_STATE.QUEUED:
                 // Action transitioning from queued to ongoing => default cooldown = startup duration
                 cooldown = this.durationStartup;
-                if (this.type === ACTION_TYPE.TRAVEL) {
-                    cooldown = this.durationTotal;
-                }
                 break;
             case ACTION_STATE.ONGOING:
                 // Action transitioning from ongoing to done => default cooldown = surface travel time for crew
@@ -1027,6 +1025,10 @@ class Action {
     }
 
     updateLotsList() {
+        if (!this.isActionOnLot) {
+            // Action not on lot => nothing to update
+            return;
+        }
         if (this.state === ACTION_STATE.QUEUED) {
             // Queued actions do not affect a lot's state or asset
             return;

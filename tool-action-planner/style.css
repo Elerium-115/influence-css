@@ -672,7 +672,10 @@ ul.list-expanding-items li .item-title .lot-id {
   padding-left: 15px;
   text-align: right;
 }
-ul.list-expanding-items li .item-title .lot-id::before {
+ul.list-expanding-items li .item-title .lot-id:empty {
+  display: none;
+}
+ul.list-expanding-items li .item-title .lot-id:not(:empty)::before {
   content: "#";
 }
 ul.list-expanding-items li .item-expand {

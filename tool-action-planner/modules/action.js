@@ -133,6 +133,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING_PLANNED_OR_EMPTY_LOT],
         REQUIRES_AT_DESTINATION: [],
+        RUNTIME_DURATION: 45 * 1000,
         STARTUP_DURATION: 15 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.BUILDING,
         TEXT: 'Construct',
@@ -146,6 +147,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.CREW_FOR_FULL_DURATION],
         REQUIRES_AT_DESTINATION: [],
+        RUNTIME_DURATION: 0,
         STARTUP_DURATION: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.RESOURCE,
         TEXT: 'Core Sample',
@@ -159,6 +161,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_MATCHING],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
+        RUNTIME_DURATION: 45 * 1000,
         STARTUP_DURATION: 15 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.BUILDING,
         TEXT: 'Deconstruct',
@@ -172,6 +175,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_EXTRACTOR],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
+        RUNTIME_DURATION: 15 * 1000,
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.RESOURCE,
         TEXT: 'Extract',
@@ -185,6 +189,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: 'Ship',
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.BUILDING_SPACEPORT_OR_EMPTY_LOT],
         REQUIRES_AT_DESTINATION: [],
+        RUNTIME_DURATION: 15 * 1000,
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Land', // Land from orbit
@@ -198,6 +203,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: 'Ship',
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.ASSET_WITH_MATCHING_SHIP],
         REQUIRES_AT_DESTINATION: [],
+        RUNTIME_DURATION: 15 * 1000,
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Launch', // Launch to orbit
@@ -211,6 +217,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.BUILDING_REFINERY],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
+        RUNTIME_DURATION: 15 * 1000,
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.RESOURCE,
         TEXT: 'Refine',
@@ -224,6 +231,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: ACTION_PREFIX_SUBJECT_DEFAULT,
         REQUIRES_AT_SOURCE: [REQUIREMENT.ASSET_WITH_STORAGE],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASSET_WITH_STORAGE],
+        RUNTIME_DURATION: 5 * 1000,
         STARTUP_DURATION: 0, // Crew presence not required for action "Transfer" => no cooldown
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.PRODUCT_NOT_BUILDING,
         TEXT: 'Transfer',
@@ -237,6 +245,7 @@ const ACTION_TYPE_DATA = {
         PREFIX_SUBJECT: 'Ship',
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.ASTEROID],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASTEROID],
+        RUNTIME_DURATION: 15 * 1000,
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Travel',
@@ -1644,6 +1653,60 @@ class ActionService {
             lotDropdown.setDropdownWarning(false);
         }
     }
+
+    submitAddActionForm() {
+        const actionType = this.addActionTypeDropdown.getSelectedValue();
+        const actionTypeData = ACTION_TYPE_DATA[actionType];
+        const isActionAtLot = actionTypeData.IS_ACTION_ON_LOT;
+        const requiresAtDestination = actionTypeData.REQUIRES_AT_DESTINATION;
+        const isDestinationLotError = !this.elAddActionDestinationLotError.classList.contains('hidden');
+        if (isActionAtLot && requiresAtDestination.length && isDestinationLotError) {
+            // Do NOT submit the add-action form, if source lot ID is equal to destination lot ID
+            const messageHtml = 'Different lot required at destination';
+            NotificationService.createNotification(messageHtml, true);
+            return;
+        }
+        const activeCrew = crewService.activeCrew;
+        const actionSubject = this.addActionSubjectDropdown.getSelectedValue();
+        let source = null;
+        let sourceId = null;
+        if (isActionAtLot) {
+            sourceId = this.addActionLotDropdown.getSelectedValue();
+            const sourceLot = crewService.getLotByIdForActiveCrewAndAsteroid(sourceId);
+            source = sourceLot.asset || 'Empty Lot';
+        } else {
+            sourceId = activeCrew.asteroidId;
+            source = asteroidService.asteroidsById[sourceId].name;
+        }
+        let destination = null;
+        let destinationId = null;
+        if (requiresAtDestination.length) {
+            if (isActionAtLot) {
+                destinationId = this.addActionDestinationLotDropdown.getSelectedValue();
+                const destinationLot = crewService.getLotByIdForActiveCrewAndAsteroid(destinationId);
+                destination = destinationLot.asset || 'Empty Lot';
+            } else {
+                destinationId = 1234; //// TEST destination asteroid ID
+                // destination = asteroidService.asteroidsById[destinationId].name; //// TO BE ENABLED
+                destination = `TEST'N'ROID`; //// TEST
+            }
+        }
+        const durationRuntime = actionTypeData.RUNTIME_DURATION;
+        const action = new Action(
+            activeCrew.id,          // crewId
+            activeCrew.asteroidId,  // asteroidId
+            actionType,             // type
+            actionSubject,          // subject
+            source,                 // source
+            sourceId,               // sourceId
+            destination,            // destination
+            destinationId,          // destinationId
+            durationRuntime,        // durationRuntime
+        );
+        action.injectListItem();
+        actionService.updateQueuedDraggables();
+        actionService.updateQueuedActionsReadiness();
+    }
 }
 
 // Global variables and functions
@@ -1672,6 +1735,10 @@ globalThis.onTransitionActionById = function(actionId) {
 
 globalThis.onToggleAddAction = function() {
     actionService.toggleAddAction();
+}
+
+globalThis.onSubmitAddAction = function() {
+    actionService.submitAddActionForm();
 }
 
 // Initialize add-action-type dropdown

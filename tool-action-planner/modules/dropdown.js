@@ -127,6 +127,9 @@ class Dropdown {
                 elOption.classList.add('option-group-label');
             } else {
                 elOption.dataset.value = optionData.value;
+                if (typeof optionData.value === 'number') {
+                    elOption.dataset.isNumber = true;
+                }
                 elOption.addEventListener('click', () => this.selectOption(elOption));
             }
             this.elList.append(elOption);
@@ -183,6 +186,9 @@ class Dropdown {
             return;
         }
         this.selectedValue = elOptionToSelect.dataset.value;
+        if (elOptionToSelect.dataset.isNumber) {
+            this.selectedValue = Number(this.selectedValue);
+        }
         elOptionActive.classList.remove('active');
         elOptionToSelect.classList.add('active');
         this.lastSelectedDate = new Date();

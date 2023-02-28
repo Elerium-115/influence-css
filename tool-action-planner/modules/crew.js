@@ -46,17 +46,33 @@ class Crew {
         });
     }
 
-    setIsLanded(isLanded) {
+    setIsLanded(isLanded, baseLotId = null) {
         this.isLanded = isLanded;
         // Update landed status in DOM
         document.querySelector('.landed-or-in-orbit').textContent = isLanded ? 'landed on' : 'in orbit of';
-        if (!isLanded) {
-            this.setBase(null, null);
-        }
+        this.setBaseLotId(baseLotId);
     }
 
-    setBase(baseLotId, baseAssetName) {
+    setBaseLotId(baseLotId) {
         this.baseLotId = baseLotId;
+        this.updateBaseData();
+    }
+
+    /**
+     * Update data for the current "baseLotId":
+     * - `baseAssetName`
+     * - all occurrences of the active crew's `baseAssetName` in the DOM
+     * - all occurrences of the active crew's `baseLotId` in the DOM
+     */
+    updateBaseData() {
+        let baseAssetName = '';
+        const baseLotId = this.baseLotId;
+        if (baseLotId) {
+            const baseLot = crewService.getLotByIdForActiveCrewAndAsteroid(baseLotId);
+            if (baseLot) {
+                baseAssetName = baseLot.assetName;
+            }
+        }
         this.baseAssetName = baseAssetName;
         // Update all occurrences of the active base asset name and lot ID in the DOM
         document.querySelectorAll('.active-base-asset-name').forEach(el => {
@@ -153,6 +169,13 @@ class Crew {
         const lot = new Lot(lotId, lotAsset, lotState);
         asteroidLots.push(lot);
         asteroidLots.sort((a, b) => a.id > b.id);
+        if (this.baseLotId === lotId) {
+            /**
+             * This is the crew's base lot => update their base-data, now that
+             * this newly created lot has been added to their asteroid-lots.
+             */
+            this.updateBaseData();
+        }
         this.injectLotsListItem(lot);
         if (flash) {
             lot.elLotsListItem.classList.add('flash');
@@ -311,6 +334,7 @@ class CrewService {
         setTimeout(() => {
             deleteFromDOM(elLotsListItem);
             deleteFromArray(lots, matchingLot);
+            this.activeCrew.updateBaseData();
         }, 300);
     }
 

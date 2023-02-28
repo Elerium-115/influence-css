@@ -50,15 +50,22 @@ class Lot {
         this.id = id;
         this.asset = null; // updated via "setAsset"
         this.assetName = null; // updated via "setAsset"
-        this.setAsset(asset); // expecting "LOT_ASSET" value, i.e. building or ship located at this lot (only for non-empty lots)
+        this.setAsset(asset, false); // expecting "LOT_ASSET" value, i.e. building or ship located at this lot (only for non-empty lots)
         this.state = state; // expecting "LOT_STATE" value
         this.isBeingAbandoned = false;
         this.elLotsListItem = null;
     }
 
-    setAsset(asset) {
+    setAsset(asset, isExistingLot = true) {
         this.asset = asset;
         this.assetName = LOT_ASSET_DATA[asset]?.NAME || '';
+        if (isExistingLot && crewService.activeCrew.baseLotId === this.id) {
+            /**
+             * Updated the asset of an existing lot, which is also the base of the active crew.
+             * In this case, the crew's base-data also needs to be updated.
+             */
+            crewService.activeCrew.updateBaseData();
+        }
     }
 
     isAssetAvailableOnLot() {

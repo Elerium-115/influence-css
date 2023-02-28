@@ -12,15 +12,16 @@ new Asteroid(296, 'Tortuga', 7940);
 const exampleCrew = new Crew('Dragon');
 // exampleCrew.setAsteroidId(1); // Adalia Prime
 exampleCrew.setAsteroidId(296); // Tortuga
-exampleCrew.setIsLanded(true);
-exampleCrew.setBase(666, LOT_ASSET_DATA['Light Transport'].NAME); // Light Transport at lot #666
-// exampleCrew.setIsLanded(false); //// TEST
 
 // Example lots on asteroid #1 for example crew
 for (const lotId of [666, 777, 89, 123, 1, 2, 4567]) {
     // exampleCrew.initializeLot(1, lotId); // initialize lot on Adalia Prime
     exampleCrew.initializeLot(296, lotId); // initialize lot on Tortuga
 }
+
+// Example landed-status / base for example crew
+exampleCrew.setIsLanded(true, 666);
+// exampleCrew.setIsLanded(false); //// TEST
 
 /**
  * Example action template:

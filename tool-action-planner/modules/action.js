@@ -148,7 +148,7 @@ const ACTION_TYPE_DATA = {
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.CREW_FOR_FULL_DURATION],
         REQUIRES_AT_DESTINATION: [],
         RUNTIME_DURATION: 0,
-        STARTUP_DURATION: 10 * 1000, // Crew presence required for total duration of "Core Sample" => startup duration = total duration
+        STARTUP_DURATION: 10 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.RESOURCE,
         TEXT: 'Core Sample',
         TEXT_ING: 'Core Sampling',
@@ -187,9 +187,9 @@ const ACTION_TYPE_DATA = {
         IS_EXCLUSIVE_PER_LOT: true,
         PREFIX_SOURCE: ACTION_PREFIX_SOURCE_DEFAULT,
         PREFIX_SUBJECT: 'Ship',
-        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.BUILDING_SPACEPORT_OR_EMPTY_LOT],
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.CREW_FOR_FULL_DURATION, REQUIREMENT.BUILDING_SPACEPORT_OR_EMPTY_LOT],
         REQUIRES_AT_DESTINATION: [],
-        RUNTIME_DURATION: 15 * 1000,
+        RUNTIME_DURATION: 0,
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Land', // Land from orbit
@@ -201,9 +201,9 @@ const ACTION_TYPE_DATA = {
         IS_EXCLUSIVE_PER_LOT: true,
         PREFIX_SOURCE: 'From',
         PREFIX_SUBJECT: 'Ship',
-        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.ASSET_WITH_MATCHING_SHIP],
+        REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_LANDED, REQUIREMENT.CREW_FOR_FULL_DURATION, REQUIREMENT.ASSET_WITH_MATCHING_SHIP],
         REQUIRES_AT_DESTINATION: [],
-        RUNTIME_DURATION: 15 * 1000,
+        RUNTIME_DURATION: 0,
         STARTUP_DURATION: 5 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Launch', // Launch to orbit
@@ -239,14 +239,14 @@ const ACTION_TYPE_DATA = {
     },
     TRAVEL: {
         ICON_CLASS: 'icon-ship-right',
-        IS_ACTION_ON_LOT: false, // "Travel" is currently the only action whose source ID is not a lot ID
+        IS_ACTION_ON_LOT: false,
         IS_EXCLUSIVE_PER_LOT: false,
         PREFIX_SOURCE: 'From',
         PREFIX_SUBJECT: 'Ship',
         REQUIRES_AT_SOURCE: [REQUIREMENT.CREW_IN_ORBIT, REQUIREMENT.CREW_FOR_FULL_DURATION, REQUIREMENT.ASTEROID],
         REQUIRES_AT_DESTINATION: [REQUIREMENT.ASTEROID],
         RUNTIME_DURATION: 0,
-        STARTUP_DURATION: 30 * 1000, // Crew presence required for total duration of "Travel" => startup duration = total duration
+        STARTUP_DURATION: 30 * 1000,
         SUBJECT_TYPE: ACTION_SUBJECT_TYPE.SHIP,
         TEXT: 'Travel',
         TEXT_ING: 'Traveling',
@@ -369,6 +369,14 @@ class Action {
 
     markFinalized() {
         this.finalizedDate = new Date();
+        switch (this.type) {
+            case ACTION_TYPE.LAND:
+                crewService.activeCrew.setIsLanded(true, this.sourceId);
+                break;
+            case ACTION_TYPE.LAUNCH:
+                crewService.activeCrew.setIsLanded(false);
+                break;
+        }
     }
 
     markReady() {
@@ -443,9 +451,12 @@ class Action {
         }
         this.state = state;
         if (state === ACTION_STATE.ONGOING) {
+            // Queued action transitioned to ongoing
             this.markStarted();
+            actionService.updateQueuedActionsReadiness();
         }
         if (state === ACTION_STATE.DONE) {
+            // Ongoing action transitioned to done
             this.markFinalized();
         }
         this.updateLotsList();
@@ -864,13 +875,8 @@ class Action {
                 // Update the properties of the action, and inject it into the new action-group
                 this.isReady = false;
                 this.setState(nextState);
-                if (this.state === ACTION_STATE.DONE) {
-                    this.markFinalized();
-                }
                 this.injectListItem();
                 this.flashListItem();
-                // Action fully transitioned => update queued actions
-                actionService.updateQueuedActionsReadiness();
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
     }

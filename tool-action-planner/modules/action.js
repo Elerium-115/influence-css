@@ -907,7 +907,7 @@ class Action {
     /**
      * Return the new lot asset name, as a result of an ongoing / done action
      */
-    getNewLotAssetData() {
+    getNewLotAssetData(lot) {
         if (this.state === ACTION_STATE.QUEUED) {
             console.log(`%c--- ERROR: action queued => can NOT get new lot asset name`, 'color: orange;');
             return;
@@ -918,22 +918,43 @@ class Action {
         };
         switch (this.type) {
             case ACTION_TYPE.CONSTRUCT:
-            case ACTION_TYPE.LAND:
                 /**
-                 * For these types of actions, a lot's asset is the action's subject
-                 * (value of type "LOT_ASSET"), regardless if the action is ongoing or done:
-                 * e.g. Construct "Warehouse", Land "Light Transport"
+                 * Building constructing / constructed => change the lot's asset to the action's subject
+                 * (value of type "LOT_ASSET"), regardless if the action is ongoing or done.
                  */
                 newLotAssetData.asset = this.subject; // NOT "this.subjectName"
                 newLotAssetData.shouldUpdateAsset = true;
                 break;
-            case ACTION_TYPE.DECONSTRUCT:
-            case ACTION_TYPE.LAUNCH:
+            case ACTION_TYPE.LAND:
                 /**
-                 * For these types of actions, a lot's asset remains unchanged while
-                 * the action is ongoing, but is reset after the action is done.
+                 * Ship landing / landed => change the lot's asset to the action's subject
+                 * (value of type "LOT_ASSET"), regardless if the action is ongoing or done.
+                 * Do this only if the lot did not have a building-related state.
+                 * Otherwise it means the ship is landing / landed at a Spaceport.
+                 */
+                if (!LOT_STATE_DATA[lot.state].IS_BUILDING_STATE) {
+                    newLotAssetData.asset = this.subject; // NOT "this.subjectName"
+                    newLotAssetData.shouldUpdateAsset = true;
+                }
+                break;
+            case ACTION_TYPE.DECONSTRUCT:
+                /**
+                 * Building deconstructing / deconstructed => do NOT change the lot's asset
+                 * while the action is ongoing, but reset it after the action is done.
                  */
                 if (this.state === ACTION_STATE.DONE) {
+                    newLotAssetData.asset = null;
+                    newLotAssetData.shouldUpdateAsset = true;
+                }
+                break;
+            case ACTION_TYPE.LAUNCH:
+                /**
+                 * Ship launching / launched => do NOT change the lot's asset
+                 * while the action is ongoing, but reset it after the action is done.
+                 * Do this only if the lot did not have a building-related state.
+                 * Otherwise it means the ship is launching / launched from a Spaceport.
+                 */
+                if (this.state === ACTION_STATE.DONE && !LOT_STATE_DATA[lot.state].IS_BUILDING_STATE) {
                     newLotAssetData.asset = null;
                     newLotAssetData.shouldUpdateAsset = true;
                 }
@@ -948,7 +969,7 @@ class Action {
     /**
      * Return the new lot state, as a result of an ongoing / done action
      */
-    getNewLotStateData() {
+    getNewLotStateData(lot) {
         if (this.state === ACTION_STATE.QUEUED) {
             console.log(`%c--- ERROR: action queued => can NOT get new lot state`, 'color: orange;');
             return;
@@ -984,22 +1005,34 @@ class Action {
                 newLotStateData.shouldUpdateState = true;
                 break;
             case ACTION_TYPE.LAND:
-                if (this.state === ACTION_STATE.ONGOING) {
-                    newLotStateData.state = LOT_STATE.SHIP_LANDING;
-                } else {
-                    // Ship landed
-                    newLotStateData.state = LOT_STATE.SHIP_LANDED;
+                /**
+                 * Ship landing / landed => change the lot state.
+                 * Do this only if the lot did not have a building-related state.
+                 * Otherwise it means the ship is landing / landed at a Spaceport.
+                 */
+                if (!LOT_STATE_DATA[lot.state].IS_BUILDING_STATE) {
+                    if (this.state === ACTION_STATE.ONGOING) {
+                        newLotStateData.state = LOT_STATE.SHIP_LANDING;
+                    } else {
+                        newLotStateData.state = LOT_STATE.SHIP_LANDED;
+                    }
+                    newLotStateData.shouldUpdateState = true;
                 }
-                newLotStateData.shouldUpdateState = true;
                 break;
             case ACTION_TYPE.LAUNCH:
-                if (this.state === ACTION_STATE.ONGOING) {
-                    newLotStateData.state = LOT_STATE.SHIP_LAUNCHING;
-                } else {
-                    // Ship launched => revert the lot's state to "EMPTY"
-                    newLotStateData.state = LOT_STATE.EMPTY;
+                /**
+                 * Ship launching / launched => change the lot state.
+                 * Do this only if the lot did not have a building-related state.
+                 * Otherwise it means the ship is launching / launched from a Spaceport.
+                 */
+                if (!LOT_STATE_DATA[lot.state].IS_BUILDING_STATE) {
+                    if (this.state === ACTION_STATE.ONGOING) {
+                        newLotStateData.state = LOT_STATE.SHIP_LAUNCHING;
+                    } else {
+                        newLotStateData.state = LOT_STATE.EMPTY;
+                    }
+                    newLotStateData.shouldUpdateState = true;
                 }
-                newLotStateData.shouldUpdateState = true;
                 break;
         }
         return newLotStateData;
@@ -1046,8 +1079,8 @@ class Action {
             return;
         }
         const elLotsListItem = actionLot.elLotsListItem;
-        const newLotAssetData = this.getNewLotAssetData();
-        const newLotStateData = this.getNewLotStateData();
+        const newLotAssetData = this.getNewLotAssetData(actionLot);
+        const newLotStateData = this.getNewLotStateData(actionLot);
         const newLotActionData = this.getNewLotActionData();
         if (newLotAssetData && newLotAssetData.shouldUpdateAsset) {
             // This lot property needs to be set BEFORE calling "getLotStateClass"

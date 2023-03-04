@@ -6,6 +6,7 @@ class Dropdown {
         this.onSelectValue = onSelectValue;
         this.hasSearch = hasSearch;
         this.searchPlaceholder = searchPlaceholder;
+        this.noOption = false;
         this.elSearchInput = null;
         this.lastSelectedDate = null;
         this.elWrapper.style.setProperty('--max-rows', `${maxRows}`);
@@ -138,6 +139,13 @@ class Dropdown {
             this.elWrapper.classList.add('single-option');
         } else {
             this.elWrapper.classList.remove('single-option');
+        }
+        if (Object.keys(optionsData).length) {
+            this.noOption = false;
+            this.elWrapper.classList.remove('no-option');
+        } else {
+            this.noOption = true;
+            this.elWrapper.classList.add('no-option');
         }
     }
 

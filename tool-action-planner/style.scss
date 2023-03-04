@@ -336,6 +336,19 @@ input[type='text'] {
         }
     }
 
+    &.no-option {
+
+        &::before {
+            color: var(--color-warning);
+            content: 'N/A (please add a lot first)';
+            line-height: var(--item-unit);
+        }
+
+        ul {
+            display: none;
+        }
+    }
+
     &.warning {
         ul {
             &:not(.hover) {

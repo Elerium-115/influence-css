@@ -1478,6 +1478,10 @@ class ActionService {
                 this.addActionLotDropdown.setOptions(addActionLotOptionsData);
                 this.addActionDestinationLotDropdown.setOptions(addActionLotOptionsData);
             }
+            if (this.addActionLotDropdown.noOption) {
+                // No lot initialized (yet) => bypass lot-related logic
+                return;
+            }
             this.addActionLotDropdown.updateOptionsMaxWidth();
             this.addActionDestinationLotDropdown.updateOptionsMaxWidth();
             // Handle pre-selected / previously-selected lot IDs (pre-selected if "resetLotOptions" TRUE)
@@ -1682,7 +1686,8 @@ class ActionService {
             }
         }
         // Ensure source and destination lots are different
-        if (this.addActionLotDropdown.getSelectedValue() === this.addActionDestinationLotDropdown.getSelectedValue()) {
+        const requiresAtDestination = ACTION_TYPE_DATA[actionType].REQUIRES_AT_DESTINATION;
+        if (requiresAtDestination.length && this.addActionLotDropdown.getSelectedValue() === this.addActionDestinationLotDropdown.getSelectedValue()) {
             lotDropdown.setDropdownWarning(true);
             this.elAddActionDestinationLotError.classList.remove('hidden');
         } else {
@@ -1727,6 +1732,12 @@ class ActionService {
         let source = null;
         let sourceId = null;
         if (isActionAtLot) {
+            if (this.addActionLotDropdown.noOption) {
+                // Do NOT submit the add-action form, if no lot initialized
+                const messageHtml = 'Lot required for this action type. You can add a lot using the "Manage Lots" panel.';
+                NotificationService.createNotification(messageHtml, true);
+                return;
+            }
             sourceId = this.addActionLotDropdown.getSelectedValue();
             const sourceLot = crewService.getLotByIdForActiveCrewAndAsteroid(sourceId);
             source = sourceLot.asset || 'Empty Lot';

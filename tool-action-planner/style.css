@@ -341,6 +341,14 @@ input[type=text]:focus {
 .dropdown-wrapper.single-option ul::after {
   content: unset !important;
 }
+.dropdown-wrapper.no-option::before {
+  color: var(--color-warning);
+  content: "N/A (please add a lot first)";
+  line-height: var(--item-unit);
+}
+.dropdown-wrapper.no-option ul {
+  display: none;
+}
 .dropdown-wrapper.warning ul:not(.hover)::after {
   background-color: var(--color-warning);
 }

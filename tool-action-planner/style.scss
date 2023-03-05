@@ -710,6 +710,72 @@ input[type='text'] {
 }
 
 #manage-actions {
+    #timeline {
+        border-top: 1px dashed var(--color-gray-dark);
+        display: flex;
+        font-size: 14px;
+        margin-bottom: 20px;
+        margin-top: 55px;
+
+        #timeline-ready {
+            align-items: center;
+            background-color: var(--color-ready);
+            border-radius: 50%;
+            color: black;
+            display: flex;
+            font-weight: bold;
+            height: 30px;
+            justify-content: center;
+            margin-top: -15px;
+            position: relative;
+            width: 30px;
+            z-index: 1;
+
+            &::before {
+                color: var(--color-ready);
+                content: 'ready';
+                font-weight: normal;
+                position: absolute;
+                top: -20px;
+            }
+        }
+
+        .timeline-section {
+            flex-grow: 1;
+            margin-top: -15px;
+            position: relative;
+
+            .timeline-action {
+                position: absolute;
+
+                &::after {
+                    background-color: black;
+                }
+
+                .timer {
+                    bottom: -20px;
+                    position: absolute;
+                }
+            }
+        }
+
+        #timeline-done {
+            .timeline-action {
+                background-color: var(--color-gray-medium);
+                color: var(--color-gray-medium);
+                right: calc(var(--offset-x) - 30px);
+            }
+        }
+
+        #timeline-ongoing {
+            .timeline-action {
+                background-color: var(--color-highlight);
+                color: var(--color-highlight);
+                left: calc(var(--offset-x) - 30px);
+            }
+        }
+    }
+
     #action-groups {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

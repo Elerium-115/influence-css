@@ -619,6 +619,59 @@ input[type=text]:focus {
 #plan-actions #manage-lots-panel #manage-lots-list-wrapper #manage-lots-list li:not(:hover) .lot-abandon {
   display: none;
 }
+#manage-actions #timeline {
+  border-top: 1px dashed var(--color-gray-dark);
+  display: flex;
+  font-size: 14px;
+  margin-bottom: 20px;
+  margin-top: 55px;
+}
+#manage-actions #timeline #timeline-ready {
+  align-items: center;
+  background-color: var(--color-ready);
+  border-radius: 50%;
+  color: black;
+  display: flex;
+  font-weight: bold;
+  height: 30px;
+  justify-content: center;
+  margin-top: -15px;
+  position: relative;
+  width: 30px;
+  z-index: 1;
+}
+#manage-actions #timeline #timeline-ready::before {
+  color: var(--color-ready);
+  content: "ready";
+  font-weight: normal;
+  position: absolute;
+  top: -20px;
+}
+#manage-actions #timeline .timeline-section {
+  flex-grow: 1;
+  margin-top: -15px;
+  position: relative;
+}
+#manage-actions #timeline .timeline-section .timeline-action {
+  position: absolute;
+}
+#manage-actions #timeline .timeline-section .timeline-action::after {
+  background-color: black;
+}
+#manage-actions #timeline .timeline-section .timeline-action .timer {
+  bottom: -20px;
+  position: absolute;
+}
+#manage-actions #timeline #timeline-done .timeline-action {
+  background-color: var(--color-gray-medium);
+  color: var(--color-gray-medium);
+  right: calc(var(--offset-x) - 30px);
+}
+#manage-actions #timeline #timeline-ongoing .timeline-action {
+  background-color: var(--color-highlight);
+  color: var(--color-highlight);
+  left: calc(var(--offset-x) - 30px);
+}
 #manage-actions #action-groups {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

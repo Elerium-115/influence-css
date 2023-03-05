@@ -52,23 +52,33 @@ on('change', 'label > input', el => {
     }
 });
 
-// Toggle compact vs. expanded layout for each "ul.list-expanding-items"
-on('change', '#toggle-compact-lists', el => {
-    const elsActionGroupList = document.querySelectorAll("ul.list-expanding-items");
+// Toggle showing vs. hiding the timeline
+on('change', '#toggle-timeline', el => {
+    const elTimeline = document.getElementById('timeline');
     if (el.checked) {
-        elsActionGroupList.forEach(el => el.classList.remove('list-expanded'));
+        elTimeline.classList.remove('hidden');
     } else {
-        elsActionGroupList.forEach(el => el.classList.add('list-expanded'));
+        elTimeline.classList.add('hidden');
     }
 });
 
 // Toggle showing vs. hiding ".action-type-text" elements in each "ul.list-expanding-items"
 on('change', '#toggle-action-types', el => {
-    const elsActionGroupList = document.querySelectorAll("ul.list-expanding-items");
+    const elsActionGroupList = document.querySelectorAll('ul.list-expanding-items');
     if (el.checked) {
         elsActionGroupList.forEach(el => el.classList.remove('hide-action-types'));
     } else {
         elsActionGroupList.forEach(el => el.classList.add('hide-action-types'));
+    }
+});
+
+// Toggle compact vs. expanded layout for each "ul.list-expanding-items"
+on('change', '#toggle-compact-lists', el => {
+    const elsActionGroupList = document.querySelectorAll('ul.list-expanding-items');
+    if (el.checked) {
+        elsActionGroupList.forEach(el => el.classList.remove('list-expanded'));
+    } else {
+        elsActionGroupList.forEach(el => el.classList.add('list-expanded'));
     }
 });
 

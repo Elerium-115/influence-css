@@ -165,8 +165,25 @@
             <section id="manage-actions" class="root-section">
                 <h2>Manage Actions</h2>
                 <div class="section-title-sidebar">
+                    <label id="toggle-timeline-label" class="label-for-input checked"><input type="checkbox" id="toggle-timeline" checked> Timeline</label>
                     <label id="toggle-action-types-label" class="label-for-input checked"><input type="checkbox" id="toggle-action-types" checked> Action Types</label>
                     <label id="toggle-compact-lists-label" class="label-for-input checked"><input type="checkbox" id="toggle-compact-lists" checked> Compact Lists</label>
+                </div>
+                <div id="timeline">
+                    <div id="timeline-done" class="timeline-section">
+                        <div class="timeline-action icon-round icon-core-sample" style="--offset-x: 40%;">
+                            <span class="timer">3h</span>
+                        </div>
+                    </div>
+                    <div id="timeline-ready">1</div>
+                    <div id="timeline-ongoing" class="timeline-section">
+                        <div class="timeline-action icon-round icon-yield" style="--offset-x: 20%;">
+                            <span class="timer">5m</span>
+                        </div>
+                        <div class="timeline-action icon-round icon-construct" style="--offset-x: 70%;">
+                            <span class="timer">12h</span>
+                        </div>
+                    </div>
                 </div>
                 <div id="action-groups">
                     <div id="actions-queued" class="action-group">

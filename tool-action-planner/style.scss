@@ -752,6 +752,12 @@ input[type='text'] {
                     background-color: black;
                 }
 
+                &.ready {
+                    .timer {
+                        display: none;
+                    }
+                }
+
                 .timer {
                     bottom: -20px;
                     position: absolute;

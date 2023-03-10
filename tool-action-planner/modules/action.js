@@ -299,6 +299,7 @@ class Action {
         this.isActionOnLot = ACTION_TYPE_DATA[this.type].IS_ACTION_ON_LOT;
         this.isActionExclusivePerLot = ACTION_TYPE_DATA[this.type].IS_EXCLUSIVE_PER_LOT;
         this.elListItem = null;
+        this.elTimelineItem = null;
         this.refreshOngoingInterval = null;
         this.refreshDoneInterval = null;
         this.updateLotsList();
@@ -402,6 +403,9 @@ class Action {
                 // Updating the HTML in this way is required, otherwise there may be issues e.g. with the transition to "Done"
                 this.elListItem.innerHTML = elListItemTemp.innerHTML;
                 this.injectLeaderLineIfNeeded();
+                // Update timeline item HTML and ready-count
+                this.elTimelineItem.classList.add('ready');
+                actionService.updateTimelineReadyCount(); // increment
                 // Update lot action and progress in lots-list
                 if (this.isActionOnLot) {
                     const elLotsListItem = document.getElementById(`lot_${this.sourceId}`);
@@ -598,6 +602,39 @@ class Action {
         `;
     }
 
+    /**
+     * Source: ChatGPT... with a human touch.
+     * Prompt: Write a JS function that takes values between 0 and 86400 as inputs,
+     * and scales them exponentially between 0 and 100,
+     * using a single log formula, without using if-else blocks.
+     */
+    getTimelineOffsetPercent() {
+        let seconds;
+        switch (this.state) {
+            case ACTION_STATE.ONGOING:
+                seconds = this.getOngoingTimeRemainingMs() / 1000;
+                break;
+            case ACTION_STATE.DONE:
+                seconds = (Date.now() - this.finalizedDate) / 1000;
+                break;
+            default:
+                // No timeline item for queued actions
+                console.log(`%c--- ERROR: queued action => NO timeline item`, 'color: orange;');
+                return;
+        }
+        if (seconds < 1) {
+            // Avoid negative return-value, if time-diff less than 1 second
+            return 0;
+        }
+        // Calculate the log base 10 of the input value
+        const logValue = Math.log10(seconds);
+        // Map the logValue to the range 0-1, representing the input's position on a linear scale
+        // const mappedValue = logValue / 4.936513742478893; // log10(60*60*24) re: 100% = 1 day
+        const mappedValue = logValue / 5.78161178249315; // log10(60*60*24*7) re: 100% = 1 week
+        // Calculate the exponential scale based on the linearly mapped value
+        return 100 * (Math.exp(mappedValue) - 1) / (Math.exp(1) - 1);
+    }
+
     refreshOngoingTime() {
         if (this.state !== ACTION_STATE.ONGOING) {
             console.log(`%c--- ERROR: action not ongoing => can NOT refresh time`, 'color: orange;');
@@ -617,8 +654,13 @@ class Action {
             this.markReady();
             return;
         }
+        // Update list-item timer
         const elTimerCompact = this.elListItem.querySelector('.timer-compact');
         elTimerCompact.textContent = timeRemainingShort;
+        // Update timeline-item timer
+        const elTimelineTimer = this.elTimelineItem.querySelector('.timer');
+        elTimelineTimer.textContent = timeRemainingShort;
+        this.elTimelineItem.style.setProperty('--offset-x', `${this.getTimelineOffsetPercent()}%`);
         // Update progress percent and progress bars
         const progress = Math.round(100 * (ongoingTimeElapsedMs) / this.durationTotal);
         this.elListItem.querySelector('.progress-done').textContent = progress;
@@ -657,9 +699,19 @@ class Action {
             this.clearRefreshDoneInterval();
             return;
         }
+        // Update list-item timer
         const timeAgo = fromNow(this.finalizedDate);
         const elTimerAgo = this.elListItem.querySelector('.timer-ago');
         elTimerAgo.textContent = timeAgo;
+        // Update timeline-item timer
+        const elTimelineTimer = this.elTimelineItem.querySelector('.timer');
+        elTimelineTimer.textContent = msToShortTime(Date.now() - this.finalizedDate);
+        this.elTimelineItem.style.setProperty('--offset-x', `${this.getTimelineOffsetPercent()}%`);
+    }
+
+    injectListAndTimelineItem() {
+        this.injectListItem();
+        this.injectTimelineItem();
     }
 
     injectListItem() {
@@ -719,6 +771,45 @@ class Action {
             const elSource = this.elListItem.querySelector('.value-source');
             leaderLineConnectElements(elSource, elDestination);
         }
+    }
+
+    injectTimelineItem() {
+        let elTimeline;
+        let timeDiffShort;
+        let readyClass = '';
+        switch (this.state) {
+            case ACTION_STATE.ONGOING:
+                elTimeline = document.getElementById('timeline-ongoing');
+                timeDiffShort = msToShortTime(this.getOngoingTimeRemainingMs());
+                if (this.isReady) {
+                    // Required for pre-populated actions which are initialized as "ready ongoing"
+                    readyClass = 'ready';
+                    actionService.updateTimelineReadyCount(); // increment
+                }
+                break;
+            case ACTION_STATE.DONE:
+                elTimeline = document.getElementById('timeline-done');
+                timeDiffShort = msToShortTime(Date.now() - this.finalizedDate);
+                break;
+            default:
+                // No timeline item for queued actions
+                return;
+        }
+        const timelineItemHtml = /*html*/ `
+            <div id="timeline_action_${this.id}"
+                    class="timeline-action icon-round ${ACTION_TYPE_DATA[this.type].ICON_CLASS} ${readyClass}"
+                    style="--offset-x: ${this.getTimelineOffsetPercent()}%;">
+                <span class="timer">${timeDiffShort}</span>
+            </div>
+        `;
+        if (this.elTimelineItem) {
+            // Move existing timeline item, from "ongoing" to "done"
+            this.elTimelineItem.classList.remove('ready');
+        } else {
+            // Inject new timeline item, into "ongoing"
+            this.elTimelineItem = createElementFromHtml(timelineItemHtml);
+        }
+        elTimeline.append(this.elTimelineItem);
     }
 
     setCrewCooldownBeforeTransition(transitionDuration) {
@@ -814,6 +905,7 @@ class Action {
                 this.clearRefreshDoneInterval();
                 // Remove global reference
                 delete actionService.actionsById[this.id];
+                actionService.updateTimelineReadyCount(); // decrement
                 // Ensure the top queued action is ready, in case the previously-ready action has just been removed
                 actionService.updateQueuedActionsReadiness();
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
@@ -875,7 +967,10 @@ class Action {
                 // Update the properties of the action, and inject it into the new action-group
                 this.isReady = false;
                 this.setState(nextState);
-                this.injectListItem();
+                if (nextState === ACTION_STATE.DONE) {
+                    actionService.updateTimelineReadyCount(); // decrement
+                }
+                this.injectListAndTimelineItem();
                 this.flashListItem();
             }, ACTION_LIST_ITEM_TRANSITION_DURATION);
         }, ACTION_LIST_ITEM_TRANSITION_DURATION);
@@ -1181,6 +1276,7 @@ class ActionService {
     constructor() {
         this.actionsById = {};
         this.queuedActionsContainer = document.querySelector('#actions-queued ul');
+        this.elTimelineReadyCount = document.getElementById('timeline-ready');
         this.elAddActionRequiresSource = document.getElementById('add-action-requires-source');
         this.elAddActionRequiresDestination = document.getElementById('add-action-requires-destination');
         // Action type
@@ -1770,13 +1866,23 @@ class ActionService {
             destinationId,          // destinationId
             durationRuntime,        // durationRuntime
         );
-        action.injectListItem();
+        action.injectListAndTimelineItem();
         if (document.getElementById('toggle-add-action-top-priority').checked) {
             action.moveToTopOfQueue(false);
         }
         actionService.addEventListenersForDraggable(action.elListItem);
         actionService.updateQueuedActionsReadiness();
         action.flashListItem();
+    }
+
+    updateTimelineReadyCount() {
+        let timelineReadyCount = 0;
+        for (const action of Object.values(this.actionsById)) {
+            if (action.state === ACTION_STATE.ONGOING && action.isReady) {
+                timelineReadyCount++;
+            }
+        }
+        this.elTimelineReadyCount.textContent = timelineReadyCount;
     }
 }
 

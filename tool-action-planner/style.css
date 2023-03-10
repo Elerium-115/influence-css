@@ -658,6 +658,9 @@ input[type=text]:focus {
 #manage-actions #timeline .timeline-section .timeline-action::after {
   background-color: black;
 }
+#manage-actions #timeline .timeline-section .timeline-action.ready .timer {
+  display: none;
+}
 #manage-actions #timeline .timeline-section .timeline-action .timer {
   bottom: -20px;
   position: absolute;

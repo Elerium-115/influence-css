@@ -93,7 +93,7 @@ function initializeExampleActionsById() {
         if (actionTemplate[10]) {   // forceFinalizedHoursAgo
             action.finalizedDate.setHours(action.finalizedDate.getHours() - actionTemplate[10]);
         }
-        action.injectListItem();
+        action.injectListAndTimelineItem();
     });
 }
 

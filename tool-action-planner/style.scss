@@ -33,6 +33,14 @@ body {
 .icon-ship-up::after { @include customIcon('icon-ship.svg'); transform: rotate(-90deg); }
 .icon-x::after { @include customIcon('icon-x.svg'); }
 
+@mixin tooltip {
+    background-color: black;
+    color: white;
+    filter: drop-shadow(0 0 10px black);
+    padding: 0 10px;
+    position: absolute;
+}
+
 @mixin transition-default {
     transition: all 300ms ease 0s;
 }
@@ -230,16 +238,12 @@ input[type='text'] {
         &:not(.ready):hover {
             &::after {
                 // Tooltip for crew-action
+                @include tooltip;
                 --tooltip-line-height: 30px;
-                background-color: black;
                 bottom: calc(0px - (var(--sticky-line-height) + var(--tooltip-line-height)));
-                color: white;
                 content: attr(data-crew-action-text);
-                filter: drop-shadow(0 0 10px black);
                 font-size: 14px;
                 line-height: var(--tooltip-line-height);
-                position: absolute;
-                padding: 0 10px;
                 right: 0;
                 white-space: nowrap;
                 z-index: var(--sticky-crew-z-index);
@@ -714,7 +718,7 @@ input[type='text'] {
         border-top: 1px dashed var(--color-gray-dark);
         display: flex;
         font-size: 14px;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         margin-top: 55px;
 
         #timeline-ready {
@@ -748,6 +752,22 @@ input[type='text'] {
             .timeline-action {
                 position: absolute;
 
+                &::before {
+                    // Tooltip
+                    @include tooltip;
+                    --tooltip-line-height: 30px;
+                    content: attr(data-tooltip-text);
+                    display: none;
+                    font-size: 14px;
+                    line-height: var(--tooltip-line-height);
+                    top: calc(0px - (10px + var(--tooltip-line-height)));
+                    white-space: nowrap;
+                }
+
+                &:hover::before {
+                    display: inline;
+                }
+
                 &::after {
                     background-color: black;
                 }
@@ -765,8 +785,7 @@ input[type='text'] {
                     color: var(--color-warning) !important;
                 }
 
-                &.highlight,
-                &:hover {
+                &.highlight {
                     color: white !important;
                     outline: 2px solid white;
                     z-index: 2;
@@ -777,6 +796,16 @@ input[type='text'] {
 
                     .timer {
                         text-shadow: 2px 2px 2px black;
+                    }
+                }
+
+                &.expand-timeline-ready {
+                    top: calc(var(--offset-y-index) * 35px);
+
+                    &::before {
+                        display: inline;
+                        left: 40px;
+                        top: 0;
                     }
                 }
 
@@ -792,6 +821,8 @@ input[type='text'] {
                 background-color: var(--color-gray-medium);
                 color: var(--color-gray-medium);
                 right: calc(var(--offset-x) - 30px);
+
+                &:hover::before { left: 0; }
             }
         }
 
@@ -800,6 +831,8 @@ input[type='text'] {
                 background-color: var(--color-highlight);
                 color: var(--color-highlight);
                 left: calc(var(--offset-x) - 30px);
+
+                &:hover::before { right: 0; }
             }
         }
     }
@@ -950,15 +983,11 @@ ul.list-expanding-items {
 
                             &::before {
                                 //// TO DO: use in-game styling for tooltips?
+                                @include tooltip;
                                 align-items: center;
-                                background-color: black;
                                 bottom: 0;
-                                color: white;
                                 display: flex;
-                                filter: drop-shadow(0 0 10px black);
                                 left: 40px;
-                                padding: 0 10px;
-                                position: absolute;
                                 top: 0;
                                 z-index: 1;
                             }

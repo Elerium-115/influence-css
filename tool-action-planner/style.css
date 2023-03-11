@@ -241,16 +241,16 @@ input[type=text]:focus {
   color: var(--color-ready);
 }
 #active-crew-sticky #active-crew:not(.ready):hover::after {
-  --tooltip-line-height: 30px;
   background-color: black;
-  bottom: calc(0px - (var(--sticky-line-height) + var(--tooltip-line-height)));
   color: white;
-  content: attr(data-crew-action-text);
   filter: drop-shadow(0 0 10px black);
+  padding: 0 10px;
+  position: absolute;
+  --tooltip-line-height: 30px;
+  bottom: calc(0px - (var(--sticky-line-height) + var(--tooltip-line-height)));
+  content: attr(data-crew-action-text);
   font-size: 14px;
   line-height: var(--tooltip-line-height);
-  position: absolute;
-  padding: 0 10px;
   right: 0;
   white-space: nowrap;
   z-index: var(--sticky-crew-z-index);
@@ -623,7 +623,7 @@ input[type=text]:focus {
   border-top: 1px dashed var(--color-gray-dark);
   display: flex;
   font-size: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   margin-top: 55px;
 }
 #manage-actions #timeline #timeline-ready {
@@ -655,6 +655,23 @@ input[type=text]:focus {
 #manage-actions #timeline .timeline-section .timeline-action {
   position: absolute;
 }
+#manage-actions #timeline .timeline-section .timeline-action::before {
+  background-color: black;
+  color: white;
+  filter: drop-shadow(0 0 10px black);
+  padding: 0 10px;
+  position: absolute;
+  --tooltip-line-height: 30px;
+  content: attr(data-tooltip-text);
+  display: none;
+  font-size: 14px;
+  line-height: var(--tooltip-line-height);
+  top: calc(0px - (10px + var(--tooltip-line-height)));
+  white-space: nowrap;
+}
+#manage-actions #timeline .timeline-section .timeline-action:hover::before {
+  display: inline;
+}
 #manage-actions #timeline .timeline-section .timeline-action::after {
   background-color: black;
 }
@@ -668,16 +685,24 @@ input[type=text]:focus {
   background-color: var(--color-warning) !important;
   color: var(--color-warning) !important;
 }
-#manage-actions #timeline .timeline-section .timeline-action.highlight, #manage-actions #timeline .timeline-section .timeline-action:hover {
+#manage-actions #timeline .timeline-section .timeline-action.highlight {
   color: white !important;
   outline: 2px solid white;
   z-index: 2;
 }
-#manage-actions #timeline .timeline-section .timeline-action.highlight::after, #manage-actions #timeline .timeline-section .timeline-action:hover::after {
+#manage-actions #timeline .timeline-section .timeline-action.highlight::after {
   background-color: white;
 }
-#manage-actions #timeline .timeline-section .timeline-action.highlight .timer, #manage-actions #timeline .timeline-section .timeline-action:hover .timer {
+#manage-actions #timeline .timeline-section .timeline-action.highlight .timer {
   text-shadow: 2px 2px 2px black;
+}
+#manage-actions #timeline .timeline-section .timeline-action.expand-timeline-ready {
+  top: calc(var(--offset-y-index) * 35px);
+}
+#manage-actions #timeline .timeline-section .timeline-action.expand-timeline-ready::before {
+  display: inline;
+  left: 40px;
+  top: 0;
 }
 #manage-actions #timeline .timeline-section .timeline-action .timer {
   bottom: -20px;
@@ -688,10 +713,16 @@ input[type=text]:focus {
   color: var(--color-gray-medium);
   right: calc(var(--offset-x) - 30px);
 }
+#manage-actions #timeline #timeline-done .timeline-action:hover::before {
+  left: 0;
+}
 #manage-actions #timeline #timeline-ongoing .timeline-action {
   background-color: var(--color-highlight);
   color: var(--color-highlight);
   left: calc(var(--offset-x) - 30px);
+}
+#manage-actions #timeline #timeline-ongoing .timeline-action:hover::before {
+  right: 0;
 }
 #manage-actions #action-groups {
   display: grid;
@@ -811,15 +842,15 @@ ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-butto
   position: relative;
 }
 ul.list-expanding-items li .item-expand .subactions .subactions-cell .icon-button.icon-tooltip::before {
-  align-items: center;
   background-color: black;
-  bottom: 0;
   color: white;
-  display: flex;
   filter: drop-shadow(0 0 10px black);
-  left: 40px;
   padding: 0 10px;
   position: absolute;
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  left: 40px;
   top: 0;
   z-index: 1;
 }

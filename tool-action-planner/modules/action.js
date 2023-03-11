@@ -735,6 +735,17 @@ class Action {
                 break;
         }
         this.elListItem = createElementFromHtml(this.getListItemHtml());
+        // Highlight timeline item, on hover over list item
+        this.elListItem.addEventListener('mouseenter', () => {
+            if (this.elTimelineItem) {
+                this.elTimelineItem.classList.add('highlight');
+            }
+        });
+        this.elListItem.addEventListener('mouseleave', () => {
+            if (this.elTimelineItem) {
+                this.elTimelineItem.classList.remove('highlight');
+            }
+        });
         switch (this.state) {
             case ACTION_STATE.QUEUED:
                 actionGroupList.append(this.elListItem);
@@ -811,6 +822,16 @@ class Action {
         } else {
             // Inject new timeline item, into "ongoing"
             this.elTimelineItem = createElementFromHtml(timelineItemHtml);
+            this.elTimelineItem.dataset.tooltipText = this.getActionText();
+            // Highlight both timeline item and list item, on hover over timeline item
+            this.elTimelineItem.addEventListener('mouseenter', () => {
+                this.elTimelineItem.classList.add('highlight');
+                this.elListItem.classList.add('highlight');
+            });
+            this.elTimelineItem.addEventListener('mouseleave', () => {
+                this.elTimelineItem.classList.remove('highlight');
+                this.elListItem.classList.remove('highlight');
+            });
         }
         elTimeline.append(this.elTimelineItem);
     }
@@ -904,7 +925,9 @@ class Action {
             setTimeout(() => {
                 // Done sliding up => remove the list item
                 this.removeListItem();
-                deleteFromDOM(this.elTimelineItem); // also remove timeline item
+                if (this.elTimelineItem) {
+                    deleteFromDOM(this.elTimelineItem); // also remove timeline item, if it exists (i.e. this was NOT a queued action)
+                }
                 this.clearRefreshOngoingInterval();
                 this.clearRefreshDoneInterval();
                 // Remove global reference
@@ -1920,6 +1943,22 @@ globalThis.onToggleAddAction = function() {
 
 globalThis.onSubmitAddAction = function() {
     actionService.submitAddActionForm();
+}
+
+globalThis.onHoverTimelineReady = function(isMouseOver) {
+    let timelineReadyIdx = 0;
+    for (const action of Object.values(actionService.actionsById)) {
+        if (action.state === ACTION_STATE.ONGOING && action.isReady) {
+            timelineReadyIdx++;
+            if (isMouseOver) {
+                action.elTimelineItem.classList.add('expand-timeline-ready', 'highlight');
+                action.elTimelineItem.style.setProperty('--offset-y-index', `${timelineReadyIdx}`);
+            } else {
+                action.elTimelineItem.classList.remove('expand-timeline-ready', 'highlight');
+                action.elTimelineItem.style.setProperty('--offset-y-index', `0`);
+            }
+        }
+    }
 }
 
 // Initialize add-action-type dropdown

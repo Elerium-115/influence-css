@@ -765,13 +765,18 @@ input[type='text'] {
                     color: var(--color-warning) !important;
                 }
 
-                &.highlight {
+                &.highlight,
+                &:hover {
                     color: white !important;
                     outline: 2px solid white;
                     z-index: 2;
 
                     &::after {
                         background-color: white;
+                    }
+
+                    .timer {
+                        text-shadow: 2px 2px 2px black;
                     }
                 }
 

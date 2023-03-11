@@ -904,6 +904,7 @@ class Action {
             setTimeout(() => {
                 // Done sliding up => remove the list item
                 this.removeListItem();
+                deleteFromDOM(this.elTimelineItem); // also remove timeline item
                 this.clearRefreshOngoingInterval();
                 this.clearRefreshDoneInterval();
                 // Remove global reference

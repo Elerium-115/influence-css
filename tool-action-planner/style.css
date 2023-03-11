@@ -668,13 +668,16 @@ input[type=text]:focus {
   background-color: var(--color-warning) !important;
   color: var(--color-warning) !important;
 }
-#manage-actions #timeline .timeline-section .timeline-action.highlight {
+#manage-actions #timeline .timeline-section .timeline-action.highlight, #manage-actions #timeline .timeline-section .timeline-action:hover {
   color: white !important;
   outline: 2px solid white;
   z-index: 2;
 }
-#manage-actions #timeline .timeline-section .timeline-action.highlight::after {
+#manage-actions #timeline .timeline-section .timeline-action.highlight::after, #manage-actions #timeline .timeline-section .timeline-action:hover::after {
   background-color: white;
+}
+#manage-actions #timeline .timeline-section .timeline-action.highlight .timer, #manage-actions #timeline .timeline-section .timeline-action:hover .timer {
+  text-shadow: 2px 2px 2px black;
 }
 #manage-actions #timeline .timeline-section .timeline-action .timer {
   bottom: -20px;

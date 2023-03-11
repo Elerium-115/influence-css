@@ -88,12 +88,18 @@ on('mouseenter', selectorLotsListItem, el => {
     const actions = actionService.getActionsForActiveCrewAtLotId(Number(el.dataset.id), true);
     for (const action of actions) {
         action.elListItem.classList.add('highlight');
+        if (action.elTimelineItem) {
+            action.elTimelineItem.classList.add('highlight');
+        }
     }
 });
 on('mouseleave', selectorLotsListItem, el => {
     const actions = actionService.getActionsForActiveCrewAtLotId(Number(el.dataset.id), true);
     for (const action of actions) {
         action.elListItem.classList.remove('highlight');
+        if (action.elTimelineItem) {
+            action.elTimelineItem.classList.remove('highlight');
+        }
     }
 });
 

@@ -404,6 +404,7 @@ class Action {
                 this.elListItem.innerHTML = elListItemTemp.innerHTML;
                 this.injectLeaderLineIfNeeded();
                 // Update timeline item HTML and ready-count
+                this.elTimelineItem.classList.remove('startup-in-progress'); // needed for actions that require crew for full duration
                 this.elTimelineItem.classList.add('ready');
                 actionService.updateTimelineReadyCount(); // increment
                 // Update lot action and progress in lots-list
@@ -669,9 +670,11 @@ class Action {
         let isStartupInProgress = false;
         if (this.durationStartup && ongoingTimeElapsedMs < this.durationStartup) {
             this.elListItem.classList.add('startup-in-progress');
+            this.elTimelineItem.classList.add('startup-in-progress');
             isStartupInProgress = true;
         } else {
             this.elListItem.classList.remove('startup-in-progress');
+            this.elTimelineItem.classList.remove('startup-in-progress');
         }
         // Update lot action and progress in lots-list
         if (this.isActionOnLot) {

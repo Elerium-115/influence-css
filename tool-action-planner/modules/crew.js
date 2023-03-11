@@ -408,6 +408,7 @@ globalThis.onHoverActiveCrew = function(isMouseOver) {
     if (isMouseOver && activeCrewAction) {
         // Highlight list-item for crew-action, if crew not ready
         activeCrewAction.elListItem.classList.add('highlight');
+        activeCrewAction.elTimelineItem.classList.add('highlight');
     } else {
         /**
          * Stop highlighting the list-item for crew-action, if the crew became ready while still hovering over it.
@@ -417,6 +418,11 @@ globalThis.onHoverActiveCrew = function(isMouseOver) {
         const elListItemHighlight = document.querySelector('#actions-ongoing ul li.highlight, #actions-done ul li.highlight');
         if (elListItemHighlight) {
             elListItemHighlight.classList.remove('highlight');
+        }
+        // Stop highlighting the timeline-item for crew-action - idem...
+        const elTimelineItemHighlight = document.querySelector('#timeline-ongoing .highlight, #timeline-done .highlight');
+        if (elTimelineItemHighlight) {
+            elTimelineItemHighlight.classList.remove('highlight');
         }
     }
 }

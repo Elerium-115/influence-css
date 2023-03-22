@@ -719,7 +719,7 @@ label.label-for-input:hover {
 
 #manage-actions {
     #timeline {
-        background: linear-gradient(90deg, gray 0% 40%, lime, aqua 60% 100%) border-box;
+        background: linear-gradient(-90deg, gray 0% 40%, lime, aqua 60% 100%) border-box;
         border-top: 1px dashed black;
         display: flex;
         font-size: 14px;
@@ -822,20 +822,20 @@ label.label-for-input:hover {
             }
         }
 
-        #timeline-done {
+        #timeline-ongoing {
             .timeline-action {
-                background-color: var(--color-gray-medium);
-                color: var(--color-gray-medium);
+                background-color: var(--color-highlight);
+                color: var(--color-highlight);
                 right: calc(var(--offset-x) - 30px);
 
                 &:hover::before { left: 0; }
             }
         }
 
-        #timeline-ongoing {
+        #timeline-done {
             .timeline-action {
-                background-color: var(--color-highlight);
-                color: var(--color-highlight);
+                background-color: var(--color-gray-medium);
+                color: var(--color-gray-medium);
                 left: calc(var(--offset-x) - 30px);
 
                 &:hover::before { right: 0; }

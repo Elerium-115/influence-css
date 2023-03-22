@@ -624,7 +624,7 @@ label.label-for-input:hover {
   display: none;
 }
 #manage-actions #timeline {
-  background: linear-gradient(90deg, gray 0% 40%, lime, aqua 60% 100%) border-box;
+  background: linear-gradient(-90deg, gray 0% 40%, lime, aqua 60% 100%) border-box;
   border-top: 1px dashed black;
   display: flex;
   font-size: 14px;
@@ -714,20 +714,20 @@ label.label-for-input:hover {
   bottom: -20px;
   position: absolute;
 }
-#manage-actions #timeline #timeline-done .timeline-action {
-  background-color: var(--color-gray-medium);
-  color: var(--color-gray-medium);
-  right: calc(var(--offset-x) - 30px);
-}
-#manage-actions #timeline #timeline-done .timeline-action:hover::before {
-  left: 0;
-}
 #manage-actions #timeline #timeline-ongoing .timeline-action {
   background-color: var(--color-highlight);
   color: var(--color-highlight);
-  left: calc(var(--offset-x) - 30px);
+  right: calc(var(--offset-x) - 30px);
 }
 #manage-actions #timeline #timeline-ongoing .timeline-action:hover::before {
+  left: 0;
+}
+#manage-actions #timeline #timeline-done .timeline-action {
+  background-color: var(--color-gray-medium);
+  color: var(--color-gray-medium);
+  left: calc(var(--offset-x) - 30px);
+}
+#manage-actions #timeline #timeline-done .timeline-action:hover::before {
   right: 0;
 }
 #manage-actions #action-groups {
